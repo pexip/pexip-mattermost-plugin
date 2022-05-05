@@ -3,9 +3,9 @@
   "author": "Marcos Cereijo",
   "version": "1.0.0",
   "scripts": {
-    "bundle": "mkdir -p com.mattermost.webapp-hello-world && cp dist/main.js com.mattermost.webapp-hello-world && cp  plugin.json com.mattermost.webapp-hello-world && tar -czvf com.mattermost.webapp-hello-world.gz com.mattermost.webapp-hello-world",
+    "bundle": "mkdir -p com.pexip.pexip-vmr && cp dist/main.js com.pexip.pexip-vmr && cp  plugin.json com.pexip.pexip-vmr && tar -czvf com.pexip.pexip-vmr.gz com.pexip.pexip-vmr",
     "build": "webpack --mode=production",
-    "clean": "rm -r node_modules dist com.mattermost.webapp-hello-world*"
+    "clean": "rm -r node_modules dist com.pexip.pexip-vmr*"
   },
   "devDependencies": {
     "@babel/core": "^7.17.10",

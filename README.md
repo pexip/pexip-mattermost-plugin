@@ -1,6 +1,8 @@
 # Pexip Mattermost Plugin
 
-Mattermost is a chat webapp that has plugins and apps. From the user point of view the UX is very similar to Slack.
+Mattermost is a chat application that can be deployed on-premises. The key feature is that is allows to developers to create their own plugin (server and client side) and integrations.
+
+The goal of this project is to develop and simple plugin that allow us to call to VMRs per channel.
 
 ## Deploy the server locally (Manual)
 
@@ -32,7 +34,7 @@ $ npm run bundle
 
 ## Upload plugin to mattermost platform
 
-For testing the plugin we will need to launch mattermost in a web browser
+These are the steps to deploy the plugin in our local environment:
 
 1. Launch mattermost in a web browser: http://localhost:8065
 
@@ -42,13 +44,10 @@ For testing the plugin we will need to launch mattermost in a web browser
 
 4. In the left menu go to the "Plugins" section and there select "Plugin Management".
 
-5. In the section "Upload Plugin" click on "Choose File" and select the file "com.mattermost.webapp-hello-world.gz".
+5. In the section "Upload Plugin" click on "Choose File" and select the file "com.pexip.pexip-vmr.gz".
 
 6. Click on "Upload".
 
-7. Go to the left menu and under the "Plugins" section you should see "Pexip VMR connector". Click on that plugin to show the plugins menu.
+7. Go to the left menu and under the "Plugins" section you should see "Pexip VMR". Click on that plugin to show the plugins menu.
 
 8. In the "Enable Plugin" section select "true".
-
-
-

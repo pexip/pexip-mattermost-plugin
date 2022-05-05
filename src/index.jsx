@@ -1,22 +1,14 @@
 import React from 'react';
+import VmrManager from './lib/VmrManager';
 
-// Courtesy of https://feathericons.com/
-const Icon = () => <i className='icon fa fa-plug'/>;
-
-class HelloWorldPlugin {
+class PexipVmrPlugin {
     initialize(registry, store) {
         registry.registerChannelHeaderButtonAction(
-            // icon - JSX element to use as the button's icon
-            <Icon />,
-            // action - a function called when the button is clicked, passed the channel and channel member as arguments
-            // null,
-            () => {
-                alert("Hello World!");
-            },
-            // dropdown_text - string or JSX element shown for the dropdown button description
-            "Hello World",
+            <i className='icon fa fa-video-camera'/>,
+            (channel, participant, other) => VmrManager.startVmr(channel, participant, other, store),
+            "Pexip VMR",
         );
     }
 }
 
-window.registerPlugin('com.mattermost.webapp-hello-world', new HelloWorldPlugin());
+window.registerPlugin('com.pexip.pexip-vmr', new PexipVmrPlugin());
