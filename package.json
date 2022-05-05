@@ -1,0 +1,21 @@
+{
+  "name": "pexip-mattermost-plugin",
+  "author": "Marcos Cereijo",
+  "version": "1.0.0",
+  "scripts": {
+    "bundle": "mkdir -p com.mattermost.webapp-hello-world && cp dist/main.js com.mattermost.webapp-hello-world && cp  plugin.json com.mattermost.webapp-hello-world && tar -czvf com.mattermost.webapp-hello-world.gz com.mattermost.webapp-hello-world",
+    "build": "webpack --mode=production",
+    "clean": "rm -r node_modules dist com.mattermost.webapp-hello-world*"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.17.10",
+    "@babel/preset-env": "^7.17.10",
+    "@babel/preset-react": "^7.16.7",
+    "babel-loader": "^8.2.5",
+    "webpack": "^5.72.0",
+    "webpack-cli": "^4.9.2"
+  },
+  "dependencies": {
+    "react": "^18.1.0"
+  }
+}

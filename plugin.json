@@ -1,0 +1,7 @@
+{
+  "id": "com.pexip.vmr-connector",
+  "name": "Pexip VMR connector",
+  "webapp": {
+      "bundle_path": "main.js"
+  }
+}

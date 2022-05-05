@@ -1,0 +1,4 @@
+.DS_Store
+dist
+node_modules
+com.mattermost.webapp-hello-world*
