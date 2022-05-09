@@ -2,6 +2,16 @@
   "id": "com.pexip.pexip-vmr",
   "name": "Pexip VMR",
   "webapp": {
-      "bundle_path": "main.js"
+      "bundle_path": "bundle.js"
+  },
+  "settings_schema": {
+    "settings": [{
+      "key": "PexipInfinityUrl",
+      "display_name": "Pexip Infinity URL:",
+      "type": "text",
+      "help_text": "Conferencing Node to connect for joining to a VMR.",
+      "placeholder": "Pexip Infinity URL...",
+      "default": "https://192.168.1.101"
+    }]
   }
 }

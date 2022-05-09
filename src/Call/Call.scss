@@ -1,0 +1,19 @@
+.Call {
+  display: flex;
+  button.join-vmr {
+    width: fit-content;
+    padding: 8px 16px;
+    border: none;
+    background-color: #386fe5;
+    border-radius: 4px;
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+    margin: auto;
+    margin-top: 4em;
+    &:hover {
+      background-color: #1c58d9;
+    }
+  }
+}
