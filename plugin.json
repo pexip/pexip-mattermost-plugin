@@ -6,12 +6,12 @@
   },
   "settings_schema": {
     "settings": [{
-      "key": "PexipInfinityUrl",
-      "display_name": "Pexip Infinity URL:",
+      "key": "node",
+      "display_name": "Pexip Infinity Server:",
       "type": "text",
-      "help_text": "Conferencing Node to connect for joining to a VMR.",
-      "placeholder": "Pexip Infinity URL...",
-      "default": "https://192.168.1.101"
+      "help_text": "Conferencing Node for joining a VMR.",
+      "placeholder": "e.g. example.com or 192.168.1.101",
+      "default": "192.168.1.101"
     }]
   }
 }

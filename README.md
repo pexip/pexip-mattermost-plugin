@@ -36,11 +36,11 @@ $ npm run bundle
 
 These are the steps to deploy the plugin in our local environment:
 
-1. Launch mattermost in a web browser: http://localhost:8065
+1. Launch mattermost in a web browser: https://localhost:8065
 
 2. Introduce all the mandatory info: username, password, organization, url, etc.
 
-3. Open the admin web page: http://localhost:8065/admin_console
+3. Open the admin web page: https://localhost:8065/admin_console
 
 4. In the left menu go to the "Plugins" section and there select "Plugin Management".
 

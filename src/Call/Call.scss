@@ -1,5 +1,29 @@
 .Call {
   display: flex;
+  .call-container {
+    display: flex;
+    flex-direction: column;
+    video {
+      width: 100%;
+    }
+    .toolbar {
+      display: flex;
+      background: var(--global-header-background);
+      padding: 5px;
+      svg {
+        font-size: 18px;
+        border-radius: 4px;
+        margin: auto;
+        padding: 6px;
+        color: rgba(255, 255, 255, 0.56);
+        cursor: pointer;
+        &:hover {
+          background: rgba(255, 255, 255, 0.08);
+          color: rgba(255, 255, 255, 0.72);
+        }
+      }
+    }
+  }
   button.join-vmr {
     width: fit-content;
     padding: 8px 16px;
