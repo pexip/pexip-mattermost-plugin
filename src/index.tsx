@@ -10,7 +10,7 @@ import { Call } from './Call/Call';
 import { CallManager } from './services/callManager';
 
 const pluginId = 'com.pexip.pexip-vmr';
-const icon = <i className='icon fa fa-video-camera'/>;
+const icon = <i id='pexip-vmr-plugin-button' className='icon fa fa-video-camera'/>;
 const dropDownText = 'Pexip VMR';
 
 class Plugin {
@@ -33,7 +33,7 @@ class Plugin {
     CallManager.setNode(node);
     CallManager.setDisplayName(displayName);
     CallManager.setChannel(channel.name);
-    this.store.dispatch(this.rhsPlugin.showRHSPlugin);
+    this.store.dispatch(this.rhsPlugin.toggleRHSPlugin);
   }
 
   private async getNode() {

@@ -1,39 +1,67 @@
 import * as React from 'react';
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Component } from 'react';
 
 import { CallManager } from '../services/callManager';
 
 import './Call.scss';
-import { faDesktop, faMicrophone, faMicrophoneSlash, faPowerOff, faVideo, faVideoSlash } from '@fortawesome/free-solid-svg-icons';
+import { Toolbar } from './components/Toolbar/Toolbar';
 
-export class Call extends React.PureComponent {
+export class Call extends Component {
 
-  private videoRef = React.createRef<HTMLVideoElement>();
+  private mainVideoRef = React.createRef<HTMLVideoElement>();
+  private localVideoRef = React.createRef<HTMLVideoElement>();
+  private secondaryVideoRef = React.createRef<HTMLVideoElement>();
 
   render() {
-    const call = (
-      <div className='call-container'>
-        <video autoPlay playsInline ref={this.videoRef}/>
-        <div className='toolbar'>
-          <FontAwesomeIcon icon={ CallManager.isAudioMute() ? faMicrophoneSlash : faMicrophone }/>
-          <FontAwesomeIcon icon={ CallManager.isVideoMute() ? faVideoSlash : faVideo }/>
-          <FontAwesomeIcon icon={ faDesktop } className={CallManager.isSharingScreen() ? 'selected': ''}/>
-          <FontAwesomeIcon icon={ faPowerOff }/>
-        </div>
-      </div>
-    );
-    const startCallButton = <button className='join-vmr'
-      onClick={() => {
-        CallManager.connect(this.videoRef);
-        this.setState({});
-      }}>{'Join "' + CallManager.getChannel() +'" VMR'}
-    </button>;
-    return (
-      <div className='Call'>
-        { CallManager.isOnCall() ? call : startCallButton }
-      </div>
-    );
+    let content;
+    if (CallManager.getState() === 'ACTIVE') {
+      content = (
+        <>
+          <video className='main' autoPlay playsInline ref={this.mainVideoRef}/>
+          <div className='pip'>
+            <video className='local' autoPlay playsInline ref={this.localVideoRef}/>
+            <video className='secondary' autoPlay playsInline ref={this.secondaryVideoRef}
+              onClick={() => this.onToggleMainVideo()}/>
+          </div>
+          <Toolbar onDisconnect={ () => this.onDisconnect() }/>
+        </>
+      );
+    } else {
+      content = (
+        <button className='join-vmr' onClick={() => this.onConnect()}>
+          {'Join "' + CallManager.getChannel() +'" VMR'}
+        </button>
+      );
+    }
+    return <div className='Call'>{ content }</div>;
   }
-  
+
+  componentDidMount() {
+    CallManager.localStream$.subscribe((stream) => {
+      const video = this.localVideoRef.current;
+      if (video) video.srcObject = stream;
+    });
+    CallManager.mainStream$.subscribe((stream) => {
+      const video = this.mainVideoRef.current;
+      if (video) video.srcObject = stream;
+    });
+    CallManager.secondaryStream$.subscribe((stream) => {
+      const video = this.secondaryVideoRef.current;
+      if (video) video.srcObject = stream;
+    });
+  }
+
+  private onToggleMainVideo() {
+    CallManager.toggleMainVideo();
+  }
+
+  private onConnect() {
+    CallManager.connect();
+    this.setState({});
+  }
+
+  private onDisconnect() {
+    this.setState({});
+  }
+
 }

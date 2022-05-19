@@ -1,27 +1,26 @@
 .Call {
   display: flex;
-  .call-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  position: relative;
+  video.main {
+    width: 100%;
+    background-color: black;
+  }
+  .pip {
+    position: absolute;
     display: flex;
-    flex-direction: column;
-    video {
-      width: 100%;
+    flex-direction: row-reverse;
+    height: 20%;
+    right: 0;
+    video.secondary {
+      cursor: pointer;
     }
-    .toolbar {
-      display: flex;
-      background: var(--global-header-background);
-      padding: 5px;
-      svg {
-        font-size: 18px;
-        border-radius: 4px;
-        margin: auto;
-        padding: 6px;
-        color: rgba(255, 255, 255, 0.56);
-        cursor: pointer;
-        &:hover {
-          background: rgba(255, 255, 255, 0.08);
-          color: rgba(255, 255, 255, 0.72);
-        }
-      }
+    video.local {
+      transform: rotateY(180deg);
+      -webkit-transform:rotateY(180deg); /* Safari and Chrome */
+      -moz-transform:rotateY(180deg); /* Firefox */
     }
   }
   button.join-vmr {

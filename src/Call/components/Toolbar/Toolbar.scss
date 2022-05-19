@@ -1,0 +1,28 @@
+.Toolbar {
+  display: flex;
+  background: var(--global-header-background);
+  padding: 5px;
+  button {
+    width: 32px;
+    height: 32px;
+    border-width: 0;
+    border-radius: 4px;
+    padding: 6px;
+    margin: auto;
+    background-color: transparent;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.56);
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.72);
+    }
+    svg {
+      font-size: 18px;
+    }
+  }
+  #tooltip {
+    font-size: 12px;
+    font-weight: bold;
+    padding: 6px;
+  }
+}

@@ -5,13 +5,29 @@
       "bundle_path": "bundle.js"
   },
   "settings_schema": {
-    "settings": [{
-      "key": "node",
-      "display_name": "Pexip Infinity Server:",
-      "type": "text",
-      "help_text": "Conferencing Node for joining a VMR.",
-      "placeholder": "e.g. example.com or 192.168.1.101",
-      "default": "192.168.1.101"
-    }]
+    "settings": [
+      {
+        "key": "node",
+        "display_name": "Pexip Infinity Server:",
+        "type": "text",
+        "help_text": "Conferencing Node for joining a VMR.",
+        "placeholder": "e.g. example.com or 192.168.1.101",
+        "default": "192.168.1.101"
+      }, {
+        "key": "prefix",
+        "display_name": "VMR prefix:",
+        "type": "text",
+        "help_text": "If the prefix is \"matt-\" and Mattermost channel is \"Off Topic\" the VMR will be \"matt-off-topic\".",
+        "placeholder": "e.g. matt-",
+        "default": "matt-"
+      }, {
+        "key": "pin",
+        "display_name": "Host PIN:",
+        "type": "text",
+        "help_text": "Conferencing Node for joining a VMR.",
+        "placeholder": "e.g. 4578",
+        "default": "1234"
+      }
+    ]
   }
 }
