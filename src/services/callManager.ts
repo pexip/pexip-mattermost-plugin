@@ -55,6 +55,11 @@ export class CallManager {
 
   static toggleVideoMute() {
     CallManager.pexrtc.muteVideo(!CallManager.pexrtc.mutedVideo);
+    if (CallManager.pexrtc.mutedVideo) {
+      this.localStream$.next(null);
+    } else {
+      this.localStream$.next(this.localStream);
+    }
   }
 
   static shareScreen() {

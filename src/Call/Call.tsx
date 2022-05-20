@@ -1,3 +1,5 @@
+import { faExchange } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as React from 'react';
 import { Component } from 'react';
 
@@ -17,11 +19,19 @@ export class Call extends Component {
     if (CallManager.getState() === 'ACTIVE') {
       content = (
         <>
-          <video className='main' autoPlay playsInline ref={this.mainVideoRef}/>
+          <div className='video-container main'>
+            <video autoPlay playsInline ref={this.mainVideoRef}/>
+          </div>
           <div className='pip'>
-            <video className='local' autoPlay playsInline ref={this.localVideoRef}/>
-            <video className='secondary' autoPlay playsInline ref={this.secondaryVideoRef}
-              onClick={() => this.onToggleMainVideo()}/>
+            <div className='video-container local'>
+              <video className='local' autoPlay playsInline ref={this.localVideoRef}/>
+            </div>
+            <div className='video-container secondary'>
+              <video className='secondary' autoPlay playsInline ref={this.secondaryVideoRef}/>
+              <div className='exchange-panel' onClick={() => this.onToggleMainVideo()}>
+                <FontAwesomeIcon icon={faExchange} />
+              </div>
+            </div>
           </div>
           <Toolbar onDisconnect={ () => this.onDisconnect() }/>
         </>
@@ -39,7 +49,14 @@ export class Call extends Component {
   componentDidMount() {
     CallManager.localStream$.subscribe((stream) => {
       const video = this.localVideoRef.current;
-      if (video) video.srcObject = stream;
+      if (video) {
+        video.srcObject = stream;
+        if (stream) {
+          video.style.display = 'block';
+        } else {
+          video.style.display = 'none';
+        }
+      }
     });
     CallManager.mainStream$.subscribe((stream) => {
       const video = this.mainVideoRef.current;
@@ -48,6 +65,11 @@ export class Call extends Component {
     CallManager.secondaryStream$.subscribe((stream) => {
       const video = this.secondaryVideoRef.current;
       if (video) video.srcObject = stream;
+      if (stream) {
+        video.style.display = 'block';
+      } else {
+        video.style.display = 'none';
+      }
     });
   }
 
