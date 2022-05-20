@@ -1,4 +1,4 @@
-import { faExchange } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faExchange } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as React from 'react';
 import { Component } from 'react';
@@ -9,6 +9,8 @@ import './Call.scss';
 import { Toolbar } from './components/Toolbar/Toolbar';
 
 export class Call extends Component {
+
+  private pipRef = React.createRef<HTMLDivElement>();
 
   private mainVideoRef = React.createRef<HTMLVideoElement>();
   private localVideoRef = React.createRef<HTMLVideoElement>();
@@ -22,16 +24,19 @@ export class Call extends Component {
           <div className='video-container main'>
             <video autoPlay playsInline ref={this.mainVideoRef}/>
           </div>
-          <div className='pip'>
+          <div className='pip' ref={this.pipRef}>
             <div className='video-container local'>
-              <video className='local' autoPlay playsInline ref={this.localVideoRef}/>
+              <video autoPlay playsInline ref={this.localVideoRef}/>
             </div>
             <div className='video-container secondary'>
-              <video className='secondary' autoPlay playsInline ref={this.secondaryVideoRef}/>
+              <video autoPlay playsInline ref={this.secondaryVideoRef}/>
               <div className='exchange-panel' onClick={() => this.onToggleMainVideo()}>
                 <FontAwesomeIcon icon={faExchange} />
               </div>
             </div>
+            <button className='toggle-pip-button' onClick={() => this.onTogglePip()}>
+              <FontAwesomeIcon icon={faArrowRight}/>
+            </button>
           </div>
           <Toolbar onDisconnect={ () => this.onDisconnect() }/>
         </>
@@ -75,6 +80,10 @@ export class Call extends Component {
 
   private onToggleMainVideo() {
     CallManager.toggleMainVideo();
+  }
+
+  private onTogglePip() {
+    this.pipRef.current.classList.toggle('closed') 
   }
 
   private onConnect() {
