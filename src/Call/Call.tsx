@@ -29,7 +29,7 @@ export class Call extends Component {
               <video autoPlay playsInline ref={this.localVideoRef}/>
             </div>
             <div className='video-container secondary'>
-              <video autoPlay playsInline ref={this.secondaryVideoRef}/>
+              <video autoPlay playsInline ref={this.secondaryVideoRef} style={{display: 'none'}}/>
               <div className='exchange-panel' onClick={() => this.onToggleMainVideo()}>
                 <FontAwesomeIcon icon={faExchange} />
               </div>
@@ -69,11 +69,13 @@ export class Call extends Component {
     });
     CallManager.secondaryStream$.subscribe((stream) => {
       const video = this.secondaryVideoRef.current;
-      if (video) video.srcObject = stream;
-      if (stream) {
-        video.style.display = 'block';
-      } else {
-        video.style.display = 'none';
+      if (video) {
+        video.srcObject = stream;
+        if (stream) {
+          video.style.display = 'block';
+        } else {
+          video.style.display = 'none';
+        }
       }
     });
   }
