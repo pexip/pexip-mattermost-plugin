@@ -90,7 +90,7 @@
     margin: auto;
     margin-top: 4em;
     &:hover {
-      background-color: #1c58d9;
+      background-color: var(--button-bg);
     }
   }
   #tooltip-call {

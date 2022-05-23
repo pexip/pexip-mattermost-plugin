@@ -34,9 +34,9 @@ export class Toolbar extends Component<IProps> {
           onClick={ () => this.onToggleMuteVideo() }>
             <FontAwesomeIcon icon={ CallManager.isVideoMute() ? faVideoSlash : faVideo }/>
         </button>
-        <button data-tip='Share screen' data-for='tooltip-toolbar'
-          onClick={ () => this.onShareScreen() }>
-            <FontAwesomeIcon icon={ faDesktop } className={CallManager.isSharingScreen() ? 'selected': ''}/>
+        <button data-tip={(CallManager.isSharingScreen() ? 'Stop' : 'Start') + ' sharing screen'} data-for='tooltip-toolbar'
+          onClick={ () => this.onShareScreen()} className={CallManager.isSharingScreen() ? 'selected': ''}>
+            <FontAwesomeIcon icon={ faDesktop }/>
         </button>
         <button data-tip='Disconnect' data-for='tooltip-toolbar'
           onClick={ () => this.onDisconnect() }>
@@ -64,6 +64,7 @@ export class Toolbar extends Component<IProps> {
 
   private onShareScreen() {
     CallManager.shareScreen();
+    this.setState({});
   }
   
   private onDisconnect() {
