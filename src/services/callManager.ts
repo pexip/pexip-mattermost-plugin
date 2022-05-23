@@ -5,10 +5,10 @@ export class CallManager {
   private static node = '';
   private static displayName = '';
   private static channel = '';
-  private static pin = '1234';
+  private static hostPin = '1234';
 
-  private static pexrtc: any = null; 
-  
+  private static pexrtc: any = null;
+
   private static localStream: MediaStream = null;
   private static remoteStream: MediaStream = null;
   private static presentationStream: MediaStream = null;
@@ -22,22 +22,30 @@ export class CallManager {
   static async connect() {
 
     console.log('Initialization conference with the following values:');
-    console.log('Node: ' + this.node);
-    console.log('Display Name: ' + this.displayName);
-    console.log('Channel: ' + this.channel);
-    console.log('PIN: ' + this.pin);
+    console.log('Node: ' + CallManager.node);
+    console.log('Display Name: ' + CallManager.displayName);
+    console.log('Channel: ' + CallManager.channel);
+    console.log('Host PIN: ' + CallManager.hostPin);
 
     CallManager.pexrtc = new PexRTC();
     CallManager.pexrtc.onSetup = CallManager.onSetup;
     CallManager.pexrtc.onConnect = CallManager.onConnect;
+    CallManager.pexrtc.onScreenshareConnected = CallManager.onScreenshareConnected;
+    CallManager.pexrtc.onScreenshareStopped= CallManager.onScreenshareStopped;
     CallManager.pexrtc.onPresentation = CallManager.onPresentation;
     CallManager.pexrtc.onPresentationConnected = CallManager.onPresentationConnected;
+    CallManager.pexrtc.onPresentationDisconnected = CallManager.onPresentationDisconnected;
     CallManager.pexrtc.onError = CallManager.onError;
-    CallManager.pexrtc.makeCall(this.node, 'room');
+    CallManager.pexrtc.makeCall(CallManager.node, 'room');
 
     // Change the color of the channel button
     const button = document.getElementById('pexip-vmr-plugin-button');
     button.style.color = 'var(--button-bg)';
+
+    // Disconnect when closing Mattermost app
+    addEventListener('beforeunload', () => CallManager.disconnect());
+
+    // TODO: Show error when cannot connect
 
   }
 
@@ -56,14 +64,23 @@ export class CallManager {
   static toggleVideoMute() {
     CallManager.pexrtc.muteVideo(!CallManager.pexrtc.mutedVideo);
     if (CallManager.pexrtc.mutedVideo) {
-      this.localStream$.next(null);
+      CallManager.localStream$.next(null);
     } else {
-      this.localStream$.next(this.localStream);
+      CallManager.localStream$.next(CallManager.localStream);
     }
   }
 
   static shareScreen() {
-    CallManager.pexrtc.present('screen');
+    //CallManager.pexrtc.present('screen');
+    console.log(CallManager.isSharingScreen());
+    if (CallManager.isSharingScreen()) {
+      CallManager.pexrtc.present(null);
+    } else {
+      const stream = CallManager.pexrtc.present('screen');
+      console.log(stream);
+      CallManager.presentationStream = stream;
+      CallManager.secondaryStream$.next(stream);
+    }
   }
 
   static getState() {
@@ -79,7 +96,7 @@ export class CallManager {
   }
 
   static isSharingScreen() {
-    return CallManager.pexrtc?.screenshare;
+    return !!CallManager.pexrtc?.screenshare;
   }
 
   static setNode(value: string) {
@@ -94,6 +111,10 @@ export class CallManager {
     CallManager.channel = value;
   }
 
+  static setHostPin(value: string) {
+    CallManager.hostPin = value;
+  }
+
   static getNode() {
     return CallManager.node;
   }
@@ -104,6 +125,10 @@ export class CallManager {
 
   static getChannel() {
     return CallManager.channel;
+  }
+
+  static getHostPin() {
+    return CallManager.hostPin;
   }
 
   static toggleMainVideo() {
@@ -120,7 +145,7 @@ export class CallManager {
   private static onSetup(stream: MediaStream, pin_status: string, conference_extension: string) {
     CallManager.localStream = stream;
     CallManager.localStream$.next(stream);
-    CallManager.pexrtc.connect(CallManager.pin);
+    CallManager.pexrtc.connect(CallManager.hostPin);
   }
 
   private static onConnect(stream: MediaStream) {
@@ -128,30 +153,49 @@ export class CallManager {
     CallManager.mainStream$.next(stream);
   }
 
-  private static onPresentation(setting: boolean, presenter: string, uuid: string) {
-    console.log('On Presentation '+ setting);
-    
-    if (setting) {
-      // Enabling presentation
-      const stream = CallManager.pexrtc.getPresentation();
-      console.log(stream);
-      // CallManager.presentationStream = stream;
-      // CallManager.presentationStream$.next(stream);
-    } else {
-      // Disabling presentation
-      // CallManager.presentationStream$.next(null);
+  private static onScreenshareConnected(stream: MediaStream) {
+    console.log('On Screenshare Connected');
+    if (CallManager.isPresentationInMain) {
+      CallManager.toggleMainVideo();
     }
-  }
-
-  private static onPresentationConnected(stream: MediaStream) {
-    console.log('Presentation Connected');
-    console.log(stream);
     CallManager.presentationStream = stream;
     CallManager.secondaryStream$.next(stream);
   }
 
-  private static onPresentationDisconnected(reason: string) {
+  private static onScreenshareStopped(reason: string) {
+    console.log('On Screenshare Stopped');
+    if (CallManager.isPresentationInMain) {
+      CallManager.toggleMainVideo();
+    }
+    CallManager.presentationStream = null;
     CallManager.secondaryStream$.next(null);
+  }
+
+  private static onPresentation(setting: boolean, presenter: string, uuid: string) {
+    console.log('On Presentation');
+    if (setting) {
+      CallManager.pexrtc.getPresentation();
+    }
+  }
+
+  private static onPresentationConnected(stream: MediaStream) {
+    console.log('On Presentation Connected');
+    CallManager.presentationStream = stream;
+    if (!CallManager.isPresentationInMain) {
+      CallManager.toggleMainVideo();
+    }
+    CallManager.mainStream$.next(stream);
+  }
+
+  private static onPresentationDisconnected(reason: string) {
+    console.log('On Presentation Disconnected');
+    if (!CallManager.isSharingScreen()) {
+      CallManager.presentationStream = null;
+      if (CallManager.isPresentationInMain) {
+        CallManager.toggleMainVideo();
+      }
+      CallManager.secondaryStream$.next(null);
+    }
   }
 
   private static onError(error: string) {

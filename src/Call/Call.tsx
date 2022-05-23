@@ -80,6 +80,10 @@ export class Call extends Component {
     });
   }
 
+  componentWillUnmount() {
+    CallManager.disconnect();
+  }
+
   private onToggleMainVideo() {
     CallManager.toggleMainVideo();
   }
