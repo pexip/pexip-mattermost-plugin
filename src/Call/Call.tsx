@@ -2,6 +2,7 @@ import { faArrowRight, faExchange } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as React from 'react';
 import { Component } from 'react';
+import ReactTooltip from 'react-tooltip';
 
 import { CallManager } from '../services/callManager';
 
@@ -30,14 +31,20 @@ export class Call extends Component {
             </div>
             <div className='video-container secondary'>
               <video autoPlay playsInline ref={this.secondaryVideoRef} style={{display: 'none'}}/>
-              <div className='exchange-panel' onClick={() => this.onToggleMainVideo()}>
+              <div className='exchange-panel' onClick={() => this.onToggleMainVideo()} data-tip='Exchange videos' data-for='tooltip-call'>
                 <FontAwesomeIcon icon={faExchange} />
               </div>
             </div>
-            <button className='toggle-pip-button' onClick={() => this.onTogglePip()}>
+            <button className='toggle-pip-button' onClick={(event) => this.onTogglePip(event)} data-tip={'Hide pip'} data-for='tooltip-call'>
               <FontAwesomeIcon icon={faArrowRight}/>
             </button>
           </div>
+          <ReactTooltip
+            id='tooltip-call'
+            place='bottom'
+            effect='solid'
+            multiline={false}
+          />
           <Toolbar onDisconnect={ () => this.onDisconnect() }/>
         </>
       );
@@ -80,16 +87,19 @@ export class Call extends Component {
     });
   }
 
-  componentWillUnmount() {
-    CallManager.disconnect();
-  }
-
   private onToggleMainVideo() {
     CallManager.toggleMainVideo();
   }
 
-  private onTogglePip() {
-    this.pipRef.current.classList.toggle('closed') 
+  private onTogglePip(event: React.MouseEvent) {
+    this.pipRef.current.classList.toggle('closed');
+    const element = event.currentTarget as HTMLButtonElement;
+    const closed = this.pipRef.current?.classList.contains('closed');
+    if (closed) {
+      element.setAttribute('data-tip', 'Show pip');
+    } else {
+      element.setAttribute('data-tip', 'Hide pip');
+    }
   }
 
   private onConnect() {

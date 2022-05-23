@@ -13,7 +13,7 @@ export class CallManager {
   private static remoteStream: MediaStream = null;
   private static presentationStream: MediaStream = null;
 
-  private static isPresentationInMain: boolean = false;
+  private static presentationInMain: boolean = false;
 
   static localStream$ = new BehaviorSubject<MediaStream>(null);
   static mainStream$ = new BehaviorSubject<MediaStream>(null);
@@ -87,6 +87,10 @@ export class CallManager {
     return CallManager.pexrtc?.state;
   }
 
+  static isPresentationInMain() {
+    return this.presentationInMain;
+  }
+
   static isAudioMute() {
     return CallManager.pexrtc?.mutedAudio;
   }
@@ -132,8 +136,8 @@ export class CallManager {
   }
 
   static toggleMainVideo() {
-    CallManager.isPresentationInMain = !CallManager.isPresentationInMain;
-    if (CallManager.isPresentationInMain) {
+    CallManager.presentationInMain = !CallManager.presentationInMain;
+    if (CallManager.isPresentationInMain()) {
       CallManager.mainStream$.next(CallManager.presentationStream);
       CallManager.secondaryStream$.next(CallManager.remoteStream);
     } else {
@@ -155,7 +159,7 @@ export class CallManager {
 
   private static onScreenshareConnected(stream: MediaStream) {
     console.log('On Screenshare Connected');
-    if (CallManager.isPresentationInMain) {
+    if (CallManager.isPresentationInMain()) {
       CallManager.toggleMainVideo();
     }
     CallManager.presentationStream = stream;
@@ -164,7 +168,7 @@ export class CallManager {
 
   private static onScreenshareStopped(reason: string) {
     console.log('On Screenshare Stopped');
-    if (CallManager.isPresentationInMain) {
+    if (CallManager.isPresentationInMain()) {
       CallManager.toggleMainVideo();
     }
     CallManager.presentationStream = null;
@@ -181,7 +185,7 @@ export class CallManager {
   private static onPresentationConnected(stream: MediaStream) {
     console.log('On Presentation Connected');
     CallManager.presentationStream = stream;
-    if (!CallManager.isPresentationInMain) {
+    if (!CallManager.isPresentationInMain()) {
       CallManager.toggleMainVideo();
     }
     CallManager.mainStream$.next(stream);
@@ -191,7 +195,7 @@ export class CallManager {
     console.log('On Presentation Disconnected');
     if (!CallManager.isSharingScreen()) {
       CallManager.presentationStream = null;
-      if (CallManager.isPresentationInMain) {
+      if (CallManager.isPresentationInMain()) {
         CallManager.toggleMainVideo();
       }
       CallManager.secondaryStream$.next(null);
