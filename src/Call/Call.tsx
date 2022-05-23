@@ -29,8 +29,8 @@ export class Call extends Component {
             <div className='video-container local'>
               <video autoPlay playsInline ref={this.localVideoRef}/>
             </div>
-            <div className='video-container secondary'>
-              <video autoPlay playsInline ref={this.secondaryVideoRef} style={{display: 'none'}}/>
+            <div className='video-container secondary' style={{display: 'none'}}>
+              <video autoPlay playsInline ref={this.secondaryVideoRef}/>
               <div className='exchange-panel' onClick={() => this.onToggleMainVideo()} data-tip='Exchange videos' data-for='tooltip-call'>
                 <FontAwesomeIcon icon={faExchange} />
               </div>
@@ -79,9 +79,9 @@ export class Call extends Component {
       if (video) {
         video.srcObject = stream;
         if (stream) {
-          video.style.display = 'block';
+          video.parentElement.style.display = 'block';
         } else {
-          video.style.display = 'none';
+          video.parentElement.style.display = 'none';
         }
       }
     });

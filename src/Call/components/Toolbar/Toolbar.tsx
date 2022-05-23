@@ -12,6 +12,7 @@ import {
   faVideo,
   faVideoSlash
 } from '@fortawesome/free-solid-svg-icons';
+import { Subscription } from 'rxjs';
 
 import { CallManager } from '../../../services/callManager';
 
@@ -22,6 +23,8 @@ interface IProps {
 }
 
 export class Toolbar extends Component<IProps> {
+
+  private subscriptionMainStream: Subscription;
 
   render() {
     return (
@@ -64,6 +67,16 @@ export class Toolbar extends Component<IProps> {
 
   private onShareScreen() {
     CallManager.shareScreen();
+    // If the other end start present, hide the update the sharing button state
+    this.subscriptionMainStream?.unsubscribe();
+    if (CallManager.isSharingScreen()) {
+      this.subscriptionMainStream = CallManager.mainStream$.subscribe(() => {
+        if (!CallManager.isSharingScreen()) {
+          this.subscriptionMainStream.unsubscribe();
+          this.setState({});
+        }
+      });
+    }
     this.setState({});
   }
   
