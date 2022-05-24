@@ -40,7 +40,6 @@ class Plugin {
       hostPin: pluginConfig.pin
     }
     ConferenceManager.setConfig(conferenceConfig);
-    console.log(channel);
     this.store.dispatch(this.rhsPlugin.toggleRHSPlugin);
   }
 

@@ -51,3 +51,28 @@ These are the steps to deploy the plugin in our local environment:
 7. Go to the left menu and under the "Plugins" section you should see "Pexip VMR". Click on that plugin to show the plugins menu.
 
 8. In the "Enable Plugin" section select "true".
+
+## Configure the plugin
+
+1. Open the admin web page: https://localhost:8065/admin_console
+
+2. In the left menu go to the "Plugins/Pexip VMR".
+
+3. Configure the following parameters:
+
+   - Pexip Infinity Server: Domain or IP of your Conferencing Node.
+
+   - VMR prefix: It will attach a prefix to the Mattermost Channel name. For example, if the channel name is "Town Square" and the prefix "matt-", the system will use the VMR "matt-town-square".
+
+   - Host PIN: This PIN is used for all the VMR for connecting as an host.
+
+## Populate the VMRs
+
+Here you have several alternatives:
+
+- Create the VMR by hand (for dev): You will need to create a VMR per Mattermost Channel. For the channel "Town Square" and prefix "matt-" we should create a VMR with the alias "matt-town-square". Take into account that if you create a new Mattermost Channel, you should also create a new VMR.
+  
+- Use the Local Policy (recommended): We have define a prefix which should help to create a Local Policy for all the Mattermost Channels. 
+
+
+
