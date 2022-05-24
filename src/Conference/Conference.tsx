@@ -4,12 +4,12 @@ import * as React from 'react';
 import { Component } from 'react';
 import ReactTooltip from 'react-tooltip';
 
-import { CallManager } from '../services/callManager';
-
-import './Call.scss';
+import { ConferenceManager } from '../services/conference-manager';
 import { Toolbar } from './components/Toolbar/Toolbar';
 
-export class Call extends Component {
+import './Conference.scss';
+
+export class Conference extends Component {
 
   private pipRef = React.createRef<HTMLDivElement>();
 
@@ -19,7 +19,7 @@ export class Call extends Component {
 
   render() {
     let content;
-    if (CallManager.getState() === 'ACTIVE') {
+    if (ConferenceManager.getState() === 'ACTIVE') {
       content = (
         <>
           <div className='video-container main'>
@@ -51,15 +51,15 @@ export class Call extends Component {
     } else {
       content = (
         <button className='join-vmr' onClick={() => this.onConnect()}>
-          {'Join "' + CallManager.getChannel() +'" VMR'}
+          {'Join to "' + ConferenceManager.getConfig().mattermostChannel +'" video room'}
         </button>
       );
     }
-    return <div className='Call'>{ content }</div>;
+    return <div className='Conference'>{ content }</div>;
   }
 
   componentDidMount() {
-    CallManager.localStream$.subscribe((stream) => {
+    ConferenceManager.localStream$.subscribe((stream) => {
       const video = this.localVideoRef.current;
       if (video) {
         video.srcObject = stream;
@@ -70,11 +70,11 @@ export class Call extends Component {
         }
       }
     });
-    CallManager.mainStream$.subscribe((stream) => {
+    ConferenceManager.mainStream$.subscribe((stream) => {
       const video = this.mainVideoRef.current;
       if (video) video.srcObject = stream;
     });
-    CallManager.secondaryStream$.subscribe((stream) => {
+    ConferenceManager.secondaryStream$.subscribe((stream) => {
       const video = this.secondaryVideoRef.current;
       if (video) {
         video.srcObject = stream;
@@ -88,7 +88,7 @@ export class Call extends Component {
   }
 
   private onToggleMainVideo() {
-    CallManager.toggleMainVideo();
+    ConferenceManager.toggleMainVideo();
   }
 
   private onTogglePip(event: React.MouseEvent) {
@@ -103,7 +103,7 @@ export class Call extends Component {
   }
 
   private onConnect() {
-    CallManager.connect();
+    ConferenceManager.connect();
     this.setState({});
   }
 
