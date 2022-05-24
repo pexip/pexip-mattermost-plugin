@@ -24,7 +24,7 @@
         "key": "pin",
         "display_name": "Host PIN:",
         "type": "text",
-        "help_text": "Conferencing Node for joining a VMR.",
+        "help_text": "PIN that will be used for all the VMRs.",
         "placeholder": "e.g. 4578",
         "default": "1234"
       }
