@@ -22,7 +22,7 @@ class Plugin {
   async initialize(registry: PluginRegistry, store: Store<GlobalState, Action<Record<string, unknown>>>) {
     this.store = store;
     const script = document.createElement('script');
-    script.src = '/static/plugins/com.pexip.pexip-vmr/pexrtc-27.2.js';
+    script.src = '/static/plugins/com.pexip.pexip-vmr/pexrtc-31.js';
     document.getElementsByTagName('head')[0].appendChild(script);
     registry.registerChannelHeaderButtonAction(icon, this.action.bind(this), dropDownText);
     this.rhsPlugin = registry.registerRightHandSidebarComponent(Conference as any, 'Pexip VMR');
