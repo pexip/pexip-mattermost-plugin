@@ -80,5 +80,32 @@ Here you have several alternatives:
   
 - Use the Local Policy (recommended): We have define a prefix which should help to create a Local Policy for all the Mattermost Channels. 
 
-
+```
+{% set preffix = "matt-" %}
+{% if call_info.local_alias.startswith(preffix) %}
+  {
+    "action": "continue",
+    "result": {
+      "service_type": "conference",
+      "name":  {{'"'}}{{call_info.local_alias | pex_regex_replace("^matt-", "") }}{{'"'}},
+      "service_tag": "Mattermost",
+      "description": "",
+      "pin": "1234",
+      "allow_guests": true,
+      "crypto_mode": "besteffort",
+      "view": "one_main_seven_pips" 
+    }
+  }
+{% elif service_config %}
+  {
+    "action" : "continue",
+    "result" : {{service_config|pex_to_json}}
+  }
+{% else %}
+  {
+    "action" : "reject",
+    "result" : {}
+  }
+{% endif %}
+```
 
