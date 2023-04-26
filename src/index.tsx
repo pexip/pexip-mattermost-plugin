@@ -38,7 +38,6 @@ class Plugin {
       node: pluginConfig.node,
       displayName: user.username,
       vmrPrefix: pluginConfig.prefix,
-      channel: channel.name,
       hostPin: pluginConfig.pin
     }
     ConferenceManager.setConfig(conferenceConfig);

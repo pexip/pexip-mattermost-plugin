@@ -1,3 +1,4 @@
+import { Channel } from 'mattermost-redux/types/channels';
 import { BehaviorSubject } from 'rxjs';
 
 export enum ConnectionState {
@@ -11,13 +12,13 @@ export interface ConferenceConfig {
   node: URL;
   displayName: string;
   vmrPrefix: string;
-  channel: string;
   hostPin: string;
 }
 
 export class ConferenceManager {
 
   private static config: ConferenceConfig = null;
+  private static channel: Channel;
 
   private static pexrtc: any = null;
 
@@ -40,8 +41,8 @@ export class ConferenceManager {
     console.log('Node: ' + ConferenceManager.config.node);
     console.log('Display Name: ' + ConferenceManager.config.displayName);
     console.log('VMR Prefix: ' + ConferenceManager.config.vmrPrefix)
-    console.log('Channel: ' + ConferenceManager.config.channel);
     console.log('Host PIN: ' + ConferenceManager.config.hostPin);
+    console.log('Channel: ' + this.channel.name);
 
     ConferenceManager.connectionState$.next(ConnectionState.Connecting);
 
@@ -54,7 +55,8 @@ export class ConferenceManager {
     ConferenceManager.pexrtc.onPresentationConnected = ConferenceManager.onPresentationConnected;
     ConferenceManager.pexrtc.onPresentationDisconnected = ConferenceManager.onPresentationDisconnected;
     ConferenceManager.pexrtc.onError = ConferenceManager.onError;
-    ConferenceManager.pexrtc.makeCall(ConferenceManager.config.node, ConferenceManager.config.vmrPrefix + ConferenceManager.config.channel);
+    ConferenceManager.pexrtc.makeCall(ConferenceManager.config.node,
+      ConferenceManager.config.vmrPrefix + this.channel.name);
 
     // Change the color of the channel button
     const button = document.getElementById('pexip-vmr-plugin-button');
@@ -128,6 +130,14 @@ export class ConferenceManager {
 
   static getConfig () {
     return ConferenceManager.config;
+  }
+
+  static setChannel (channel: Channel) {
+    ConferenceManager.channel = channel;
+  }
+
+  static getChannel () {
+    return ConferenceManager.channel;
   }
 
   static toggleMainVideo () {

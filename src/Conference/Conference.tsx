@@ -27,6 +27,8 @@ interface ConferenceState {
 
 export class Conference extends Component {
 
+  private channelDisplayName: string
+
   state: ConferenceState = {
     localStream: null,
     mainStream: null,
@@ -38,7 +40,7 @@ export class Conference extends Component {
   render() {
     return (
       <div className='Conference'>
-        <div className='header'>Channel Room</div>
+        <div className='header'>{this.channelDisplayName} Room</div>
         <div className='conference-container'>
           <div className='video-container main'>
             <Video mediaStream={this.state.mainStream} />
@@ -85,6 +87,7 @@ export class Conference extends Component {
     ConferenceManager.secondaryStream$.subscribe((stream) => {
       this.setState({secondaryStream: stream});
     });
+    this.channelDisplayName = ConferenceManager.getChannel().display_name;
   }
 
   private onToggleMainVideo() {
