@@ -6,13 +6,13 @@ import { GlobalState } from 'mattermost-redux/types/store';
 import { Channel, ChannelMembership } from 'mattermost-redux/types/channels';
 import { Client4 } from 'mattermost-redux/client';
 
-import { Conference } from './Conference/Conference';
 import { ConferenceManager } from './services/conference-manager';
 import { ConferenceConfig } from './services/conference-manager';
+import { App } from './App';
 
-const pluginId = 'com.pexip.pexip-vmr';
+const pluginId = 'com.pexip.pexip-video-connect';
 const icon = <i id='pexip-vmr-plugin-button' className='icon fa fa-video-camera'/>;
-const dropDownText = 'Pexip VMR';
+const dropDownText = 'Pexip Video Connect';
 
 class Plugin {
   
@@ -22,10 +22,10 @@ class Plugin {
   async initialize(registry: PluginRegistry, store: Store<GlobalState, Action<Record<string, unknown>>>) {
     this.store = store;
     const script = document.createElement('script');
-    script.src = '/static/plugins/com.pexip.pexip-vmr/pexrtc-31.js';
+    script.src = '/static/plugins/com.pexip.pexip-video-connect/pexrtc-31.js';
     document.getElementsByTagName('head')[0].appendChild(script);
     registry.registerChannelHeaderButtonAction(icon, this.action.bind(this), dropDownText);
-    this.rhsPlugin = registry.registerRightHandSidebarComponent(Conference as any, 'Pexip VMR');
+    this.rhsPlugin = registry.registerRightHandSidebarComponent(App as any, 'Pexip Video Connect');
   }
 
   private async action(channel: Channel, channelMembership: ChannelMembership) {

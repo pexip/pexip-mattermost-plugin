@@ -1,5 +1,12 @@
 import { BehaviorSubject } from 'rxjs';
 
+export enum ConnectionState {
+  Disconnected,
+  Connected,
+  Connecting,
+  Error
+}
+
 export interface ConferenceConfig {
   node: URL;
   displayName: string;
@@ -20,9 +27,12 @@ export class ConferenceManager {
 
   private static presentationInMain: boolean = false;
 
+  private static error: string = '';
+
   static localStream$ = new BehaviorSubject<MediaStream>(null);
   static mainStream$ = new BehaviorSubject<MediaStream>(null);
   static secondaryStream$ = new BehaviorSubject<MediaStream>(null);
+  static connectionState$ = new BehaviorSubject<ConnectionState>(ConnectionState.Disconnected);
 
   static async connect() {
 
@@ -31,6 +41,8 @@ export class ConferenceManager {
     console.log('Display Name: ' + ConferenceManager.config.displayName);
     console.log('Mattermost Channel: ' + ConferenceManager.config.mattermostChannel);
     console.log('Host PIN: ' + ConferenceManager.config.hostPin);
+
+    ConferenceManager.connectionState$.next(ConnectionState.Connecting);
 
     ConferenceManager.pexrtc = new PexRTC();
     ConferenceManager.pexrtc.onSetup = ConferenceManager.onSetup;
@@ -60,6 +72,7 @@ export class ConferenceManager {
     // Change the color of the channel button
     const button = document.getElementById('pexip-vmr-plugin-button');
     button.style.color = 'inherit';
+    ConferenceManager.connectionState$.next(ConnectionState.Disconnected);
   }
 
   static toggleAudioMute() {
@@ -127,6 +140,10 @@ export class ConferenceManager {
     }
   }
 
+  static getError() {
+    return ConferenceManager.error;
+  }
+
   private static onSetup(stream: MediaStream, pin_status: string, conference_extension: string) {
     ConferenceManager.localStream = stream;
     ConferenceManager.localStream$.next(stream);
@@ -136,6 +153,7 @@ export class ConferenceManager {
   private static onConnect(stream: MediaStream) {
     ConferenceManager.remoteStream = stream;
     ConferenceManager.mainStream$.next(stream);
+    ConferenceManager.connectionState$.next(ConnectionState.Connected);
   }
 
   private static onScreenshareConnected(stream: MediaStream) {
@@ -184,7 +202,7 @@ export class ConferenceManager {
   }
 
   private static onError(error: string) {
-    console.error(error);
+    ConferenceManager.connectionState$.next(ConnectionState.Error);
   }
 
 }

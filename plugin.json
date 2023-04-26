@@ -1,6 +1,6 @@
 {
-  "id": "com.pexip.pexip-vmr",
-  "name": "Pexip VMR",
+  "id": "com.pexip.pexip-video-connect",
+  "name": "Pexip Video Connect",
   "webapp": {
       "bundle_path": "bundle.js"
   },
