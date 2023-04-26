@@ -119,7 +119,7 @@ export class ConferenceManager {
   }
 
   static isSharingScreen () {
-    return !!ConferenceManager.pexrtc?.screenshare;
+    return !!ConferenceManager.pexrtc?.screenshare_requested;
   }
 
   static setConfig (config: ConferenceConfig) {
