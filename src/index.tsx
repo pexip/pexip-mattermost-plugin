@@ -9,6 +9,7 @@ import { Client4 } from 'mattermost-redux/client';
 import { ConferenceManager } from './services/conference-manager';
 import { ConferenceConfig } from './services/conference-manager';
 import { App } from './App';
+import { MattermostManager } from './services/mattermost-manager';
 
 const pluginId = 'com.pexip.pexip-video-connect';
 const icon = <i id='pexip-vmr-plugin-button' className='icon fa fa-video-camera'/>;
@@ -21,6 +22,7 @@ class Plugin {
 
   async initialize(registry: PluginRegistry, store: Store<GlobalState, Action<Record<string, unknown>>>) {
     this.store = store;
+    MattermostManager.setStore(store);
     const script = document.createElement('script');
     script.src = '/static/plugins/com.pexip.pexip-video-connect/pexrtc-31.js';
     document.getElementsByTagName('head')[0].appendChild(script);
@@ -30,13 +32,14 @@ class Plugin {
 
   private async action(channel: Channel, channelMembership: ChannelMembership) {
     const config = await Client4.getConfig();
+    console.log(config);
     const pluginConfig = config.PluginSettings.Plugins[pluginId];
     const user = await Client4.getUser(channelMembership.user_id);
     const conferenceConfig: ConferenceConfig = {
       node: pluginConfig.node,
       displayName: user.username,
-      mattermostChannel: channel.display_name,
-      vmr: pluginConfig.prefix + channel.name,
+      vmrPrefix: pluginConfig.prefix,
+      channel: channel.name,
       hostPin: pluginConfig.pin
     }
     ConferenceManager.setConfig(conferenceConfig);

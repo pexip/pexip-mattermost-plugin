@@ -18,44 +18,34 @@ export class Conference extends Component {
   private secondaryVideoRef = React.createRef<HTMLVideoElement>();
 
   render() {
-    let content;
-    if (ConferenceManager.getState() === 'ACTIVE') {
-      content = (
-        <>
-          <div className='video-container main'>
-            <video autoPlay playsInline ref={this.mainVideoRef}/>
+    return (
+      <div className='Conference'>
+        <div className='video-container main'>
+          <video autoPlay playsInline ref={this.mainVideoRef}/>
+        </div>
+        <div className='pip' ref={this.pipRef}>
+          <div className='video-container local'>
+            <video autoPlay playsInline ref={this.localVideoRef}/>
           </div>
-          <div className='pip' ref={this.pipRef}>
-            <div className='video-container local'>
-              <video autoPlay playsInline ref={this.localVideoRef}/>
+          <div className='video-container secondary' style={{display: 'none'}}>
+            <video autoPlay playsInline ref={this.secondaryVideoRef}/>
+            <div className='exchange-panel' onClick={() => this.onToggleMainVideo()} data-tip='Exchange videos' data-for='tooltip-call'>
+              <FontAwesomeIcon icon={faExchange} />
             </div>
-            <div className='video-container secondary' style={{display: 'none'}}>
-              <video autoPlay playsInline ref={this.secondaryVideoRef}/>
-              <div className='exchange-panel' onClick={() => this.onToggleMainVideo()} data-tip='Exchange videos' data-for='tooltip-call'>
-                <FontAwesomeIcon icon={faExchange} />
-              </div>
-            </div>
-            <button className='toggle-pip-button' onClick={(event) => this.onTogglePip(event)} data-tip={'Hide pip'} data-for='tooltip-call'>
-              <FontAwesomeIcon icon={faArrowRight}/>
-            </button>
           </div>
-          <ReactTooltip
-            id='tooltip-call'
-            place='bottom'
-            effect='solid'
-            multiline={false}
-          />
-          <Toolbar onDisconnect={ () => this.onDisconnect() }/>
-        </>
-      );
-    } else {
-      content = (
-        <button className='join-vmr' onClick={() => this.onConnect()}>
-          {'Join to "' + ConferenceManager.getConfig().mattermostChannel +'" video room'}
-        </button>
-      );
-    }
-    return <div className='Conference'>{ content }</div>;
+          <button className='toggle-pip-button' onClick={(event) => this.onTogglePip(event)} data-tip={'Hide pip'} data-for='tooltip-call'>
+            <FontAwesomeIcon icon={faArrowRight}/>
+          </button>
+        </div>
+        <ReactTooltip
+          id='tooltip-call'
+          place='bottom'
+          effect='solid'
+          multiline={false}
+        />
+        <Toolbar onDisconnect={ () => this.onDisconnect() }/>
+      </div>
+    )
   }
 
   componentDidMount() {
@@ -100,11 +90,6 @@ export class Conference extends Component {
     } else {
       element.setAttribute('data-tip', 'Hide pip');
     }
-  }
-
-  private onConnect() {
-    ConferenceManager.connect();
-    this.setState({});
   }
 
   private onDisconnect() {

@@ -10,8 +10,8 @@ export enum ConnectionState {
 export interface ConferenceConfig {
   node: URL;
   displayName: string;
-  mattermostChannel: string;
-  vmr: string;
+  vmrPrefix: string;
+  channel: string;
   hostPin: string;
 }
 
@@ -34,12 +34,13 @@ export class ConferenceManager {
   static secondaryStream$ = new BehaviorSubject<MediaStream>(null);
   static connectionState$ = new BehaviorSubject<ConnectionState>(ConnectionState.Disconnected);
 
-  static async connect() {
+  static async connect () {
 
     console.log('Initialization conference with the following values:');
     console.log('Node: ' + ConferenceManager.config.node);
     console.log('Display Name: ' + ConferenceManager.config.displayName);
-    console.log('Mattermost Channel: ' + ConferenceManager.config.mattermostChannel);
+    console.log('VMR Prefix: ' + ConferenceManager.config.vmrPrefix)
+    console.log('Channel: ' + ConferenceManager.config.channel);
     console.log('Host PIN: ' + ConferenceManager.config.hostPin);
 
     ConferenceManager.connectionState$.next(ConnectionState.Connecting);
@@ -53,7 +54,7 @@ export class ConferenceManager {
     ConferenceManager.pexrtc.onPresentationConnected = ConferenceManager.onPresentationConnected;
     ConferenceManager.pexrtc.onPresentationDisconnected = ConferenceManager.onPresentationDisconnected;
     ConferenceManager.pexrtc.onError = ConferenceManager.onError;
-    ConferenceManager.pexrtc.makeCall(ConferenceManager.config.node, ConferenceManager.config.vmr);
+    ConferenceManager.pexrtc.makeCall(ConferenceManager.config.node, ConferenceManager.config.vmrPrefix + ConferenceManager.config.channel);
 
     // Change the color of the channel button
     const button = document.getElementById('pexip-vmr-plugin-button');
@@ -66,7 +67,7 @@ export class ConferenceManager {
 
   }
 
-  static disconnect() {
+  static disconnect () {
     ConferenceManager.pexrtc.disconnect();
     ConferenceManager.pexrtc = null;
     // Change the color of the channel button
@@ -75,11 +76,11 @@ export class ConferenceManager {
     ConferenceManager.connectionState$.next(ConnectionState.Disconnected);
   }
 
-  static toggleAudioMute() {
+  static toggleAudioMute () {
     ConferenceManager.pexrtc.muteAudio(!ConferenceManager.pexrtc.mutedAudio);
   }
 
-  static toggleVideoMute() {
+  static toggleVideoMute () {
     ConferenceManager.pexrtc.muteVideo(!ConferenceManager.pexrtc.mutedVideo);
     if (ConferenceManager.pexrtc.mutedVideo) {
       ConferenceManager.localStream$.next(null);
@@ -88,7 +89,7 @@ export class ConferenceManager {
     }
   }
 
-  static shareScreen() {
+  static shareScreen () {
     //ConferenceManager.pexrtc.present('screen');
     console.log(ConferenceManager.isSharingScreen());
     if (ConferenceManager.isSharingScreen()) {
@@ -101,35 +102,35 @@ export class ConferenceManager {
     }
   }
 
-  static getState() {
+  static getState () {
     return ConferenceManager.pexrtc?.state;
   }
 
-  static isPresentationInMain() {
+  static isPresentationInMain () {
     return this.presentationInMain;
   }
 
-  static isAudioMute() {
+  static isAudioMute () {
     return ConferenceManager.pexrtc?.mutedAudio;
   }
 
-  static isVideoMute() {
+  static isVideoMute () {
     return ConferenceManager.pexrtc?.mutedVideo;
   }
 
-  static isSharingScreen() {
+  static isSharingScreen () {
     return !!ConferenceManager.pexrtc?.screenshare;
   }
 
-  static setConfig(config: ConferenceConfig) {
+  static setConfig (config: ConferenceConfig) {
     ConferenceManager.config = config;
   }
 
-  static getConfig() {
+  static getConfig () {
     return ConferenceManager.config;
   }
 
-  static toggleMainVideo() {
+  static toggleMainVideo () {
     ConferenceManager.presentationInMain = !ConferenceManager.presentationInMain;
     if (ConferenceManager.isPresentationInMain()) {
       ConferenceManager.mainStream$.next(ConferenceManager.presentationStream);
@@ -140,23 +141,23 @@ export class ConferenceManager {
     }
   }
 
-  static getError() {
+  static getError () {
     return ConferenceManager.error;
   }
 
-  private static onSetup(stream: MediaStream, pin_status: string, conference_extension: string) {
+  private static onSetup (stream: MediaStream, pin_status: string, conference_extension: string) {
     ConferenceManager.localStream = stream;
     ConferenceManager.localStream$.next(stream);
     ConferenceManager.pexrtc.connect(ConferenceManager.config.hostPin);
   }
 
-  private static onConnect(stream: MediaStream) {
+  private static onConnect (stream: MediaStream) {
     ConferenceManager.remoteStream = stream;
     ConferenceManager.mainStream$.next(stream);
     ConferenceManager.connectionState$.next(ConnectionState.Connected);
   }
 
-  private static onScreenshareConnected(stream: MediaStream) {
+  private static onScreenshareConnected (stream: MediaStream) {
     console.log('On Screenshare Connected');
     if (ConferenceManager.isPresentationInMain()) {
       ConferenceManager.toggleMainVideo();
@@ -165,7 +166,7 @@ export class ConferenceManager {
     ConferenceManager.secondaryStream$.next(stream);
   }
 
-  private static onScreenshareStopped(reason: string) {
+  private static onScreenshareStopped (reason: string) {
     console.log('On Screenshare Stopped');
     if (ConferenceManager.isPresentationInMain()) {
       ConferenceManager.toggleMainVideo();
@@ -174,14 +175,14 @@ export class ConferenceManager {
     ConferenceManager.secondaryStream$.next(null);
   }
 
-  private static onPresentation(setting: boolean, presenter: string, uuid: string) {
+  private static onPresentation (setting: boolean, presenter: string, uuid: string) {
     console.log('On Presentation');
     if (setting) {
       ConferenceManager.pexrtc.getPresentation();
     }
   }
 
-  private static onPresentationConnected(stream: MediaStream) {
+  private static onPresentationConnected (stream: MediaStream) {
     console.log('On Presentation Connected');
     ConferenceManager.presentationStream = stream;
     if (!ConferenceManager.isPresentationInMain()) {
@@ -190,7 +191,7 @@ export class ConferenceManager {
     ConferenceManager.mainStream$.next(stream);
   }
 
-  private static onPresentationDisconnected(reason: string) {
+  private static onPresentationDisconnected (reason: string) {
     console.log('On Presentation Disconnected');
     if (!ConferenceManager.isSharingScreen()) {
       ConferenceManager.presentationStream = null;
@@ -201,7 +202,7 @@ export class ConferenceManager {
     }
   }
 
-  private static onError(error: string) {
+  private static onError (error: string) {
     ConferenceManager.connectionState$.next(ConnectionState.Error);
   }
 
