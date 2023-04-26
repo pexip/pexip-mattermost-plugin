@@ -9,71 +9,81 @@ import { Toolbar } from './components/Toolbar/Toolbar';
 
 import './Conference.scss';
 
+interface VideoProps {
+  mediaStream: MediaStream;
+}
+
+const Video = React.memo((props: VideoProps) => {
+  return <video autoPlay playsInline ref={(element) => {
+    if (element) element.srcObject = props.mediaStream;
+  }}/>
+})
+
+interface ConferenceState {
+  localStream: MediaStream;
+  mainStream: MediaStream;
+  secondaryStream: MediaStream;
+}
+
 export class Conference extends Component {
 
-  private pipRef = React.createRef<HTMLDivElement>();
+  state: ConferenceState = {
+    localStream: null,
+    mainStream: null,
+    secondaryStream: null
+  }
 
-  private mainVideoRef = React.createRef<HTMLVideoElement>();
-  private localVideoRef = React.createRef<HTMLVideoElement>();
-  private secondaryVideoRef = React.createRef<HTMLVideoElement>();
+  private pipRef = React.createRef<HTMLDivElement>();
 
   render() {
     return (
       <div className='Conference'>
-        <div className='video-container main'>
-          <video autoPlay playsInline ref={this.mainVideoRef}/>
-        </div>
-        <div className='pip' ref={this.pipRef}>
-          <div className='video-container local'>
-            <video autoPlay playsInline ref={this.localVideoRef}/>
+        <div className='header'>Channel Room</div>
+        <div className='conference-container'>
+          <div className='video-container main'>
+            <Video mediaStream={this.state.mainStream} />
           </div>
-          <div className='video-container secondary' style={{display: 'none'}}>
-            <video autoPlay playsInline ref={this.secondaryVideoRef}/>
-            <div className='exchange-panel' onClick={() => this.onToggleMainVideo()} data-tip='Exchange videos' data-for='tooltip-call'>
-              <FontAwesomeIcon icon={faExchange} />
-            </div>
+          <div className='pip' ref={this.pipRef}>
+            {this.state.localStream && (
+              <div className='video-container local'>
+                <Video mediaStream={this.state.localStream} />
+              </div>
+            )}
+            {this.state.secondaryStream && (
+              <div className='video-container secondary'>
+                <Video mediaStream={this.state.secondaryStream} />
+                <div className='exchange-panel' onClick={() => this.onToggleMainVideo()} data-tip='Exchange videos' data-for='tooltip-call'>
+                  <FontAwesomeIcon icon={faExchange} />
+                </div>
+              </div>
+            )}
+            {(this.state.localStream || this.state.secondaryStream) && (
+              <button className='toggle-pip-button' onClick={(event) => this.onTogglePip(event)} data-tip={'Hide pip'} data-for='tooltip-call'>
+                <FontAwesomeIcon icon={faArrowRight}/>
+              </button>
+            )}
           </div>
-          <button className='toggle-pip-button' onClick={(event) => this.onTogglePip(event)} data-tip={'Hide pip'} data-for='tooltip-call'>
-            <FontAwesomeIcon icon={faArrowRight}/>
-          </button>
+          <ReactTooltip
+            id='tooltip-call'
+            place='bottom'
+            effect='solid'
+            multiline={false}
+          />
+          <Toolbar onDisconnect={ () => this.onDisconnect() }/>
         </div>
-        <ReactTooltip
-          id='tooltip-call'
-          place='bottom'
-          effect='solid'
-          multiline={false}
-        />
-        <Toolbar onDisconnect={ () => this.onDisconnect() }/>
       </div>
     )
   }
 
   componentDidMount() {
     ConferenceManager.localStream$.subscribe((stream) => {
-      const video = this.localVideoRef.current;
-      if (video) {
-        video.srcObject = stream;
-        if (stream) {
-          video.style.display = 'block';
-        } else {
-          video.style.display = 'none';
-        }
-      }
+      this.setState({localStream: stream});
     });
     ConferenceManager.mainStream$.subscribe((stream) => {
-      const video = this.mainVideoRef.current;
-      if (video) video.srcObject = stream;
+      this.setState({mainStream: stream});
     });
     ConferenceManager.secondaryStream$.subscribe((stream) => {
-      const video = this.secondaryVideoRef.current;
-      if (video) {
-        video.srcObject = stream;
-        if (stream) {
-          video.parentElement.style.display = 'block';
-        } else {
-          video.parentElement.style.display = 'none';
-        }
-      }
+      this.setState({secondaryStream: stream});
     });
   }
 
