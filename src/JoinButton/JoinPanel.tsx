@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { ConferenceManager } from '../services/conference-manager';
 
-import './JoinPanel.scss';
 import { MattermostManager } from '../services/mattermost-manager';
-import { Client4 } from 'mattermost-redux/client';
+
+import './JoinPanel.scss';
 
 interface JoinButtonState {
   channelId: string;
@@ -53,11 +53,10 @@ export class JoinButton extends Component<{}, JoinButtonState> {
   }
 
   render () {
-    console.log('REnder');
     return (
       <div className='JoinPanel'>
         <p>Connect to "{this.state.channelDisplayName}" room? </p>
-        <button className='join-button' onClick={this.onConnect}>
+        <button onClick={this.onConnect}>
           Join conference
         </button>
       </div>

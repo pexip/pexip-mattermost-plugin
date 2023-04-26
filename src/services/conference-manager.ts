@@ -203,6 +203,7 @@ export class ConferenceManager {
   }
 
   private static onError (error: string) {
+    ConferenceManager.error = error;
     ConferenceManager.connectionState$.next(ConnectionState.Error);
   }
 

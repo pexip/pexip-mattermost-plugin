@@ -32,7 +32,6 @@ class Plugin {
 
   private async action(channel: Channel, channelMembership: ChannelMembership) {
     const config = await Client4.getConfig();
-    console.log(config);
     const pluginConfig = config.PluginSettings.Plugins[pluginId];
     const user = await Client4.getUser(channelMembership.user_id);
     const conferenceConfig: ConferenceConfig = {

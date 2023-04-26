@@ -19,7 +19,6 @@ export class App extends Component<any, AppState> {
 
   constructor(props: any) {
     super(props);
-    console.log(props);
     this.state = {
       connectionState: ConnectionState.Disconnected
     }
@@ -48,7 +47,9 @@ export class App extends Component<any, AppState> {
         component = <Loading />
         break;
       case ConnectionState.Error:
-        component =  <ErrorPanel message={this.error} />
+        component =  <ErrorPanel
+          message={ConferenceManager.getError()}
+          onGoBack={() => this.setState({connectionState: ConnectionState.Disconnected})} />
         break;
     }
     return (
