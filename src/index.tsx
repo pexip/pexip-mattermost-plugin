@@ -41,7 +41,13 @@ class Plugin {
       hostPin: pluginConfig.pin
     }
     ConferenceManager.setConfig(conferenceConfig);
-    this.store.dispatch(this.rhsPlugin.toggleRHSPlugin);
+    if (pluginConfig.embedded) {
+      this.store.dispatch(this.rhsPlugin.toggleRHSPlugin);
+    } else {
+      const vmr = pluginConfig.prefix + channel.name;
+      window.open(`https://${pluginConfig.node}/webapp3/m/${vmr}/?pin=${pluginConfig.pin}&name=${user.username}`,
+      '', 'width=800;height=800');
+    }
   }
 
 }

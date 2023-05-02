@@ -56,7 +56,7 @@ export class ConferenceManager {
     ConferenceManager.pexrtc.onPresentationDisconnected = ConferenceManager.onPresentationDisconnected;
     ConferenceManager.pexrtc.onError = ConferenceManager.onError;
     ConferenceManager.pexrtc.makeCall(ConferenceManager.config.node,
-      ConferenceManager.config.vmrPrefix + this.channel.name);
+      ConferenceManager.config.vmrPrefix + this.channel.name, ConferenceManager.config.displayName);
 
     // Change the color of the channel button
     const button = document.getElementById('pexip-vmr-plugin-button');
@@ -92,13 +92,10 @@ export class ConferenceManager {
   }
 
   static shareScreen () {
-    //ConferenceManager.pexrtc.present('screen');
-    console.log(ConferenceManager.isSharingScreen());
     if (ConferenceManager.isSharingScreen()) {
       ConferenceManager.pexrtc.present(null);
     } else {
       const stream = ConferenceManager.pexrtc.present('screen');
-      console.log(stream);
       ConferenceManager.presentationStream = stream;
       ConferenceManager.secondaryStream$.next(stream);
     }

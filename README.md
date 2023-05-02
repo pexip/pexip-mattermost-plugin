@@ -93,7 +93,8 @@ Here you have several alternatives:
       "pin": "1234",
       "allow_guests": true,
       "crypto_mode": "besteffort",
-      "view": "one_main_seven_pips" 
+      "view": "five_mains_seven_pips",
+      "enable_overlay_text": true
     }
   }
 {% elif service_config %}

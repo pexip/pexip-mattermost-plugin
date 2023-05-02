@@ -23,10 +23,16 @@
       }, {
         "key": "pin",
         "display_name": "Host PIN:",
-        "type": "text",
+        "type": "number",
         "help_text": "PIN that will be used for all the VMRs.",
         "placeholder": "e.g. 4578",
         "default": "1234"
+      }, {
+        "key": "embedded",
+        "display_name": "Embedded Experience",
+        "type": "bool",
+        "help_text": "Indicates if the conference should be displayed inside Mattermost or in another tab with only the conference.",
+        "default": true
       }
     ]
   }
