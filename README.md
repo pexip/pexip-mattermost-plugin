@@ -1,43 +1,20 @@
-# Plugin Starter Template [![CircleCI branch](https://img.shields.io/circleci/project/github/mattermost/mattermost-plugin-starter-template/master.svg)](https://circleci.com/gh/mattermost/mattermost-plugin-starter-template)
+# Mattermost Pexip Plugin
 
-This plugin serves as a starting point for writing a Mattermost plugin. Feel free to base your own plugin off this repository.
+Start a video conference with several participants without leaving the Mattermost interface. You can share your screen and interact with the rest of your team.
 
-To learn more about plugins, see [our plugin documentation](https://developers.mattermost.com/extend/plugins/).
+To compile this plugin you will need **node v16** and npm v8. This is very important, if you use another version of node, you will find some compability problems between packages.
 
-This template requires node v16 and npm v8. You can download and install nvm to manage your node versions by following the instructions [here](https://github.com/nvm-sh/nvm). Once you've setup the project simply run `nvm i` within the root folder to use the suggested version of node.
+You can download and install nvm to manage your node versions by following the instructions [here](https://github.com/nvm-sh/nvm). Once you've setup the project simply run `nvm i` within the root folder to use the suggested version of node.
 
 ## Getting Started
-Use GitHub's template feature to make a copy of this repository by clicking the "Use this template" button.
 
 Alternatively shallow clone the repository matching your plugin name:
 ```
-git clone --depth 1 https://github.com/mattermost/mattermost-plugin-starter-template com.example.my-plugin
+git clone --depth 1 https://github.com/pexip/mattermost-plugin-pexip com.pexip.mattermost-plugin-pexip
 ```
 
 Note that this project uses [Go modules](https://github.com/golang/go/wiki/Modules). Be sure to locate the project outside of `$GOPATH`.
 
-Edit the following files:
-1. `plugin.json` with your `id`, `name`, and `description`:
-```
-{
-    "id": "com.example.my-plugin",
-    "name": "My Plugin",
-    "description": "A plugin to enhance Mattermost."
-}
-```
-
-2. `go.mod` with your Go module path, following the `<hosting-site>/<repository>/<module>` convention:
-```
-module github.com/example/my-plugin
-```
-
-3. `.golangci.yml` with your Go module path:
-```yml
-linters-settings:
-  # [...]
-  goimports:
-    local-prefixes: github.com/example/my-plugin
-```
 
 Build your plugin:
 ```
@@ -51,6 +28,10 @@ dist/com.example.my-plugin.tar.gz
 ```
 
 ## Development
+
+This plugin was developed using the template provided by Mattermost: https://github.com/mattermost/mattermost-plugin-starter-template
+
+To learn more about plugins, see [Mattermost documentation](https://developers.mattermost.com/extend/plugins/).
 
 To avoid having to manually install your plugin, build and deploy your plugin using one of the following options. In order for the below options to work, you must first enable plugin uploads via your config.json or API and restart Mattermost.
 
