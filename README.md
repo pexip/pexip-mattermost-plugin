@@ -1,112 +1,140 @@
-# Pexip Mattermost Plugin
+# Plugin Starter Template [![CircleCI branch](https://img.shields.io/circleci/project/github/mattermost/mattermost-plugin-starter-template/master.svg)](https://circleci.com/gh/mattermost/mattermost-plugin-starter-template)
 
-Mattermost is a chat application that can be deployed on-premises. The key feature is that is allows to developers to create their own plugin (server and client side) and integrations.
+This plugin serves as a starting point for writing a Mattermost plugin. Feel free to base your own plugin off this repository.
 
-The goal of this project is to develop and simple plugin that allow us to call to VMRs per channel.
+To learn more about plugins, see [our plugin documentation](https://developers.mattermost.com/extend/plugins/).
 
-## Admin page
-![Admin page](/assets/images/admin.png)
+This template requires node v16 and npm v8. You can download and install nvm to manage your node versions by following the instructions [here](https://github.com/nvm-sh/nvm). Once you've setup the project simply run `nvm i` within the root folder to use the suggested version of node.
 
-## Active conference
-![Active conference](/assets/images/conference.png)
+## Getting Started
+Use GitHub's template feature to make a copy of this repository by clicking the "Use this template" button.
 
-## Deploy the server locally (Manual)
-
-We can run a docker container directly with the following command:
-
-```bash
-$ docker run --name mattermost-preview -d --publish 8065:8065 mattermost/mattermost-preview
+Alternatively shallow clone the repository matching your plugin name:
+```
+git clone --depth 1 https://github.com/mattermost/mattermost-plugin-starter-template com.example.my-plugin
 ```
 
-## Generate plugin bundle
+Note that this project uses [Go modules](https://github.com/golang/go/wiki/Modules). Be sure to locate the project outside of `$GOPATH`.
 
-1. Install npm dependencies:
-
-```bash
-$ npm run install
+Edit the following files:
+1. `plugin.json` with your `id`, `name`, and `description`:
+```
+{
+    "id": "com.example.my-plugin",
+    "name": "My Plugin",
+    "description": "A plugin to enhance Mattermost."
+}
 ```
 
-2. Create javascript file for production:
-
-```bash
-$ npm run build
+2. `go.mod` with your Go module path, following the `<hosting-site>/<repository>/<module>` convention:
+```
+module github.com/example/my-plugin
 ```
 
-3. Create bundle (tgz for uploading to mattermost)
-
-```bash
-$ npm run bundle
+3. `.golangci.yml` with your Go module path:
+```yml
+linters-settings:
+  # [...]
+  goimports:
+    local-prefixes: github.com/example/my-plugin
 ```
 
-## Upload plugin to mattermost platform
+Build your plugin:
+```
+make
+```
 
-These are the steps to deploy the plugin in our local environment:
-
-1. Launch mattermost in a web browser: https://localhost:8065
-
-2. Introduce all the mandatory info: username, password, organization, url, etc.
-
-3. Open the admin web page: https://localhost:8065/admin_console
-
-4. In the left menu go to the "Plugins" section and there select "Plugin Management".
-
-5. In the section "Upload Plugin" click on "Choose File" and select the file "com.pexip.pexip-vmr.gz".
-
-6. Click on "Upload".
-
-7. Go to the left menu and under the "Plugins" section you should see "Pexip VMR". Click on that plugin to show the plugins menu.
-
-8. In the "Enable Plugin" section select "true".
-
-## Configure the plugin
-
-1. Open the admin web page: https://localhost:8065/admin_console
-
-2. In the left menu go to the "Plugins/Pexip VMR".
-
-3. Configure the following parameters:
-
-   - Pexip Infinity Server: Domain or IP of your Conferencing Node.
-
-   - VMR prefix: It will attach a prefix to the Mattermost Channel name. For example, if the channel name is "Town Square" and the prefix "matt-", the system will use the VMR "matt-town-square".
-
-   - Host PIN: This PIN is used for all the VMR for connecting as an host.
-
-## Populate the VMRs
-
-Here you have several alternatives:
-
-- Create the VMR by hand (for dev): You will need to create a VMR per Mattermost Channel. For the channel "Town Square" and prefix "matt-" we should create a VMR with the alias "matt-town-square". Take into account that if you create a new Mattermost Channel, you should also create a new VMR.
-  
-- Use the Local Policy (recommended): We have define a prefix which should help to create a Local Policy for all the Mattermost Channels. 
+This will produce a single plugin file (with support for multiple architectures) for upload to your Mattermost server:
 
 ```
-{% set preffix = "matt-" %}
-{% if call_info.local_alias.startswith(preffix) %}
-  {
-    "action": "continue",
-    "result": {
-      "service_type": "conference",
-      "name":  {{'"'}}{{call_info.local_alias | pex_regex_replace("^matt-", "") }}{{'"'}},
-      "service_tag": "Mattermost",
-      "description": "",
-      "pin": "1234",
-      "allow_guests": true,
-      "crypto_mode": "besteffort",
-      "view": "five_mains_seven_pips",
-      "enable_overlay_text": true
+dist/com.example.my-plugin.tar.gz
+```
+
+## Development
+
+To avoid having to manually install your plugin, build and deploy your plugin using one of the following options. In order for the below options to work, you must first enable plugin uploads via your config.json or API and restart Mattermost.
+
+```json
+    "PluginSettings" : {
+        ...
+        "EnableUploads" : true
     }
-  }
-{% elif service_config %}
-  {
-    "action" : "continue",
-    "result" : {{service_config|pex_to_json}}
-  }
-{% else %}
-  {
-    "action" : "reject",
-    "result" : {}
-  }
-{% endif %}
 ```
 
+### Deploying with Local Mode
+
+If your Mattermost server is running locally, you can enable [local mode](https://docs.mattermost.com/administration/mmctl-cli-tool.html#local-mode) to streamline deploying your plugin. Edit your server configuration as follows:
+
+```json
+{
+    "ServiceSettings": {
+        ...
+        "EnableLocalMode": true,
+        "LocalModeSocketLocation": "/var/tmp/mattermost_local.socket"
+    },
+}
+```
+
+and then deploy your plugin:
+```
+make deploy
+```
+
+You may also customize the Unix socket path:
+```
+export MM_LOCALSOCKETPATH=/var/tmp/alternate_local.socket
+make deploy
+```
+
+If developing a plugin with a webapp, watch for changes and deploy those automatically:
+```
+export MM_SERVICESETTINGS_SITEURL=http://localhost:8065
+export MM_ADMIN_TOKEN=j44acwd8obn78cdcx7koid4jkr
+make watch
+```
+
+### Deploying with credentials
+
+Alternatively, you can authenticate with the server's API with credentials:
+```
+export MM_SERVICESETTINGS_SITEURL=http://localhost:8065
+export MM_ADMIN_USERNAME=admin
+export MM_ADMIN_PASSWORD=password
+make deploy
+```
+
+or with a [personal access token](https://docs.mattermost.com/developer/personal-access-tokens.html):
+```
+export MM_SERVICESETTINGS_SITEURL=http://localhost:8065
+export MM_ADMIN_TOKEN=j44acwd8obn78cdcx7koid4jkr
+make deploy
+```
+
+## Q&A
+
+### How do I make a server-only or web app-only plugin?
+
+Simply delete the `server` or `webapp` folders and remove the corresponding sections from `plugin.json`. The build scripts will skip the missing portions automatically.
+
+### How do I include assets in the plugin bundle?
+
+Place them into the `assets` directory. To use an asset at runtime, build the path to your asset and open as a regular file:
+
+```go
+bundlePath, err := p.API.GetBundlePath()
+if err != nil {
+    return errors.Wrap(err, "failed to get bundle path")
+}
+
+profileImage, err := ioutil.ReadFile(filepath.Join(bundlePath, "assets", "profile_image.png"))
+if err != nil {
+    return errors.Wrap(err, "failed to read profile image")
+}
+
+if appErr := p.API.SetProfileImage(userID, profileImage); appErr != nil {
+    return errors.Wrap(err, "failed to set profile image")
+}
+```
+
+### How do I build the plugin with unminified JavaScript?
+Setting the `MM_DEBUG` environment variable will invoke the debug builds. The simplist way to do this is to simply include this variable in your calls to `make` (e.g. `make dist MM_DEBUG=1`).

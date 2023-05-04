@@ -1,5 +1,5 @@
 {
-  "name": "pexip-mattermost-plugin",
+  "name": "mattermost-plugin-pexip",
   "author": "Marcos Cereijo",
   "version": "1.0.0",
   "scripts": {

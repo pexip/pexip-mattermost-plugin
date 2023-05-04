@@ -1,39 +1,57 @@
 {
-  "id": "com.pexip.pexip-video-connect",
-  "name": "Pexip Video Connect",
-  "webapp": {
-      "bundle_path": "bundle.js"
-  },
-  "settings_schema": {
-    "settings": [
-      {
-        "key": "node",
-        "display_name": "Pexip Infinity Server:",
-        "type": "text",
-        "help_text": "Conferencing Node for joining a VMR.",
-        "placeholder": "e.g. example.com or 192.168.1.101",
-        "default": "192.168.1.101"
-      }, {
-        "key": "prefix",
-        "display_name": "VMR prefix:",
-        "type": "text",
-        "help_text": "If the prefix is \"matt-\" and Mattermost channel is \"Off Topic\" the VMR will be \"matt-off-topic\".",
-        "placeholder": "e.g. matt-",
-        "default": "matt-"
-      }, {
-        "key": "pin",
-        "display_name": "Host PIN:",
-        "type": "number",
-        "help_text": "PIN that will be used for all the VMRs.",
-        "placeholder": "e.g. 4578",
-        "default": "1234"
-      }, {
-        "key": "embedded",
-        "display_name": "Embedded Experience",
-        "type": "bool",
-        "help_text": "Indicates if the conference should be displayed inside Mattermost or in another tab with only the conference.",
-        "default": true
-      }
-    ]
-  }
+    "id": "com.pexip.pexip-video-connecte",
+    "name": "Pexip Video Connect",
+    "description": "Start video conferences with several participants inside Mattermost.",
+    "homepage_url": "https://github.com/mattermost/mattermost-plugin-starter-template",
+    "support_url": "https://github.com/mattermost/mattermost-plugin-starter-template/issues",
+    "release_notes_url": "https://github.com/mattermost/mattermost-plugin-starter-template/releases/tag/v0.1.0",
+    "icon_path": "assets/starter-template-icon.svg",
+    "version": "0.1.0",
+    "min_server_version": "6.2.1",
+    "server": {
+        "executables": {
+            "linux-amd64": "server/dist/plugin-linux-amd64",
+            "linux-arm64": "server/dist/plugin-linux-arm64",
+            "darwin-amd64": "server/dist/plugin-darwin-amd64",
+            "darwin-arm64": "server/dist/plugin-darwin-arm64",
+            "windows-amd64": "server/dist/plugin-windows-amd64.exe"
+        }
+    },
+    "webapp": {
+        "bundle_path": "webapp/dist/main.js"
+    },
+    "settings_schema": {
+        "header": "",
+        "footer": "",
+        "settings": [
+            {
+                "key": "node",
+                "display_name": "Pexip Infinity Server:",
+                "type": "text",
+                "help_text": "Conferencing Node for joining a VMR.",
+                "placeholder": "e.g. example.com or 192.168.1.101",
+                "default": "192.168.1.101"
+            }, {
+                "key": "prefix",
+                "display_name": "VMR prefix:",
+                "type": "text",
+                "help_text": "If the prefix is \"matt-\" and Mattermost channel is \"Off Topic\" the VMR will be \"matt-off-topic\".",
+                "placeholder": "e.g. matt-",
+                "default": "matt-"
+            }, {
+                "key": "pin",
+                "display_name": "Host PIN:",
+                "type": "number",
+                "help_text": "PIN that will be used for all the VMRs.",
+                "placeholder": "e.g. 4578",
+                "default": "1234"
+            }, {
+                "key": "embedded",
+                "display_name": "Embedded Experience",
+                "type": "bool",
+                "help_text": "Indicates if the conference should be displayed inside Mattermost or in another tab with only the conference.",
+                "default": true
+            }
+        ]
+    }
 }
