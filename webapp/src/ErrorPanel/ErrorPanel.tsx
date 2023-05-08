@@ -1,14 +1,13 @@
-import React from "react";
+import React from 'react'
 
-import './ErrorPanel.scss';
-import { ConferenceManager } from "../services/conference-manager";
+import './ErrorPanel.scss'
 
 interface ErrorPanelProps {
-  message: string;
-  onGoBack: () => void;
+  message: string
+  onGoBack: () => void
 }
 
-const ErrorPanel = (props: ErrorPanelProps) => {
+const ErrorPanel = (props: ErrorPanelProps): JSX.Element => {
   return (
     <div className="ErrorPanel">
       <p>{props.message}</p>
@@ -17,4 +16,4 @@ const ErrorPanel = (props: ErrorPanelProps) => {
   )
 }
 
-export default ErrorPanel;
+export default ErrorPanel

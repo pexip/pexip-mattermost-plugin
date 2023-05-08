@@ -1,5 +1,5 @@
-import { Channel } from 'mattermost-redux/types/channels';
-import { BehaviorSubject } from 'rxjs';
+import type { Channel } from 'mattermost-redux/types/channels'
+import { BehaviorSubject } from 'rxjs'
 
 export enum ConnectionState {
   Disconnected,
@@ -9,209 +9,202 @@ export enum ConnectionState {
 }
 
 export interface ConferenceConfig {
-  node: URL;
-  displayName: string;
-  vmrPrefix: string;
-  hostPin: string;
+  node: string
+  displayName: string
+  vmrPrefix: string
+  hostPin: string
 }
 
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class ConferenceManager {
+  private static config: ConferenceConfig
+  private static channel: Channel
 
-  private static config: ConferenceConfig = null;
-  private static channel: Channel;
+  private static pexrtc: any
 
-  private static pexrtc: any = null;
+  private static localStream: MediaStream | null
+  private static remoteStream: MediaStream | null
+  private static presentationStream: MediaStream | null
 
-  private static localStream: MediaStream = null;
-  private static remoteStream: MediaStream = null;
-  private static presentationStream: MediaStream = null;
+  private static presentationInMain: boolean = false
 
-  private static presentationInMain: boolean = false;
+  private static error: string = ''
 
-  private static error: string = '';
+  static localStream$ = new BehaviorSubject<MediaStream | null>(null)
+  static mainStream$ = new BehaviorSubject<MediaStream | null>(null)
+  static secondaryStream$ = new BehaviorSubject<MediaStream | null>(null)
+  static connectionState$ = new BehaviorSubject<ConnectionState>(ConnectionState.Disconnected)
 
-  static localStream$ = new BehaviorSubject<MediaStream>(null);
-  static mainStream$ = new BehaviorSubject<MediaStream>(null);
-  static secondaryStream$ = new BehaviorSubject<MediaStream>(null);
-  static connectionState$ = new BehaviorSubject<ConnectionState>(ConnectionState.Disconnected);
-
-  static async connect () {
-
-    console.log('Initialization conference with the following values:');
-    console.log('Node: ' + ConferenceManager.config.node);
-    console.log('Display Name: ' + ConferenceManager.config.displayName);
+  static connect (): void {
+    console.log('Initialization conference with the following values:')
+    console.log('Node: ' + ConferenceManager.config.node)
+    console.log('Display Name: ' + ConferenceManager.config.displayName)
     console.log('VMR Prefix: ' + ConferenceManager.config.vmrPrefix)
-    console.log('Host PIN: ' + ConferenceManager.config.hostPin);
-    console.log('Channel: ' + this.channel.name);
+    console.log('Host PIN: ' + ConferenceManager.config.hostPin)
+    console.log('Channel: ' + this.channel.name)
 
-    ConferenceManager.connectionState$.next(ConnectionState.Connecting);
+    ConferenceManager.connectionState$.next(ConnectionState.Connecting)
 
-    ConferenceManager.pexrtc = new PexRTC();
-    ConferenceManager.pexrtc.onSetup = ConferenceManager.onSetup;
-    ConferenceManager.pexrtc.onConnect = ConferenceManager.onConnect;
-    ConferenceManager.pexrtc.onScreenshareConnected = ConferenceManager.onScreenshareConnected;
-    ConferenceManager.pexrtc.onScreenshareStopped= ConferenceManager.onScreenshareStopped;
-    ConferenceManager.pexrtc.onPresentation = ConferenceManager.onPresentation;
-    ConferenceManager.pexrtc.onPresentationConnected = ConferenceManager.onPresentationConnected;
-    ConferenceManager.pexrtc.onPresentationDisconnected = ConferenceManager.onPresentationDisconnected;
-    ConferenceManager.pexrtc.onError = ConferenceManager.onError;
+    ConferenceManager.pexrtc = new PexRTC()
+    ConferenceManager.pexrtc.onSetup = ConferenceManager.onSetup
+    ConferenceManager.pexrtc.onConnect = ConferenceManager.onConnect
+    ConferenceManager.pexrtc.onScreenshareConnected = ConferenceManager.onScreenshareConnected
+    ConferenceManager.pexrtc.onScreenshareStopped = ConferenceManager.onScreenshareStopped
+    ConferenceManager.pexrtc.onPresentation = ConferenceManager.onPresentation
+    ConferenceManager.pexrtc.onPresentationConnected = ConferenceManager.onPresentationConnected
+    ConferenceManager.pexrtc.onPresentationDisconnected = ConferenceManager.onPresentationDisconnected
+    ConferenceManager.pexrtc.onError = ConferenceManager.onError
     ConferenceManager.pexrtc.makeCall(ConferenceManager.config.node,
-      ConferenceManager.config.vmrPrefix + this.channel.name, ConferenceManager.config.displayName);
+      ConferenceManager.config.vmrPrefix + this.channel.name, ConferenceManager.config.displayName)
 
     // Change the color of the channel button
-    const button = document.getElementById('pexip-vmr-plugin-button');
-    button.style.color = 'var(--button-bg)';
+    const button = document.getElementById('pexip-vmr-plugin-button')
+    if (button != null) button.style.color = 'var(--button-bg)'
 
     // Disconnect when closing Mattermost app
-    addEventListener('beforeunload', () => ConferenceManager.disconnect());
+    addEventListener('beforeunload', () => { ConferenceManager.disconnect() })
 
     // TODO: Show error when cannot connect
-
   }
 
-  static disconnect () {
-    ConferenceManager.pexrtc.disconnect();
-    ConferenceManager.pexrtc = null;
+  static disconnect (): void {
+    ConferenceManager.pexrtc.disconnect()
+    ConferenceManager.pexrtc = null
     // Change the color of the channel button
-    const button = document.getElementById('pexip-vmr-plugin-button');
-    button.style.color = 'inherit';
-    ConferenceManager.connectionState$.next(ConnectionState.Disconnected);
+    const button = document.getElementById('pexip-vmr-plugin-button')
+    if (button != null) button.style.color = 'inherit'
+    ConferenceManager.connectionState$.next(ConnectionState.Disconnected)
   }
 
-  static toggleAudioMute () {
-    ConferenceManager.pexrtc.muteAudio(!ConferenceManager.pexrtc.mutedAudio);
+  static toggleAudioMute (): void {
+    ConferenceManager.pexrtc.muteAudio(!(ConferenceManager.pexrtc.mutedAudio as boolean))
   }
 
-  static toggleVideoMute () {
-    ConferenceManager.pexrtc.muteVideo(!ConferenceManager.pexrtc.mutedVideo);
-    if (ConferenceManager.pexrtc.mutedVideo) {
-      ConferenceManager.localStream$.next(null);
+  static toggleVideoMute (): void {
+    ConferenceManager.pexrtc.muteVideo(!(ConferenceManager.pexrtc.mutedVideo as boolean))
+    if (ConferenceManager.pexrtc.mutedVideo as boolean) {
+      ConferenceManager.localStream$.next(null)
     } else {
-      ConferenceManager.localStream$.next(ConferenceManager.localStream);
+      ConferenceManager.localStream$.next(ConferenceManager.localStream)
     }
   }
 
-  static shareScreen () {
+  static shareScreen (): void {
     if (ConferenceManager.isSharingScreen()) {
-      ConferenceManager.pexrtc.present(null);
+      ConferenceManager.pexrtc.present(null)
     } else {
-      const stream = ConferenceManager.pexrtc.present('screen');
-      ConferenceManager.presentationStream = stream;
-      ConferenceManager.secondaryStream$.next(stream);
+      const stream = ConferenceManager.pexrtc.present('screen')
+      ConferenceManager.presentationStream = stream
+      ConferenceManager.secondaryStream$.next(stream)
     }
   }
 
-  static getState () {
-    return ConferenceManager.pexrtc?.state;
+  static isPresentationInMain (): boolean {
+    return this.presentationInMain
   }
 
-  static isPresentationInMain () {
-    return this.presentationInMain;
+  static isAudioMute (): boolean {
+    return ConferenceManager.pexrtc?.mutedAudio
   }
 
-  static isAudioMute () {
-    return ConferenceManager.pexrtc?.mutedAudio;
+  static isVideoMute (): boolean {
+    return ConferenceManager.pexrtc?.mutedVideo
   }
 
-  static isVideoMute () {
-    return ConferenceManager.pexrtc?.mutedVideo;
+  static isSharingScreen (): boolean {
+    return ConferenceManager.pexrtc?.screenshare_requested as boolean
   }
 
-  static isSharingScreen () {
-    return !!ConferenceManager.pexrtc?.screenshare_requested;
+  static setConfig (config: ConferenceConfig): void {
+    ConferenceManager.config = config
   }
 
-  static setConfig (config: ConferenceConfig) {
-    ConferenceManager.config = config;
+  static getConfig (): ConferenceConfig {
+    return ConferenceManager.config
   }
 
-  static getConfig () {
-    return ConferenceManager.config;
+  static setChannel (channel: Channel): void {
+    ConferenceManager.channel = channel
   }
 
-  static setChannel (channel: Channel) {
-    ConferenceManager.channel = channel;
+  static getChannel (): Channel {
+    return ConferenceManager.channel
   }
 
-  static getChannel () {
-    return ConferenceManager.channel;
-  }
-
-  static toggleMainVideo () {
-    ConferenceManager.presentationInMain = !ConferenceManager.presentationInMain;
+  static toggleMainVideo (): void {
+    ConferenceManager.presentationInMain = !ConferenceManager.presentationInMain
     if (ConferenceManager.isPresentationInMain()) {
-      ConferenceManager.mainStream$.next(ConferenceManager.presentationStream);
-      ConferenceManager.secondaryStream$.next(ConferenceManager.remoteStream);
+      ConferenceManager.mainStream$.next(ConferenceManager.presentationStream)
+      ConferenceManager.secondaryStream$.next(ConferenceManager.remoteStream)
     } else {
-      ConferenceManager.mainStream$.next(ConferenceManager.remoteStream);
-      ConferenceManager.secondaryStream$.next(ConferenceManager.presentationStream);
+      ConferenceManager.mainStream$.next(ConferenceManager.remoteStream)
+      ConferenceManager.secondaryStream$.next(ConferenceManager.presentationStream)
     }
   }
 
-  static getError () {
-    return ConferenceManager.error;
+  static getError (): string {
+    return ConferenceManager.error
   }
 
-  private static onSetup (stream: MediaStream, pin_status: string, conference_extension: string) {
-    ConferenceManager.localStream = stream;
-    ConferenceManager.localStream$.next(stream);
-    ConferenceManager.pexrtc.connect(ConferenceManager.config.hostPin);
+  private static onSetup (stream: MediaStream, pinStatus: string, conferenceExtension: string): void {
+    ConferenceManager.localStream = stream
+    ConferenceManager.localStream$.next(stream)
+    ConferenceManager.pexrtc.connect(ConferenceManager.config.hostPin)
   }
 
-  private static onConnect (stream: MediaStream) {
-    ConferenceManager.remoteStream = stream;
-    ConferenceManager.mainStream$.next(stream);
-    ConferenceManager.connectionState$.next(ConnectionState.Connected);
+  private static onConnect (stream: MediaStream): void {
+    ConferenceManager.remoteStream = stream
+    ConferenceManager.mainStream$.next(stream)
+    ConferenceManager.connectionState$.next(ConnectionState.Connected)
   }
 
-  private static onScreenshareConnected (stream: MediaStream) {
-    console.log('On Screenshare Connected');
+  private static onScreenshareConnected (stream: MediaStream): void {
+    console.log('On Screenshare Connected')
     if (ConferenceManager.isPresentationInMain()) {
-      ConferenceManager.toggleMainVideo();
+      ConferenceManager.toggleMainVideo()
     }
-    ConferenceManager.presentationStream = stream;
-    ConferenceManager.secondaryStream$.next(stream);
+    ConferenceManager.presentationStream = stream
+    ConferenceManager.secondaryStream$.next(stream)
   }
 
-  private static onScreenshareStopped (reason: string) {
-    console.log('On Screenshare Stopped');
+  private static onScreenshareStopped (reason: string): void {
+    console.log('On Screenshare Stopped')
     if (ConferenceManager.isPresentationInMain()) {
-      ConferenceManager.toggleMainVideo();
+      ConferenceManager.toggleMainVideo()
     }
-    ConferenceManager.presentationStream = null;
-    ConferenceManager.secondaryStream$.next(null);
+    ConferenceManager.presentationStream = null
+    ConferenceManager.secondaryStream$.next(null)
   }
 
-  private static onPresentation (setting: boolean, presenter: string, uuid: string) {
-    console.log('On Presentation');
+  private static onPresentation (setting: boolean, presenter: string, uuid: string): void {
+    console.log('On Presentation')
     if (setting) {
-      ConferenceManager.pexrtc.getPresentation();
+      ConferenceManager.pexrtc.getPresentation()
     }
   }
 
-  private static onPresentationConnected (stream: MediaStream) {
-    console.log('On Presentation Connected');
-    ConferenceManager.presentationStream = stream;
+  private static onPresentationConnected (stream: MediaStream): void {
+    console.log('On Presentation Connected')
+    ConferenceManager.presentationStream = stream
     if (!ConferenceManager.isPresentationInMain()) {
-      ConferenceManager.toggleMainVideo();
+      ConferenceManager.toggleMainVideo()
     }
-    ConferenceManager.mainStream$.next(stream);
+    ConferenceManager.mainStream$.next(stream)
   }
 
-  private static onPresentationDisconnected (reason: string) {
-    console.log('On Presentation Disconnected');
+  private static onPresentationDisconnected (reason: string): void {
+    console.log('On Presentation Disconnected')
     if (!ConferenceManager.isSharingScreen()) {
-      ConferenceManager.presentationStream = null;
+      ConferenceManager.presentationStream = null
       if (ConferenceManager.isPresentationInMain()) {
-        ConferenceManager.toggleMainVideo();
+        ConferenceManager.toggleMainVideo()
       }
-      ConferenceManager.secondaryStream$.next(null);
+      ConferenceManager.secondaryStream$.next(null)
     }
   }
 
-  private static onError (error: string) {
-    ConferenceManager.error = error;
-    ConferenceManager.connectionState$.next(ConnectionState.Error);
+  private static onError (error: string): void {
+    ConferenceManager.error = error
+    ConferenceManager.connectionState$.next(ConnectionState.Error)
   }
-
 }

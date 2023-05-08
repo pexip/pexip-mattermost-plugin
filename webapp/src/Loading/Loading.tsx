@@ -1,9 +1,9 @@
-import React from 'react';
+import React from 'react'
 
-import './Loading.scss';
+import './Loading.scss'
 
-const Loading = () => {
-  return <div className="lds-ring"><div></div><div></div><div></div><div></div></div>;
+const Loading = (): JSX.Element => {
+  return <div className="lds-ring"><div></div><div></div><div></div><div></div></div>
 }
 
-export default Loading;
+export default Loading

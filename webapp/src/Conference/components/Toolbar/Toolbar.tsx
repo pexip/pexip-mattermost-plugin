@@ -1,9 +1,8 @@
-import * as React from 'react';
-import { Component } from 'react';
+import React, { Component } from 'react'
 
-import ReactTooltip from 'react-tooltip';
+import ReactTooltip from 'react-tooltip'
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faDesktop,
   faMicrophone,
@@ -11,38 +10,37 @@ import {
   faPowerOff,
   faVideo,
   faVideoSlash
-} from '@fortawesome/free-solid-svg-icons';
-import { Subscription } from 'rxjs';
+} from '@fortawesome/free-solid-svg-icons'
+import type { Subscription } from 'rxjs'
 
-import { ConferenceManager } from '../../../services/conference-manager';
+import { ConferenceManager } from '../../../services/conference-manager'
 
-import './Toolbar.scss';
+import './Toolbar.scss'
 
 interface IProps {
-  onDisconnect: Function;
+  onDisconnect: () => void
 }
 
 export class Toolbar extends Component<IProps> {
+  private subscriptionMainStream: Subscription
 
-  private subscriptionMainStream: Subscription;
-
-  render() {
+  render (): JSX.Element {
     return (
       <div className='Toolbar'>
         <button data-tip={ ConferenceManager.isAudioMute() ? 'Unmute audio' : 'Mute audio'} data-for='tooltip-toolbar'
-          onClick={ () => this.onToggleMuteAudio() }>
+          onClick={ this.onToggleMuteAudio }>
             <FontAwesomeIcon icon={ ConferenceManager.isAudioMute() ? faMicrophoneSlash : faMicrophone }/>
         </button>
         <button data-tip={ ConferenceManager.isVideoMute() ? 'Unmute video' : 'Mute video'} data-for='tooltip-toolbar'
-          onClick={ () => this.onToggleMuteVideo() }>
+          onClick={ this.onToggleMuteVideo }>
             <FontAwesomeIcon icon={ ConferenceManager.isVideoMute() ? faVideoSlash : faVideo }/>
         </button>
         <button data-tip={(ConferenceManager.isSharingScreen() ? 'Stop' : 'Start') + ' sharing screen'} data-for='tooltip-toolbar'
-          onClick={ () => this.onShareScreen()} className={ConferenceManager.isSharingScreen() ? 'selected': ''}>
+          onClick={ this.onShareScreen } className={ConferenceManager.isSharingScreen() ? 'selected' : ''}>
             <FontAwesomeIcon icon={ faDesktop }/>
         </button>
         <button className='disconnect' data-tip='Disconnect' data-for='tooltip-toolbar'
-          onClick={ () => this.onDisconnect() }>
+          onClick={ this.onDisconnect }>
             <FontAwesomeIcon icon={ faPowerOff }/>
         </button>
         <ReactTooltip
@@ -52,37 +50,36 @@ export class Toolbar extends Component<IProps> {
             multiline={false}
           />
       </div>
-    );
+    )
   }
 
-  private onToggleMuteAudio() {
-    ConferenceManager.toggleAudioMute();
-    this.setState({});
+  private onToggleMuteAudio (): void {
+    ConferenceManager.toggleAudioMute()
+    this.setState({})
   }
 
-  private onToggleMuteVideo() {
-    ConferenceManager.toggleVideoMute();
-    this.setState({});
+  private onToggleMuteVideo (): void {
+    ConferenceManager.toggleVideoMute()
+    this.setState({})
   }
 
-  private onShareScreen() {
-    ConferenceManager.shareScreen();
+  private onShareScreen (): void {
+    ConferenceManager.shareScreen()
     // If the other end start present, hide the update the sharing button state
-    this.subscriptionMainStream?.unsubscribe();
+    this.subscriptionMainStream?.unsubscribe()
     if (ConferenceManager.isSharingScreen()) {
       this.subscriptionMainStream = ConferenceManager.mainStream$.subscribe(() => {
         if (!ConferenceManager.isSharingScreen()) {
-          this.subscriptionMainStream.unsubscribe();
-          this.setState({});
+          this.subscriptionMainStream.unsubscribe()
+          this.setState({})
         }
-      });
+      })
     }
-    this.setState({});
+    this.setState({})
   }
-  
-  private onDisconnect() {
-    ConferenceManager.disconnect();
-    this.props.onDisconnect();
+
+  private onDisconnect (): void {
+    ConferenceManager.disconnect()
+    this.props.onDisconnect()
   }
-  
 }

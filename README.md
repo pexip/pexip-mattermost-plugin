@@ -2,9 +2,13 @@
 
 Start a video conference with several participants without leaving the Mattermost interface. You can share your screen and interact with the rest of your team.
 
-To compile this plugin you will need **node v16** and npm v8. This is very important, if you use another version of node, you will find some compability problems between packages.
+To compile this plugin you will need node v18 and npm v8. This is very important. If you use another version of node, you will find some compatibility problems between packages.
 
 You can download and install nvm to manage your node versions by following the instructions [here](https://github.com/nvm-sh/nvm). Once you've setup the project simply run `nvm i` within the root folder to use the suggested version of node.
+
+For compiling the server part you will need to have `Go` installed in your system. You can check how install it in the [Go docs](https://go.dev/doc/install).
+
+https://golangci-lint.run/usage/install/#local-installation
 
 ## Getting Started
 
