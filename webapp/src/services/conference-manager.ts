@@ -45,6 +45,7 @@ export class ConferenceManager {
 
     ConferenceManager.connectionState$.next(ConnectionState.Connecting)
 
+    // @ts-expect-error: to avoid error in check-types
     ConferenceManager.pexrtc = new PexRTC()
     ConferenceManager.pexrtc.onSetup = ConferenceManager.onSetup
     ConferenceManager.pexrtc.onConnect = ConferenceManager.onConnect

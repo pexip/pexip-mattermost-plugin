@@ -9,10 +9,11 @@ import { Client4 } from 'mattermost-redux/client'
 import { ConferenceManager, type ConferenceConfig } from './services/conference-manager'
 import { App } from './App'
 import { MattermostManager } from './services/mattermost-manager'
+import { getPluginServerRoute, getPluginSettings } from './utils'
 
 import manifest from '../../plugin.json'
 
-const pluginId = 'com.pexip.pexip-video-connect'
+const pluginId = manifest.id
 const icon = <i id='pexip-vmr-plugin-button' className='icon fa fa-video-camera'/>
 const dropDownText = 'Pexip Video Connect'
 
@@ -22,9 +23,11 @@ class Plugin {
 
   initialize (registry: PluginRegistry, store: Store<GlobalState, Action<Record<string, unknown>>>): void {
     this.store = store
+    console.log(registry)
+    console.log(store)
     MattermostManager.setStore(store)
     const script = document.createElement('script')
-    script.src = '/static/plugins/com.pexip.pexip-video-connect/pexrtc-31.js'
+    script.src = getPluginServerRoute(store.getState()) + '/public/pexrtc-31.js'
     document.getElementsByTagName('head')[0].appendChild(script)
     registry.registerChannelHeaderButtonAction(icon, this.action.bind(this), dropDownText)
     this.rhsPlugin = registry.registerRightHandSidebarComponent(App as any, 'Pexip Video Connect')
@@ -32,6 +35,8 @@ class Plugin {
 
   private async action (channel: Channel, channelMembership: ChannelMembership): Promise<void> {
     const config = await Client4.getConfig()
+    //  const settings = await MattermostManager.getStore().dispatch(getSettings());
+    getPluginSettings(MattermostManager.getStore().getState())
     const pluginConfig = config.PluginSettings.Plugins[pluginId]
     const user = await Client4.getUser(channelMembership.user_id)
     const conferenceConfig: ConferenceConfig = {
@@ -51,4 +56,4 @@ class Plugin {
   }
 }
 
-window.registerPlugin(manifest.id, new Plugin())
+window.registerPlugin(pluginId, new Plugin())

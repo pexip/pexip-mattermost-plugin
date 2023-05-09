@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Conference } from './Conference/Conference'
 import { ConferenceManager, ConnectionState } from './services/conference-manager'
-import JoinPanel from './JoinButton/JoinPanel'
+import JoinPanel from './JoinPanel/JoinPanel'
 import Loading from './Loading/Loading'
 import ErrorPanel from './ErrorPanel/ErrorPanel'
 import type { Subscription } from 'rxjs'
@@ -51,7 +51,7 @@ export class App extends Component<any, AppState> {
         break
     }
     return (
-      <div className='App'>
+      <div className='App' data-testid='App'>
         {component}
       </div>
     )

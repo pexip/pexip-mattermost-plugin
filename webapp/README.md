@@ -5,10 +5,10 @@ Mattermost is a chat application that can be deployed on-premises. The key featu
 The goal of this project is to develop and simple plugin that allow us to call to VMRs per channel.
 
 ## Admin page
-![Admin page](/assets/images/admin.png)
+![Admin page](./assets/images/admin.png)
 
 ## Active conference
-![Active conference](/assets/images/conference.png)
+![Active conference](./assets/images/conference.png)
 
 ## Deploy the server locally (Manual)
 
