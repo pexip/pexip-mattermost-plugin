@@ -40,17 +40,17 @@ class Plugin {
     // const pluginConfig = config.PluginSettings.Plugins[pluginId]
     const user = await Client4.getUser(channelMembership.user_id)
     const conferenceConfig: ConferenceConfig = {
-      node: pluginConfig.Node,
+      node: pluginConfig.node,
       displayName: user.username,
-      vmrPrefix: pluginConfig.Prefix,
-      hostPin: pluginConfig.Pin.toString()
+      vmrPrefix: pluginConfig.prefix,
+      hostPin: pluginConfig.pin.toString()
     }
     ConferenceManager.setConfig(conferenceConfig)
-    if (pluginConfig.Embedded) {
+    if (pluginConfig.embedded) {
       this.store.dispatch(this.rhsPlugin.toggleRHSPlugin)
     } else {
-      const vmr = pluginConfig.Prefix + channel.name
-      window.open(`https://${pluginConfig.Node}/webapp3/m/${vmr}/?pin=${pluginConfig.Pin}&name=${user.username}`,
+      const vmr = pluginConfig.prefix + channel.name
+      window.open(`https://${pluginConfig.node}/webapp3/m/${vmr}/?pin=${pluginConfig.pin}&name=${user.username}`,
         '', 'width=800;height=800')
     }
   }

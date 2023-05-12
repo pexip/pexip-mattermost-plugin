@@ -28,6 +28,12 @@ interface ConferenceState {
 export class Conference extends Component<any, ConferenceState> {
   private channelDisplayName: string
 
+  state = {
+    localStream: null,
+    mainStream: null,
+    secondaryStream: null
+  }
+
   private readonly pipRef = React.createRef<HTMLDivElement>()
 
   render (): JSX.Element {

@@ -4,13 +4,15 @@ package main
 import (
 	"sync"
 
+	"github.com/gorilla/mux"
+	pluginapi "github.com/mattermost/mattermost-plugin-api"
 	"github.com/mattermost/mattermost-server/v6/plugin"
 )
 
 // Plugin implements the interface expected by the Mattermost server to communicate between the server and plugin processes.
 type Plugin struct {
 	plugin.MattermostPlugin
-	// client *pluginapi.Client
+	client *pluginapi.Client
 
 	// configurationLock synchronizes access to the configuration.
 	configurationLock sync.RWMutex
@@ -19,11 +21,10 @@ type Plugin struct {
 	// setConfiguration for usage.
 	configuration *configuration
 
-	// router *mux.Router
+	router *mux.Router
 }
 
-// func (p *Plugin) OnActivate() error {
-// 	p.initializeRouter()
-// 	// fmt.Println(p.getConfiguration())
-// 	return nil
-// }
+func (p *Plugin) OnActivate() error {
+	p.initializeRouter()
+	return nil
+}
