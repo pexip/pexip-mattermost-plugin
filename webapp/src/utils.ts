@@ -3,10 +3,10 @@ import type { GlobalState } from 'mattermost-redux/types/store'
 import manifest from '../../plugin.json'
 
 interface PluginSettings {
-  node: string
-  prefix: string
-  pin: number
-  embedded: boolean
+  Node: string
+  Prefix: string
+  Pin: number
+  Embedded: boolean
 }
 
 export const getPluginServerRoute = (state: GlobalState): string => {

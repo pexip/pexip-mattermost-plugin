@@ -34,23 +34,23 @@ class Plugin {
   }
 
   private async action (channel: Channel, channelMembership: ChannelMembership): Promise<void> {
-    const config = await Client4.getConfig()
+    // const config = await Client4.getConfig()
     //  const settings = await MattermostManager.getStore().dispatch(getSettings());
-    getPluginSettings(MattermostManager.getStore().getState())
-    const pluginConfig = config.PluginSettings.Plugins[pluginId]
+    const pluginConfig = await getPluginSettings(MattermostManager.getStore().getState())
+    // const pluginConfig = config.PluginSettings.Plugins[pluginId]
     const user = await Client4.getUser(channelMembership.user_id)
     const conferenceConfig: ConferenceConfig = {
-      node: pluginConfig.node,
+      node: pluginConfig.Node,
       displayName: user.username,
-      vmrPrefix: pluginConfig.prefix,
-      hostPin: pluginConfig.pin
+      vmrPrefix: pluginConfig.Prefix,
+      hostPin: pluginConfig.Pin.toString()
     }
     ConferenceManager.setConfig(conferenceConfig)
-    if (pluginConfig.embedded as boolean) {
+    if (pluginConfig.Embedded) {
       this.store.dispatch(this.rhsPlugin.toggleRHSPlugin)
     } else {
-      const vmr = pluginConfig.prefix as string + channel.name
-      window.open(`https://${pluginConfig.node as string}/webapp3/m/${vmr}/?pin=${pluginConfig.pin as string}&name=${user.username}`,
+      const vmr = pluginConfig.Prefix + channel.name
+      window.open(`https://${pluginConfig.Node}/webapp3/m/${vmr}/?pin=${pluginConfig.Pin}&name=${user.username}`,
         '', 'width=800;height=800')
     }
   }

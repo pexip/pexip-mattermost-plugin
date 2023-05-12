@@ -25,28 +25,28 @@
         "footer": "",
         "settings": [
             {
-                "key": "node",
+                "key": "Node",
                 "display_name": "Pexip Infinity Server:",
                 "type": "text",
                 "help_text": "Conferencing Node for joining a VMR.",
                 "placeholder": "e.g. example.com or 192.168.1.101",
                 "default": "192.168.1.101"
             }, {
-                "key": "prefix",
+                "key": "Prefix",
                 "display_name": "VMR prefix:",
                 "type": "text",
                 "help_text": "If the prefix is \"matt-\" and Mattermost channel is \"Off Topic\" the VMR will be \"matt-off-topic\".",
                 "placeholder": "e.g. matt-",
                 "default": "matt-"
             }, {
-                "key": "pin",
+                "key": "Pin",
                 "display_name": "Host PIN:",
                 "type": "number",
                 "help_text": "PIN that will be used for all the VMRs.",
                 "placeholder": "e.g. 4578",
                 "default": "1234"
             }, {
-                "key": "embedded",
+                "key": "Embedded",
                 "display_name": "Embedded Experience",
                 "type": "bool",
                 "help_text": "Indicates if the conference should be displayed inside Mattermost or in another tab with only the conference.",
