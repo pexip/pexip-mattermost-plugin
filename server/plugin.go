@@ -2,6 +2,7 @@
 package main
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/gorilla/mux"
@@ -21,10 +22,21 @@ type Plugin struct {
 	// setConfiguration for usage.
 	configuration *configuration
 
+	// router for the REST API
 	router *mux.Router
+
+	// botUserID of the created bot account.
+	botUserID string
 }
 
 func (p *Plugin) OnActivate() error {
+	p.client = pluginapi.NewClient(p.API, p.Driver)
+	// p.client = pluginapi.NewClient(p.API, p.Driver)
+	fmt.Println("On Activate")
 	p.initializeRouter()
-	return nil
+	fmt.Println("Router initialized")
+	err := p.initializeBot()
+	fmt.Println("Bot initialized")
+	fmt.Println(err)
+	return err
 }

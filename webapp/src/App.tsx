@@ -7,6 +7,8 @@ import ErrorPanel from './ErrorPanel/ErrorPanel'
 import type { Subscription } from 'rxjs'
 
 import './App.scss'
+import { MattermostManager } from './services/mattermost-manager'
+import { notifyJoinConference } from './utils'
 
 interface AppState {
   connectionState: ConnectionState
@@ -24,6 +26,13 @@ export class App extends Component<any, AppState> {
 
   componentDidMount (): void {
     this.connectionSubscription = ConferenceManager.connectionState$.subscribe((connectionState) => {
+      if (connectionState === ConnectionState.Connected) {
+        const mattermostState = MattermostManager.getStore().getState()
+        const channel = ConferenceManager.getChannel()
+        notifyJoinConference(mattermostState, channel.id).catch((error) => {
+          console.error(error)
+        })
+      }
       this.setState({ connectionState })
     })
   }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"runtime/debug"
 	"strconv"
@@ -12,19 +13,80 @@ import (
 )
 
 const (
-	routeAPI         = "/api"
-	routeAPISettings = "/settings"
+	routeAPI                     = "/api"
+	routeAPISettings             = "/settings"
+	routeAPINotifyJoinConference = "/notify_join_conference"
 )
+
+type InNotifyJoinConference struct {
+	ChannelID string `json:"channelId"`
+}
 
 func (p *Plugin) initializeRouter() {
 	p.router = mux.NewRouter()
 	p.router.Use(p.withRecovery)
 	apiRouter := p.router.PathPrefix(routeAPI).Subrouter()
 	apiRouter.HandleFunc(routeAPISettings, p.checkAuth(p.handleResponse(p.httpGetSettings))).Methods(http.MethodGet)
+	apiRouter.HandleFunc(routeAPINotifyJoinConference, p.checkAuth(p.handleResponse(p.httpNotifyJoinConference))).Methods(http.MethodPost)
+}
+
+func (p *Plugin) httpGetSettings(w http.ResponseWriter, _ *http.Request) (int, error) {
+	conf := p.getConfiguration()
+	return respondJSON(w, struct {
+		Node     string `json:"node"`
+		Prefix   string `json:"prefix"`
+		Pin      int    `json:"pin"`
+		Embedded bool   `json:"embedded"`
+	}{
+		Node:     conf.Node,
+		Prefix:   conf.Prefix,
+		Pin:      conf.Pin,
+		Embedded: conf.Embedded,
+	})
+}
+
+func (p *Plugin) httpNotifyJoinConference(w http.ResponseWriter, r *http.Request) (int, error) {
+	in := InNotifyJoinConference{}
+	err := json.NewDecoder(r.Body).Decode(&in)
+	if err != nil {
+		return respondErr(w, http.StatusBadRequest,
+			errors.WithMessage(err, "failed to decode incoming request"))
+	}
+	userID := r.Header.Get("Mattermost-User-Id")
+	fmt.Println("Getting user")
+
+	user, err := p.client.User.Get(userID)
+	if err != nil {
+		return respondErr(w, http.StatusInternalServerError,
+			errors.WithMessage(err, "cannot retrieve user info"))
+	}
+
+	err = p.postMessage(in.ChannelID, "@"+user.Username+" has joined to the channel conference.")
+	if err != nil {
+		return respondErr(w, http.StatusInternalServerError,
+			errors.WithMessage(err, "cannot post message in the channel"))
+	}
+
+	return 200, err
 }
 
 func (p *Plugin) ServeHTTP(_ *plugin.Context, w http.ResponseWriter, r *http.Request) {
 	p.router.ServeHTTP(w, r)
+}
+
+func (p *Plugin) withRecovery(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if x := recover(); x != nil {
+				p.client.Log.Warn("Recovered from a panic",
+					"url", r.URL.String(),
+					"error", x,
+					"stack", string(debug.Stack()))
+			}
+		}()
+
+		next.ServeHTTP(w, r)
+	})
 }
 
 func (p *Plugin) checkAuth(handler http.HandlerFunc) http.HandlerFunc {
@@ -75,34 +137,4 @@ func respondJSON(w http.ResponseWriter, obj interface{}) (int, error) {
 func respondErr(w http.ResponseWriter, code int, err error) (int, error) {
 	http.Error(w, err.Error(), code)
 	return code, err
-}
-
-func (p *Plugin) httpGetSettings(w http.ResponseWriter, _ *http.Request) (int, error) {
-	conf := p.getConfiguration()
-	return respondJSON(w, struct {
-		Node     string `json:"node"`
-		Prefix   string `json:"prefix"`
-		Pin      int    `json:"pin"`
-		Embedded bool   `json:"embedded"`
-	}{
-		Node:     conf.Node,
-		Prefix:   conf.Prefix,
-		Pin:      conf.Pin,
-		Embedded: conf.Embedded,
-	})
-}
-
-func (p *Plugin) withRecovery(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		defer func() {
-			if x := recover(); x != nil {
-				p.client.Log.Warn("Recovered from a panic",
-					"url", r.URL.String(),
-					"error", x,
-					"stack", string(debug.Stack()))
-			}
-		}()
-
-		next.ServeHTTP(w, r)
-	})
 }
