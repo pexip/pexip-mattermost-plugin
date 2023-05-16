@@ -41,7 +41,7 @@ export class ConferenceManager {
     console.log('Display Name: ' + ConferenceManager.config.displayName)
     console.log('VMR Prefix: ' + ConferenceManager.config.vmrPrefix)
     console.log('Host PIN: ' + ConferenceManager.config.hostPin)
-    console.log('Channel: ' + this.channel.name)
+    console.log('Channel: ' + ConferenceManager.channel.name)
 
     ConferenceManager.connectionState$.next(ConnectionState.Connecting)
 
@@ -56,7 +56,7 @@ export class ConferenceManager {
     ConferenceManager.pexrtc.onPresentationDisconnected = ConferenceManager.onPresentationDisconnected
     ConferenceManager.pexrtc.onError = ConferenceManager.onError
     ConferenceManager.pexrtc.makeCall(ConferenceManager.config.node,
-      ConferenceManager.config.vmrPrefix + this.channel.name, ConferenceManager.config.displayName)
+      ConferenceManager.config.vmrPrefix + ConferenceManager.channel.name, ConferenceManager.config.displayName)
 
     // Change the color of the channel button
     const button = document.getElementById('pexip-vmr-plugin-button')
@@ -101,7 +101,7 @@ export class ConferenceManager {
   }
 
   static isPresentationInMain (): boolean {
-    return this.presentationInMain
+    return ConferenceManager.presentationInMain
   }
 
   static isAudioMute (): boolean {

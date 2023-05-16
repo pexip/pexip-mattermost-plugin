@@ -28,19 +28,19 @@ export class Toolbar extends Component<IProps> {
     return (
       <div className='Toolbar'>
         <button data-tip={ ConferenceManager.isAudioMute() ? 'Unmute audio' : 'Mute audio'} data-for='tooltip-toolbar'
-          onClick={ this.onToggleMuteAudio }>
+          onClick={ () => { this.onToggleMuteAudio() } }>
             <FontAwesomeIcon icon={ ConferenceManager.isAudioMute() ? faMicrophoneSlash : faMicrophone }/>
         </button>
         <button data-tip={ ConferenceManager.isVideoMute() ? 'Unmute video' : 'Mute video'} data-for='tooltip-toolbar'
-          onClick={ this.onToggleMuteVideo }>
+          onClick={ () => { this.onToggleMuteVideo() } }>
             <FontAwesomeIcon icon={ ConferenceManager.isVideoMute() ? faVideoSlash : faVideo }/>
         </button>
         <button data-tip={(ConferenceManager.isSharingScreen() ? 'Stop' : 'Start') + ' sharing screen'} data-for='tooltip-toolbar'
-          onClick={ this.onShareScreen } className={ConferenceManager.isSharingScreen() ? 'selected' : ''}>
+          onClick={ () => { this.onShareScreen() } } className={ConferenceManager.isSharingScreen() ? 'selected' : ''}>
             <FontAwesomeIcon icon={ faDesktop }/>
         </button>
         <button className='disconnect' data-tip='Disconnect' data-for='tooltip-toolbar'
-          onClick={ this.onDisconnect }>
+          onClick={ () => { this.onDisconnect() } }>
             <FontAwesomeIcon icon={ faPowerOff }/>
         </button>
         <ReactTooltip
