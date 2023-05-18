@@ -1,6 +1,25 @@
-# Mattermost Pexip Plugin
+# Pexip Video Connect Plugin for Mattermost
 
-Start a video conference with several participants without leaving the Mattermost interface. You can share your screen and interact with the rest of your team.
+Start a video conference from any channel with several participants without leaving Mattermost. You will be able to join also from SIP devices and share your screen.
+
+For more information and get all the possibilities, visit https://pexip.com.
+
+## Requirements
+
+For using this plugin you need to comply with the following requirements:
+
+- Mattermost server with the plugin installed.
+- Pexip Infinity Management node.
+- At least one Pexip Infinity Conferencing node.
+- A valid Pexip License.
+
+## How to compile the plugin
+
+Start by cloning the repository:
+
+```
+git clone --depth 1 https://github.com/pexip/pexip-matermost-plugin com.pexip.pexip-video-connect
+```
 
 To compile this plugin you will need node v18 and npm v8. This is very important. If you use another version of node, you will find some compatibility problems between packages.
 
@@ -8,118 +27,124 @@ You can download and install nvm to manage your node versions by following the i
 
 For compiling the server part you will need to have `Go` installed in your system. You can check how install it in the [Go docs](https://go.dev/doc/install).
 
-https://golangci-lint.run/usage/install/#local-installation
+Build the plugin:
 
-## Getting Started
-
-Alternatively shallow clone the repository matching your plugin name:
-```
-git clone --depth 1 https://github.com/pexip/mattermost-plugin-pexip com.pexip.mattermost-plugin-pexip
-```
-
-Note that this project uses [Go modules](https://github.com/golang/go/wiki/Modules). Be sure to locate the project outside of `$GOPATH`.
-
-
-Build your plugin:
-```
+```bash
 make
 ```
 
 This will produce a single plugin file (with support for multiple architectures) for upload to your Mattermost server:
 
-```
-dist/com.example.my-plugin.tar.gz
+```bash
+dist/com.pexip.pexip-video-connect-<version>.tar.gz
 ```
 
-## Development
-
-This plugin was developed using the template provided by Mattermost: https://github.com/mattermost/mattermost-plugin-starter-template
+This plugin was developed using the template provided by Mattermost: https://github.com/mattermost/mattermost-plugin-starter-template.
 
 To learn more about plugins, see [Mattermost documentation](https://developers.mattermost.com/extend/plugins/).
 
-To avoid having to manually install your plugin, build and deploy your plugin using one of the following options. In order for the below options to work, you must first enable plugin uploads via your config.json or API and restart Mattermost.
 
-```json
-    "PluginSettings" : {
-        ...
-        "EnableUploads" : true
+## How to upload the plugin
+
+For testing the plugin, you can launch mattermost in a docker container:
+
+```bash
+$ docker run --name mattermost-preview -d --publish 8065:8065 mattermost/mattermost-preview
+```
+
+For now on, we will suppose that you are using the docker container located https://localhost:8065:
+
+- Launch mattermost in a web browser: https://localhost:8065
+
+- Introduce all the mandatory info: username, password, organization, url, etc.
+
+- Open the admin web page: https://localhost:8065/admin_console
+
+- In the left menu go to the "Plugins" section and there select "Plugin Management".
+
+- In the section "Upload Plugin" click on "Choose File" and select the file "dist/com.pexip.pexip-video-connect-0.1.0.tar.gz".
+
+- Click on "Upload".
+
+
+## How to configure the Mattermost plugin
+
+Now we will enable the plugin and set the configuration:
+
+- Open the admin web page: https://localhost:8065/admin_console
+
+- Go to the left menu and under the "Plugins" section you should see "Pexip Video Connect". Click on that plugin to show the plugins menu.
+
+- In the "Enable Plugin" section select "true".
+
+- Configure the following parameters:
+
+  - Enable Plugin: true
+
+  - Pexip Infinity Server: Domain or IP of your Conferencing Node.
+
+  - VMR prefix: It will attach a prefix to the Mattermost Channel name. For example, if the channel name is "Town Square" and the prefix "matt-", the system will use the VMR "matt-town-square". You will need to use the same prefix later in the "Pexip Infinity configuration".
+
+  - Host PIN: This PIN is used for all the VMR for connecting as an host. You will need to use the same prefix later in the "Pexip Infinity configuration".
+
+  - Embedded Experience: Set it to true. It indicates if the conference should be displayed inside the Mattermost interface and if we should open a new window with only the conference.
+
+
+## How to configure Pexip Infinity
+
+You have installed the Pexip Video Connect plugin in Mattermost and almost configured it with the proper configuration. Now is the turn to 
+
+- Open the Pexip Infinity Management node web interface.
+
+- Go to "Call Control" > "Policy Profiles".
+
+- Click on "Add Policy profile".
+
+- Define a name for the new profile.
+
+- In "Service configuration policy" check the box "Apply local policy".
+
+- Copy the following script, but not forget to modify the `prefix` and `agentPin` for the onw that you defined in the plugin configuration:
+
+```
+{% set prefix = "matt-" %}
+{% set agentPin = "1234" %}
+{% if call_info.local_alias.startswith(prefix) %}
+  {
+    "action": "continue",
+    "result": {
+      "service_type": "conference",
+      "name":  {{'"'}}{{call_info.local_alias | pex_regex_replace("^" + prefix, "") }}{{'"'}},
+      "service_tag": "Mattermost",
+      "pin": agentPin,
+      "allow_guests": true,
+      "crypto_mode": "besteffort",
+      "view": "five_mains_seven_pips",
+      "enable_overlay_text": true
     }
+  }
+{% elif service_config %}
+  {
+    "action" : "continue",
+    "result" : {{service_config|pex_to_json}}
+  }
+{% else %}
+  {
+    "action" : "reject",
+    "result" : {}
+  }
+{% endif %}
 ```
+- Click on "Save" and you will have your new policy in the system.
 
-### Deploying with Local Mode
+The last step is to assign the new policy to a Location:
 
-If your Mattermost server is running locally, you can enable [local mode](https://docs.mattermost.com/administration/mmctl-cli-tool.html#local-mode) to streamline deploying your plugin. Edit your server configuration as follows:
-
-```json
-{
-    "ServiceSettings": {
-        ...
-        "EnableLocalMode": true,
-        "LocalModeSocketLocation": "/var/tmp/mattermost_local.socket"
-    },
-}
-```
-
-and then deploy your plugin:
-```
-make deploy
-```
-
-You may also customize the Unix socket path:
-```
-export MM_LOCALSOCKETPATH=/var/tmp/alternate_local.socket
-make deploy
-```
-
-If developing a plugin with a webapp, watch for changes and deploy those automatically:
-```
-export MM_SERVICESETTINGS_SITEURL=http://localhost:8065
-export MM_ADMIN_TOKEN=j44acwd8obn78cdcx7koid4jkr
-make watch
-```
-
-### Deploying with credentials
-
-Alternatively, you can authenticate with the server's API with credentials:
-```
-export MM_SERVICESETTINGS_SITEURL=http://localhost:8065
-export MM_ADMIN_USERNAME=admin
-export MM_ADMIN_PASSWORD=password
-make deploy
-```
-
-or with a [personal access token](https://docs.mattermost.com/developer/personal-access-tokens.html):
-```
-export MM_SERVICESETTINGS_SITEURL=http://localhost:8065
-export MM_ADMIN_TOKEN=j44acwd8obn78cdcx7koid4jkr
-make deploy
-```
+- Open the Pexip Infinity Management node web interface.
+- 
 
 ## Q&A
 
-### How do I make a server-only or web app-only plugin?
+### Do I need a Pexip license to use this plugin?
 
-Simply delete the `server` or `webapp` folders and remove the corresponding sections from `plugin.json`. The build scripts will skip the missing portions automatically.
+You don't need a license to install the plugin in your Mattermost environment. However, you will need a Pexip license to use a Pexip Infinity deployment that the plugin will use to connect to the conference.
 
-### How do I include assets in the plugin bundle?
-
-Place them into the `assets` directory. To use an asset at runtime, build the path to your asset and open as a regular file:
-
-```go
-bundlePath, err := p.API.GetBundlePath()
-if err != nil {
-    return errors.Wrap(err, "failed to get bundle path")
-}
-
-profileImage, err := ioutil.ReadFile(filepath.Join(bundlePath, "assets", "profile_image.png"))
-if err != nil {
-    return errors.Wrap(err, "failed to read profile image")
-}
-
-if appErr := p.API.SetProfileImage(userID, profileImage); appErr != nil {
-    return errors.Wrap(err, "failed to set profile image")
-}
-```
-
-### How do I build the plugin with unminified JavaScript?
-Setting the `MM_DEBUG` environment variable will invoke the debug builds. The simplist way to do this is to simply include this variable in your calls to `make` (e.g. `make dist MM_DEBUG=1`).
