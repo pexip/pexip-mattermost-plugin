@@ -10,7 +10,7 @@ interface JoinButtonState {
   channel: Channel
 }
 
-export class JoinButton extends Component<any, JoinButtonState> {
+export class JoinPanel extends Component<any, JoinButtonState> {
   constructor (props: any) {
     super(props)
     const store = MattermostManager.getStore()
@@ -39,15 +39,31 @@ export class JoinButton extends Component<any, JoinButtonState> {
   }
 
   render (): JSX.Element {
+    const isChannel = this.state.channel.team_id !== ''
+    let component
+    if (isChannel) {
+      component = (
+        <>
+          <p>Connect to {'"' + this.state.channel.display_name + '"'} room? </p>
+          <button onClick={ this.onConnect }>
+            Join conference
+          </button>
+        </>
+      )
+    } else {
+      component = (
+        <>
+          <p>Video conferences are only available for Channels.</p>
+          <p>Select a channel to start!</p>
+        </>
+      )
+    }
     return (
       <div className='JoinPanel'>
-        <p>Connect to {'"' + this.state.channel.display_name + '"'} room? </p>
-        <button onClick={ this.onConnect }>
-          Join conference
-        </button>
+        {component}
       </div>
     )
   }
 }
 
-export default JoinButton
+export default JoinPanel
