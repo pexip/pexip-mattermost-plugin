@@ -9,7 +9,7 @@ import { Client4 } from 'mattermost-redux/client'
 import { ConferenceManager, type ConferenceConfig } from './services/conference-manager'
 import { App } from './App'
 import { MattermostManager } from './services/mattermost-manager'
-import { getPluginServerRoute, getPluginSettings } from './utils'
+import { getPluginServerRoute, getPluginSettings, notifyJoinConference } from './utils'
 
 import manifest from '../../plugin.json'
 
@@ -50,6 +50,9 @@ class Plugin {
       this.store.dispatch(this.rhsPlugin.toggleRHSPlugin)
     } else {
       const vmr = pluginConfig.prefix + channel.name
+      notifyJoinConference(this.store.getState(), channel.id).catch((error) => {
+        console.error(error)
+      })
       window.open(`https://${pluginConfig.node}/webapp3/m/${vmr}/?pin=${pluginConfig.pin}&name=${user.username}`,
         '', 'width=800;height=800')
     }

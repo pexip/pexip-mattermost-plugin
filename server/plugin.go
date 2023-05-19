@@ -2,7 +2,6 @@
 package main
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/gorilla/mux"
@@ -31,12 +30,7 @@ type Plugin struct {
 
 func (p *Plugin) OnActivate() error {
 	p.client = pluginapi.NewClient(p.API, p.Driver)
-	// p.client = pluginapi.NewClient(p.API, p.Driver)
-	fmt.Println("On Activate")
 	p.initializeRouter()
-	fmt.Println("Router initialized")
 	err := p.initializeBot()
-	fmt.Println("Bot initialized")
-	fmt.Println(err)
 	return err
 }

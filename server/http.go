@@ -61,7 +61,7 @@ func (p *Plugin) httpNotifyJoinConference(w http.ResponseWriter, r *http.Request
 			errors.WithMessage(err, "cannot retrieve user info"))
 	}
 
-	err = p.postMessage(in.ChannelID, "@"+user.Username+" has joined to the channel conference.")
+	err = p.postMessage(in.ChannelID, "@"+user.Username+" has joined the channel video conference.")
 	if err != nil {
 		return respondErr(w, http.StatusInternalServerError,
 			errors.WithMessage(err, "cannot post message in the channel"))
