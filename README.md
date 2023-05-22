@@ -4,147 +4,121 @@ Start a video conference from any channel with several participants without leav
 
 For more information and get all the possibilities, visit https://pexip.com.
 
-## Requirements
+## Requirements/Prerequisites
 
 For using this plugin you need to comply with the following requirements:
 
-- Mattermost server with the plugin installed.
-- Pexip Infinity Management node.
-- At least one Pexip Infinity Conferencing node.
+- Mattermost server v6.2.1 or higher.
+- Pexip Infinity Management node v31 or higher.
+- At least one Pexip Infinity Conferencing node v32 or higher.
 - A valid Pexip License.
 
-## How to compile the plugin
+## Configuration
 
-Start by cloning the repository:
+In this section you will learn how to make a proper configuration. The configuration that you have to make is divided in two different steps.
 
-```
-git clone --depth 1 https://github.com/pexip/pexip-matermost-plugin com.pexip.pexip-video-connect
-```
+First you will need to define the configuration in the Pexip Infinity Management node. Here you will define how to treat the incoming conferences.
 
-To compile this plugin you will need **node v18** and **npm v8**. This is important, because if you use another version of node, you will find some compatibility problems between packages.
+In the second step, you will define the configuration of the Pexip Plugin inside Mattermost. This configuration should match the one that you defined in the previous step.
 
-You can download and install nvm to manage your node versions by following the instructions [here](https://github.com/nvm-sh/nvm). Once you've setup the project simply run `nvm i` within the root folder to use the suggested version of node.
+### Step 1: Configure Pexip Infinity
 
-For compiling the server part you will need to have **Go** installed in your system. You can check how install it in the [Go docs](https://go.dev/doc/install).
-
-Build the plugin, you only have to run the following command:
-
-```bash
-make
-```
-
-This will produce a single plugin file (with support for amd64 architecture) for upload to your Mattermost server:
-
-```bash
-dist/com.pexip.pexip-video-connect-<version>.tar.gz
-```
-
-This plugin was developed using the template provided by Mattermost: https://github.com/mattermost/mattermost-plugin-starter-template.
-
-To learn more about plugins, see [Mattermost documentation](https://developers.mattermost.com/extend/plugins/).
-
-
-## How to upload the plugin
-
-For testing the plugin, you can launch mattermost in a docker container:
-
-```bash
-$ docker run --name mattermost-preview -d --publish 8065:8065 mattermost/mattermost-preview
-```
-
-For now on, we will suppose that you are using the docker container and the app is accessible from https://localhost:8065:
-
-- Launch mattermost in a web browser: https://localhost:8065
-
-- Introduce all the mandatory info: username, password, organization, url, etc.
-
-- Open the admin web page: https://localhost:8065/admin_console
-
-- In the left menu go to the `Plugins` section and there select `Plugin Management`.
-
-- In the section `Upload Plugi` click on `Choose File` and select the file `dist/com.pexip.pexip-video-connect-0.1.0.tar.gz`.
-
-- Click on `Upload`.
-
-
-## How to configure the Mattermost plugin
-
-Now we will enable the plugin and set the configuration:
-
-- Open the admin web page: https://localhost:8065/admin_console
-
-- Go to the left menu and under the `Plugins` section you should see `Pexip Video Connect`. Click on that plugin to show the plugins menu.
-
-- Configure the following parameters:
-
-  - **Enable Plugin:** `true`
-
-  - **Pexip Infinity Server:** Domain or IP of your Conferencing Node.
-
-  - **VMR prefix:** It will attach a prefix to the Mattermost Channel name. For example, if the channel name is `Town Square` and the prefix `matt-`, the system will use the VMR `matt-town-square`. You will need to use the same prefix later in the **Pexip Infinity configuration**.
-
-  - **Host PIN:** This PIN is used for all the VMR for connecting as an host. You will need to use the same prefix later in the **Pexip Infinity configuration**.
-
-  - **Embedded Experience:** Set it to `true` if you want the integrated experience and the video conference will be displayed inside the Mattermost interface. If you set it to `false` a new window with the **Pexip Web App 3** will be opened.
-
-
-## How to configure Pexip Infinity
-
-You have installed the Pexip Video Connect plugin in Mattermost and almost configured it with the proper configuration. Now is the turn to 
+We will start by defining our configuration in the Pexip Infinity Management node:
 
 - Open the Pexip Infinity Management node web interface. 
 
-- Go to `Call Control > Policy Profiles`.
+- Go to **Call Control > Policy Profiles**.
 
-- Click on `Add Policy profile`.
+- Click on **Add Policy profile**.
 
 - Define a name for the new profile.
 
-- In `Service configuration policy` check the box `Apply local policy`.
+- In **Service configuration policy** check the box **Apply local policy**.
 
-- Copy the following script, but not forget to modify the `prefix` and `agentPin` for the onw that you defined in the plugin configuration:
+- Copy the following script, but not forget to modify the `prefix` and `agentPin` with the values that you want for your deployment:
 
-```
-{% set prefix = "matt-" %}
-{% set agentPin = "1234" %}
-{% if call_info.local_alias.startswith(prefix) %}
-  {
-    "action": "continue",
-    "result": {
-      "service_type": "conference",
-      "name":  {{'"'}}{{call_info.local_alias | pex_regex_replace("^" + prefix, "") }}{{'"'}},
-      "service_tag": "Mattermost",
-      "pin": agentPin,
-      "allow_guests": true,
-      "crypto_mode": "besteffort",
-      "view": "five_mains_seven_pips",
-      "enable_overlay_text": true
+  ```jinja
+  {% set prefix = "matt-" %}
+  {% set agentPin = "1234" %}
+  {% if call_info.local_alias.startswith(prefix) %}
+    {
+      "action": "continue",
+      "result": {
+        "service_type": "conference",
+        "name":  {{'"'}}{{call_info.local_alias | pex_regex_replace("^" + prefix, "") }}{{'"'}},
+        "service_tag": "Mattermost",
+        "pin": agentPin,
+        "allow_guests": true,
+        "crypto_mode": "besteffort",
+        "view": "five_mains_seven_pips",
+        "enable_overlay_text": true
+      }
     }
-  }
-{% elif service_config %}
-  {
-    "action" : "continue",
-    "result" : {{service_config|pex_to_json}}
-  }
-{% else %}
-  {
-    "action" : "reject",
-    "result" : {}
-  }
-{% endif %}
-```
+  {% elif service_config %}
+    {
+      "action" : "continue",
+      "result" : {{service_config|pex_to_json}}
+    }
+  {% else %}
+    {
+      "action" : "reject",
+      "result" : {}
+    }
+  {% endif %}
+  ```
 - Click on "Save" and you will have your new policy in the system.
 
 The last step is to assign the new policy to a Location:
 
 - Open the Pexip Infinity Management node web interface.
-- Go to `Platform > Locations`.
+- Go to **Platform > Locations**.
 - Select the location that you want to use for Mattermost.
-- In the section `Policy profile` select the policy that you have created before.
+- In the section **Policy profile** select the policy that you have created before.
 
-## Q&A
+### Step 2: Configure the Mattermost Plugin
+
+Now we will enable the plugin and set the configuration:
+
+- Open the admin web page: `https://<mattermost-domain>/admin_console`
+
+- Go to the left menu and under the **Plugins** section you should see **Pexip Video Connect**. Click on that plugin to show the plugins menu.
+
+- Configure the following parameters:
+
+  - **Enable Plugin:** `true`
+
+  - **Pexip Infinity Server:** Domain or IP of your Conferencing Node (e.g. `pexipdemo.com` or `192.168.1.100`).
+
+  - **VMR prefix:** It will attach a prefix to the Mattermost Channel name. For example, if the channel name is `Town Square` and the prefix `matt-`, the system will use the VMR `matt-town-square`. You will need to use the same prefix that you used for the **Pexip Infinity configuration**.
+
+    > **Warning**
+    > You will need to use the same prefix that you used for the **Pexip Infinity configuration**.
+
+  - **Host PIN:** This PIN is used for all the VMR for connecting as an host.
+
+    > **Warning**
+    > You will need to use the same host pin that you used for the **Pexip Infinity configuration**.
+
+  - **Embedded Experience:** Set it to `true` if you want the integrated experience and the video conference will be displayed inside the Mattermost interface. If you set it to `false` a new window with the **Pexip Web App 3** will be opened.
+
+## Using the Plugin
+
+Once the plugin is installed, enabled and properly configured, all user will see a new button on the top-right of the interface.
+
+The behavior of this button will depend on the configuration that you have defined in Plugin configuration. In case you have the **Embedded Experience** disabled, you will open the Pexip Web App 3 in another browser window when you push the button. In case it's enabled, you will see a panel.
+
+  > **Warning**
+  > The plugin only works for conferences inside channels. This means that it won't be available for one-to-one calls or for bots.
+
+
+## Frequently Asked Questions
 
 ### Do I need a Pexip license to use this plugin?
 
 You don't need a license to install the plugin in your Mattermost environment. However, you will need a Pexip license to use a Pexip Infinity deployment that the plugin will use to connect to the conference.
 
+## Development
+
+This plugin contains both a server and web app portion. If you want information about how to compile the plugin and test it in a development environment, visit the [developer guide](docs/DEVELOPMENT.md).
+
+https://github.com/mattermost/mattermost-plugin-github/blob/master/README.md
