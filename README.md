@@ -1,10 +1,10 @@
 # Pexip Video Connect Plugin for Mattermost
 
-Start a video conference from any channel with several participants without leaving Mattermost. You will be able to join also from SIP devices and share your screen.
+Start a video conference from any channel with several participants without leaving Mattermost. You will be able to share your screen and even join through SIP devices.
 
 For more information and get all the possibilities, visit https://pexip.com.
 
-## Requirements/Prerequisites
+## Requirements
 
 For using this plugin you need to comply with the following requirements:
 
@@ -103,22 +103,57 @@ Now we will enable the plugin and set the configuration:
 
 ## Using the Plugin
 
-Once the plugin is installed, enabled and properly configured, all user will see a new button on the top-right of the interface.
+Once the plugin is installed, enabled and properly configured, all the users will see a new button on the top-right of their interface:
 
-The behavior of this button will depend on the configuration that you have defined in Plugin configuration. In case you have the **Embedded Experience** disabled, you will open the Pexip Web App 3 in another browser window when you push the button. In case it's enabled, you will see a panel.
+<p align="center">
+  <img src="./docs/images/buttons/call-button.png" alt="Call button"/>
+</p>
 
-  > **Warning**
-  > The plugin only works for conferences inside channels. This means that it won't be available for one-to-one calls or for bots.
+The behavior of this button will depend on the configuration that you have defined for the Plugin. In case you have defined the **Embedded Experience** to `false`, it will open the Pexip Web App 3 in another window. In case this value is `true`, you will see a panel for starting the conference.
 
+<p align="center">
+  <img src="./docs/images/join-panel.png" alt="Join panel"/>
+</p>
+
+> **Info**
+> The plugin only works for conferences inside channels. This means that it won't be available for one-to-one calls or for bots. Also, take into account that in this section we will only discuss the **Embedded Experience**. If you want more information about the Web App 3, consult the [Web App 3 Documentation](https://docs.pexip.com/clients/using_webapp3.htm).
+
+
+For starting the conference, you only have to click on the **Join conference** button. Once You have done that, you will see the conference itself.
+
+<p style="width: 512px; margin: auto">
+  <img src="./docs/images/conference.png" alt="Conference"/>
+</p>
+
+During the conference you will be able to perform the following actions:
+
+- **Mute audio:** You can enable or disable your microphone with the first button.
+- **Mute video:** You can also choose if the camera feed should be available for others.
+- **Receive a presentation:** If other participant start sharing his screen, you will be able to see the video without performing any additional action.
+- **Send presentation:** In case you want to share your screen, you only have to click on the third button. This will open a pop-up to choose what you want to share (whole screen, window or tab).
+- **Disconnect:** The last button is for disconnecting for the conference.
+
+If a user is sharing the screen, you will be able to choose what to see in the main area (screensharing or video with the remote participants). To toggle between these two options, you have to click on the video thumbnail located on the top-right corner.
+
+<p style="width: 512px; margin: auto">
+  <img src="./docs/images/screenshare.png" alt="Screenshare"/>
+</p>
 
 ## Frequently Asked Questions
 
 ### Do I need a Pexip license to use this plugin?
 
-You don't need a license to install the plugin in your Mattermost environment. However, you will need a Pexip license to use a Pexip Infinity deployment that the plugin will use to connect to the conference.
+You will need a Pexip license for your Pexip Infinity deployment. Contact Pexip for [more information or booking a demo](https://www.pexip.com/demo).
+
+### Is recording supported?
+
+You can record the conferences, but it needs and extra integration with a RTMP service. More information in the [streaming and recording documentation](https://docs.pexip.com/admin/streaming.htm).
+
+
+### Is there any possibility of interoperability with Microsoft Teams, Google Meet or SIP devices?
+
+Yes, in Pexip we work very hard on interoperability with a lot of other video conference providers. This way, you will have several options to choose in our portfolio.
 
 ## Development
 
 This plugin contains both a server and web app portion. If you want information about how to compile the plugin and test it in a development environment, visit the [developer guide](docs/DEVELOPMENT.md).
-
-https://github.com/mattermost/mattermost-plugin-github/blob/master/README.md
