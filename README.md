@@ -1,5 +1,9 @@
 # Pexip Video Connect Plugin for Mattermost
 
+[![Release](https://img.shields.io/github/v/release/pexip/pexip-mattermost-plugin)](https://github.com/pexip/pexip-mattermost-plugin/releases/latest)
+
+**Maintainer:** [@marcos-cereijo-pexip](https://github.com/marcos-cereijo-pexip)
+
 Start a video conference from any channel with several participants without leaving Mattermost. You will be able to share your screen and even join through SIP devices.
 
 For more information and get all the possibilities, visit https://pexip.com.
@@ -39,15 +43,15 @@ We will start by defining our configuration in the Pexip Infinity Management nod
 
   ```jinja
   {% set prefix = "matt-" %}
-  {% set agentPin = "1234" %}
+  {% set agentPin = 4321 %}
   {% if call_info.local_alias.startswith(prefix) %}
     {
       "action": "continue",
       "result": {
         "service_type": "conference",
-        "name":  {{'"'}}{{call_info.local_alias | pex_regex_replace("^" + prefix, "") }}{{'"'}},
+        "name":  {{'"'}}{{call_info.local_alias | pex_regex_replace("^"+prefix, "") }}{{'"'}},
         "service_tag": "Mattermost",
-        "pin": agentPin,
+        "pin": {{'"'}}{{agentPin}}{{'"'}},
         "allow_guests": true,
         "crypto_mode": "besteffort",
         "view": "five_mains_seven_pips",
