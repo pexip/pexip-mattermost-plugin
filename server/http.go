@@ -53,7 +53,6 @@ func (p *Plugin) httpNotifyJoinConference(w http.ResponseWriter, r *http.Request
 			errors.WithMessage(err, "failed to decode incoming request"))
 	}
 	userID := r.Header.Get("Mattermost-User-Id")
-	fmt.Println("Getting user")
 
 	user, err := p.client.User.Get(userID)
 	if err != nil {
@@ -61,6 +60,13 @@ func (p *Plugin) httpNotifyJoinConference(w http.ResponseWriter, r *http.Request
 			errors.WithMessage(err, "cannot retrieve user info"))
 	}
 
+	channel, err := p.client.Channel.Get(in.ChannelID)
+	if err != nil {
+		return respondErr(w, http.StatusInternalServerError,
+			errors.WithMessage(err, "cannot retrieve channel info"))
+	}
+
+	fmt.Printf("%v has joined the video conference for the channel \"%v\"", user.Username, channel.DisplayName)
 	err = p.postMessage(in.ChannelID, "@"+user.Username+" has joined the channel video conference.")
 	if err != nil {
 		return respondErr(w, http.StatusInternalServerError,
