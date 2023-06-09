@@ -43,15 +43,15 @@ We will start by defining our configuration in the Pexip Infinity Management nod
 
   ```jinja
   {% set prefix = "matt-" %}
-  {% set agentPin = 4321 %}
+  {% set agentPin = "4321" %}
   {% if call_info.local_alias.startswith(prefix) %}
     {
       "action": "continue",
       "result": {
         "service_type": "conference",
-        "name":  {{'"'}}{{call_info.local_alias | pex_regex_replace("^"+prefix, "") }}{{'"'}},
+        "name":  "{{call_info.local_alias | pex_regex_replace("^"+prefix, "") }}",
         "service_tag": "Mattermost",
-        "pin": {{'"'}}{{agentPin}}{{'"'}},
+        "pin": "{{agentPin}}",
         "allow_guests": true,
         "crypto_mode": "besteffort",
         "view": "five_mains_seven_pips",
@@ -61,7 +61,7 @@ We will start by defining our configuration in the Pexip Infinity Management nod
   {% elif service_config %}
     {
       "action" : "continue",
-      "result" : {{service_config|pex_to_json}}
+      "result" : {{service_config | pex_to_json}}
     }
   {% else %}
     {
