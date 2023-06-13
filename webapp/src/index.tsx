@@ -10,6 +10,7 @@ import { ConferenceManager, type ConferenceConfig } from './services/conference-
 import { App } from './App'
 import { MattermostManager } from './services/mattermost-manager'
 import { getPluginServerRoute, getPluginSettings, notifyJoinConference } from './utils'
+import { getConfig } from 'mattermost-redux/selectors/entities/general'
 
 import manifest from '../../plugin.json'
 
@@ -23,8 +24,6 @@ class Plugin {
 
   initialize (registry: PluginRegistry, store: Store<GlobalState, Action<Record<string, unknown>>>): void {
     this.store = store
-    console.log(registry)
-    console.log(store)
     MattermostManager.setStore(store)
     const script = document.createElement('script')
     script.src = getPluginServerRoute(store.getState()) + '/public/pexrtc-31.js'
@@ -34,10 +33,12 @@ class Plugin {
   }
 
   private async action (channel: Channel, channelMembership: ChannelMembership): Promise<void> {
-    // const config = await Client4.getConfig()
-    //  const settings = await MattermostManager.getStore().dispatch(getSettings());
-    const pluginConfig = await getPluginSettings(MattermostManager.getStore().getState())
-    // const pluginConfig = config.PluginSettings.Plugins[pluginId]
+    const state = MattermostManager.getStore().getState()
+    const config = getConfig(state)
+    const pluginConfig = await getPluginSettings(state)
+    if (config.SiteURL != null) {
+      Client4.setUrl(config.SiteURL)
+    }
     const user = await Client4.getUser(channelMembership.user_id)
     const conferenceConfig: ConferenceConfig = {
       node: pluginConfig.node,
