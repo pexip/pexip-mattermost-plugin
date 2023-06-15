@@ -54,7 +54,7 @@ class Plugin {
       notifyJoinConference(this.store.getState(), channel.id).catch((error) => {
         console.error(error)
       })
-      window.open(`https://${pluginConfig.node}/webapp3/m/${vmr}/?pin=${pluginConfig.pin}&name=${user.username}`,
+      window.open(`https://${pluginConfig.node}/webapp3/m/${vmr}/express?pin=${pluginConfig.pin}&name=${user.username}`,
         '', 'width=800;height=800')
     }
   }
