@@ -162,8 +162,9 @@ export class ConferenceManager {
   private static onConnect (stream: MediaStream): void {
     ConferenceManager.remoteStream = stream
     ConferenceManager.mainStream$.next(stream)
-    ConferenceManager.connectionState$.next(ConnectionState.Connected)
-  }
+    if (ConferenceManager.connectionState$.getValue() !== ConnectionState.Connected) {
+      ConferenceManager.connectionState$.next(ConnectionState.Connected)
+    }
   }
 
   private static onScreenshareConnected (stream: MediaStream): void {
