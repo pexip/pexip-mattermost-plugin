@@ -1,10 +1,11 @@
 import type { Channel } from 'mattermost-redux/types/channels'
 import { BehaviorSubject } from 'rxjs'
+import type { Participant } from '../types/participant'
 
 export enum ConnectionState {
   Disconnected,
-  Connected,
   Connecting,
+  Connected,
   Error
 }
 
@@ -34,6 +35,7 @@ export class ConferenceManager {
   static mainStream$ = new BehaviorSubject<MediaStream | null>(null)
   static secondaryStream$ = new BehaviorSubject<MediaStream | null>(null)
   static connectionState$ = new BehaviorSubject<ConnectionState>(ConnectionState.Disconnected)
+  static participants$ = new BehaviorSubject<Participant[]>([])
 
   static connect (): void {
     console.log('Initialization conference with the following values:')
@@ -44,6 +46,7 @@ export class ConferenceManager {
     console.log('Channel: ' + ConferenceManager.channel.name)
 
     ConferenceManager.connectionState$.next(ConnectionState.Connecting)
+    ConferenceManager.participants$.next([])
 
     // @ts-expect-error: to avoid error in check-types
     ConferenceManager.pexrtc = new PexRTC()
@@ -55,6 +58,9 @@ export class ConferenceManager {
     ConferenceManager.pexrtc.onPresentationConnected = ConferenceManager.onPresentationConnected
     ConferenceManager.pexrtc.onPresentationDisconnected = ConferenceManager.onPresentationDisconnected
     ConferenceManager.pexrtc.onError = ConferenceManager.onError
+    ConferenceManager.pexrtc.onParticipantCreate = ConferenceManager.onParticipantCreate
+    ConferenceManager.pexrtc.onParticipantUpdate = ConferenceManager.onParticipantUpdate
+    ConferenceManager.pexrtc.onParticipantDelete = ConferenceManager.onParticipantDelete
     ConferenceManager.pexrtc.makeCall(ConferenceManager.config.node,
       ConferenceManager.config.vmrPrefix + ConferenceManager.channel.name, ConferenceManager.config.displayName)
 
@@ -158,6 +164,7 @@ export class ConferenceManager {
     ConferenceManager.mainStream$.next(stream)
     ConferenceManager.connectionState$.next(ConnectionState.Connected)
   }
+  }
 
   private static onScreenshareConnected (stream: MediaStream): void {
     console.log('On Screenshare Connected')
@@ -207,5 +214,24 @@ export class ConferenceManager {
   private static onError (error: string): void {
     ConferenceManager.error = error
     ConferenceManager.connectionState$.next(ConnectionState.Error)
+  }
+
+  private static onParticipantCreate (participant: any): void {
+    const participants = ConferenceManager.participants$.getValue()
+    participants.push(participant)
+    ConferenceManager.participants$.next(participants)
+  }
+
+  private static onParticipantUpdate (participant: any): void {
+    let participants = ConferenceManager.participants$.getValue()
+    participants = participants.map((part) => part.uuid === participant.uuid ? participant : part)
+    ConferenceManager.participants$.next(participants)
+  }
+
+  private static onParticipantDelete (participant: any): void {
+    const participants = ConferenceManager.participants$.getValue()
+    const index = participants.findIndex((part) => part.uuid === participant.uuid)
+    participants.splice(index, 1)
+    ConferenceManager.participants$.next(participants)
   }
 }
