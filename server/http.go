@@ -33,15 +33,17 @@ func (p *Plugin) initializeRouter() {
 func (p *Plugin) httpGetSettings(w http.ResponseWriter, _ *http.Request) (int, error) {
 	conf := p.getConfiguration()
 	return respondJSON(w, struct {
-		Node     string `json:"node"`
-		Prefix   string `json:"prefix"`
-		Pin      int    `json:"pin"`
-		Embedded bool   `json:"embedded"`
+		Node            string `json:"node"`
+		Prefix          string `json:"prefix"`
+		Pin             int    `json:"pin"`
+		DisplayNameType string `json:"displayNameType"`
+		Embedded        bool   `json:"embedded"`
 	}{
-		Node:     conf.Node,
-		Prefix:   conf.Prefix,
-		Pin:      conf.Pin,
-		Embedded: conf.Embedded,
+		Node:            conf.Node,
+		Prefix:          conf.Prefix,
+		Pin:             conf.Pin,
+		DisplayNameType: conf.DisplayNameType,
+		Embedded:        conf.Embedded,
 	})
 }
 
