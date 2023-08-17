@@ -26,7 +26,7 @@ class Plugin {
     this.store = store
     MattermostManager.setStore(store)
     const script = document.createElement('script')
-    script.src = getPluginServerRoute(store.getState()) + '/public/pexrtc-31.js'
+    script.src = getPluginServerRoute(store.getState()) + '/public/pexrtc-32.js'
     document.getElementsByTagName('head')[0].appendChild(script)
     registry.registerChannelHeaderButtonAction(icon, this.action.bind(this), dropDownText)
     this.rhsPlugin = registry.registerRightHandSidebarComponent(App as any, 'Pexip Video Connect')

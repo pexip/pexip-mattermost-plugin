@@ -7,6 +7,7 @@ import { ConferenceManager } from '../services/conference-manager'
 import { Toolbar } from './components/Toolbar/Toolbar'
 
 import './Conference.scss'
+import ParticipantList from './components/ParticipantList/ParticipantList'
 
 interface VideoProps {
   mediaStream: MediaStream | null
@@ -72,6 +73,7 @@ export class Conference extends Component<any, ConferenceState> {
           />
           <Toolbar onDisconnect={ () => { this.onDisconnect() }}/>
         </div>
+        <ParticipantList />
       </div>
     )
   }
