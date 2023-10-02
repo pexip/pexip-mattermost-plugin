@@ -4,4 +4,6 @@
   background-color: var(--sidebar-bg);
   justify-content: center;
   align-items: center;
+  // Prevent that any item is displayed outside the app
+  overflow: hidden;
 }
