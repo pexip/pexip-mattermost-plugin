@@ -19,17 +19,17 @@ const icon = <i id='pexip-vmr-plugin-button' className='icon fa fa-video-camera'
 const dropDownText = 'Pexip Video Connect'
 
 class Plugin {
-  private store: Store<GlobalState, Action<Record<string, unknown>>>
+  private store: Store<GlobalState, Action>
   private rhsPlugin: RHSPlugin
 
-  initialize (registry: PluginRegistry, store: Store<GlobalState, Action<Record<string, unknown>>>): void {
+  initialize (registry: PluginRegistry, store: Store<GlobalState, Action>): void {
     this.store = store
     MattermostManager.setStore(store)
     const script = document.createElement('script')
     script.src = getPluginServerRoute(store.getState()) + '/public/pexrtc-32.js'
     document.getElementsByTagName('head')[0].appendChild(script)
     registry.registerChannelHeaderButtonAction(icon, this.action.bind(this), dropDownText)
-    this.rhsPlugin = registry.registerRightHandSidebarComponent(App as any, 'Pexip Video Connect')
+    this.rhsPlugin = registry.registerRightHandSidebarComponent(App, 'Pexip Video Connect')
   }
 
   private async action (channel: Channel, channelMembership: ChannelMembership): Promise<void> {

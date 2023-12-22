@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 
 import ReactTooltip from 'react-tooltip'
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faDesktop,
@@ -12,7 +11,6 @@ import {
   faVideoSlash
 } from '@fortawesome/free-solid-svg-icons'
 import type { Subscription } from 'rxjs'
-
 import { ConferenceManager } from '../../../services/conference-manager'
 
 import './Toolbar.scss'
@@ -44,11 +42,11 @@ export class Toolbar extends Component<IProps> {
             <FontAwesomeIcon icon={ faPowerOff }/>
         </button>
         <ReactTooltip
-            id='tooltip-toolbar'
-            place='bottom'
-            effect='solid'
-            multiline={false}
-          />
+          id='tooltip-toolbar'
+          place='bottom'
+          effect='solid'
+          multiline={false}
+        />
       </div>
     )
   }
