@@ -8,6 +8,13 @@ GO_TEST_FLAGS ?= -race
 GO_BUILD_FLAGS ?=
 MM_UTILITIES_DIR ?= ../mattermost-utilities
 DLV_DEBUG_PORT := 2346
+
+# The following lines are for compiling the server only for Linux. By default, it
+# compiles the code for windows (amd64), linux (arm64 and amd64) and mac
+# (arm64 and amd64), but the file is too big and Mattermost rejects the plugin
+# when we try to upload it.
+# As a reference, if we want to autodetect the OS and ARCH, we can use the
+# following instructions:
 # DEFAULT_GOOS := $(shell go env GOOS)
 # DEFAULT_GOARCH := $(shell go env GOARCH)
 MM_SERVICESETTINGS_ENABLEDEVELOPER := True
