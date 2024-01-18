@@ -1,6 +1,11 @@
-const path = require('path')
+import path from 'path'
 
-module.exports = {
+import { fileURLToPath } from 'url'
+const _filename = fileURLToPath(import.meta.url)
+// eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/naming-convention
+const __dirname = path.dirname(_filename)
+
+export default {
   entry: './src/index.tsx',
   module: {
     rules: [

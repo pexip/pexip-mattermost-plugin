@@ -90,7 +90,9 @@
         -moz-transform:rotateY(180deg); /* Firefox */
       }
     }
-    #tooltip-call {
+
+    #tooltip-exchange, #tooltip-toggle-pip {
+      opacity: 1;
       font-size: 12px;
       font-weight: bold;
       padding: 6px;

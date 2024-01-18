@@ -50,17 +50,17 @@ export class ConferenceManager {
 
     // @ts-expect-error: to avoid error in check-types
     ConferenceManager.pexrtc = new PexRTC()
-    ConferenceManager.pexrtc.onSetup = ConferenceManager.onSetup
-    ConferenceManager.pexrtc.onConnect = ConferenceManager.onConnect
-    ConferenceManager.pexrtc.onScreenshareConnected = ConferenceManager.onScreenshareConnected
-    ConferenceManager.pexrtc.onScreenshareStopped = ConferenceManager.onScreenshareStopped
-    ConferenceManager.pexrtc.onPresentation = ConferenceManager.onPresentation
-    ConferenceManager.pexrtc.onPresentationConnected = ConferenceManager.onPresentationConnected
-    ConferenceManager.pexrtc.onPresentationDisconnected = ConferenceManager.onPresentationDisconnected
-    ConferenceManager.pexrtc.onError = ConferenceManager.onError
-    ConferenceManager.pexrtc.onParticipantCreate = ConferenceManager.onParticipantCreate
-    ConferenceManager.pexrtc.onParticipantUpdate = ConferenceManager.onParticipantUpdate
-    ConferenceManager.pexrtc.onParticipantDelete = ConferenceManager.onParticipantDelete
+    ConferenceManager.pexrtc.onSetup = ConferenceManager.onSetup.bind(this)
+    ConferenceManager.pexrtc.onConnect = ConferenceManager.onConnect.bind(this)
+    ConferenceManager.pexrtc.onScreenshareConnected = ConferenceManager.onScreenshareConnected.bind(this)
+    ConferenceManager.pexrtc.onScreenshareStopped = ConferenceManager.onScreenshareStopped.bind(this)
+    ConferenceManager.pexrtc.onPresentation = ConferenceManager.onPresentation.bind(this)
+    ConferenceManager.pexrtc.onPresentationConnected = ConferenceManager.onPresentationConnected.bind(this)
+    ConferenceManager.pexrtc.onPresentationDisconnected = ConferenceManager.onPresentationDisconnected.bind(this)
+    ConferenceManager.pexrtc.onError = ConferenceManager.onError.bind(this)
+    ConferenceManager.pexrtc.onParticipantCreate = ConferenceManager.onParticipantCreate.bind(this)
+    ConferenceManager.pexrtc.onParticipantUpdate = ConferenceManager.onParticipantUpdate.bind(this)
+    ConferenceManager.pexrtc.onParticipantDelete = ConferenceManager.onParticipantDelete.bind(this)
     ConferenceManager.pexrtc.makeCall(ConferenceManager.config.node,
       ConferenceManager.config.vmrPrefix + ConferenceManager.channel.name, ConferenceManager.config.displayName)
 
@@ -100,7 +100,7 @@ export class ConferenceManager {
     if (ConferenceManager.isSharingScreen()) {
       ConferenceManager.pexrtc.present(null)
     } else {
-      const stream = ConferenceManager.pexrtc.present('screen')
+      const stream = ConferenceManager.pexrtc.present('screen') as MediaStream
       ConferenceManager.presentationStream = stream
       ConferenceManager.secondaryStream$.next(stream)
     }
@@ -217,19 +217,19 @@ export class ConferenceManager {
     ConferenceManager.connectionState$.next(ConnectionState.Error)
   }
 
-  private static onParticipantCreate (participant: any): void {
+  private static onParticipantCreate (participant: Participant): void {
     const participants = ConferenceManager.participants$.getValue()
     participants.push(participant)
     ConferenceManager.participants$.next(participants)
   }
 
-  private static onParticipantUpdate (participant: any): void {
+  private static onParticipantUpdate (participant: Participant): void {
     let participants = ConferenceManager.participants$.getValue()
     participants = participants.map((part) => part.uuid === participant.uuid ? participant : part)
     ConferenceManager.participants$.next(participants)
   }
 
-  private static onParticipantDelete (participant: any): void {
+  private static onParticipantDelete (participant: Participant): void {
     const participants = ConferenceManager.participants$.getValue()
     const index = participants.findIndex((part) => part.uuid === participant.uuid)
     participants.splice(index, 1)

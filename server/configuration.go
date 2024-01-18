@@ -1,12 +1,8 @@
-// Copyright (c) 2017-present Mattermost, Inc. All Rights Reserved.
-// See License for license information.
-
 package main
 
 import (
 	"reflect"
 
-	pluginapi "github.com/mattermost/mattermost-plugin-api"
 	"github.com/pkg/errors"
 )
 
@@ -80,10 +76,6 @@ func (p *Plugin) setConfiguration(configuration *configuration) {
 // OnConfigurationChange is invoked when configuration changes may have been made.
 func (p *Plugin) OnConfigurationChange() error {
 	var configuration = new(configuration)
-
-	if p.client == nil {
-		p.client = pluginapi.NewClient(p.API, p.Driver)
-	}
 
 	// Load the public configuration fields from the Mattermost server configuration.
 	if err := p.API.LoadPluginConfiguration(configuration); err != nil {
