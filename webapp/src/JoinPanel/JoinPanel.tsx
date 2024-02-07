@@ -45,7 +45,7 @@ export class JoinPanel extends Component<any, JoinButtonState> {
       component = (
         <>
           <p>Connect to {'"' + this.state.channel.display_name + '"'} room? </p>
-          <button onClick={ this.onConnect }>
+          <button onClick={ this.onConnect.bind(this) }>
             Join conference
           </button>
         </>

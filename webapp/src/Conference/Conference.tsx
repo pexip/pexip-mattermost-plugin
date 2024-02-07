@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
+
 import { faArrowRight, faExchange } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import ReactTooltip from 'react-tooltip'
-
 import { ConferenceManager } from '../services/conference-manager'
 import { Toolbar } from './components/Toolbar/Toolbar'
+import ParticipantList from './components/ParticipantList/ParticipantList'
+import ReactTooltip from 'react-tooltip'
 
 import './Conference.scss'
 
@@ -53,25 +54,35 @@ export class Conference extends Component<any, ConferenceState> {
             {this.state.secondaryStream != null && (
               <div className='video-container secondary'>
                 <Video mediaStream={this.state.secondaryStream} />
-                <div className='exchange-panel' onClick={() => { this.onToggleMainVideo() }} data-tip='Exchange videos' data-for='tooltip-call'>
+                <div className='exchange-panel' onClick={() => { this.onToggleMainVideo() }} data-tip='Exchange videos' data-for='tooltip-exchange'>
                   <FontAwesomeIcon icon={faExchange} />
                 </div>
+                <ReactTooltip
+                  id='tooltip-exchange'
+                  place='bottom'
+                  effect='solid'
+                  multiline={false}
+                />
               </div>
             )}
             {(this.state.localStream != null || this.state.secondaryStream != null) && (
-              <button className='toggle-pip-button' onClick={(event) => { this.onTogglePip(event) }} data-tip={'Hide pip'} data-for='tooltip-call'>
-                <FontAwesomeIcon icon={faArrowRight}/>
-              </button>
+              <>
+                <button className='toggle-pip-button' onClick={(event) => { this.onTogglePip(event) }} data-tip='Hide pip' data-for='tooltip-toggle-pip'>
+                  <FontAwesomeIcon icon={faArrowRight}/>
+                </button>
+                <ReactTooltip
+                  id='tooltip-toggle-pip'
+                  place='bottom'
+                  effect='solid'
+                  multiline={false}
+                />
+              </>
             )}
           </div>
-          <ReactTooltip
-            id='tooltip-call'
-            place='bottom'
-            effect='solid'
-            multiline={false}
-          />
+
           <Toolbar onDisconnect={ () => { this.onDisconnect() }}/>
         </div>
+        <ParticipantList />
       </div>
     )
   }

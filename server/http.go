@@ -8,7 +8,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/mattermost/mattermost-server/v6/plugin"
+	"github.com/mattermost/mattermost/server/public/plugin"
 	"github.com/pkg/errors"
 )
 
@@ -33,15 +33,17 @@ func (p *Plugin) initializeRouter() {
 func (p *Plugin) httpGetSettings(w http.ResponseWriter, _ *http.Request) (int, error) {
 	conf := p.getConfiguration()
 	return respondJSON(w, struct {
-		Node     string `json:"node"`
-		Prefix   string `json:"prefix"`
-		Pin      int    `json:"pin"`
-		Embedded bool   `json:"embedded"`
+		Node            string `json:"node"`
+		Prefix          string `json:"prefix"`
+		Pin             int    `json:"pin"`
+		DisplayNameType string `json:"displayNameType"`
+		Embedded        bool   `json:"embedded"`
 	}{
-		Node:     conf.Node,
-		Prefix:   conf.Prefix,
-		Pin:      conf.Pin,
-		Embedded: conf.Embedded,
+		Node:            conf.Node,
+		Prefix:          conf.Prefix,
+		Pin:             conf.Pin,
+		DisplayNameType: conf.DisplayNameType,
+		Embedded:        conf.Embedded,
 	})
 }
 
@@ -54,14 +56,14 @@ func (p *Plugin) httpNotifyJoinConference(w http.ResponseWriter, r *http.Request
 	}
 	userID := r.Header.Get("Mattermost-User-Id")
 
-	user, err := p.client.User.Get(userID)
-	if err != nil {
+	user, appErr := p.API.GetUser(userID)
+	if appErr != nil {
 		return respondErr(w, http.StatusInternalServerError,
 			errors.WithMessage(err, "cannot retrieve user info"))
 	}
 
-	channel, err := p.client.Channel.Get(in.ChannelID)
-	if err != nil {
+	channel, appErr := p.API.GetChannel(in.ChannelID)
+	if appErr != nil {
 		return respondErr(w, http.StatusInternalServerError,
 			errors.WithMessage(err, "cannot retrieve channel info"))
 	}
@@ -84,7 +86,7 @@ func (p *Plugin) withRecovery(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if x := recover(); x != nil {
-				p.client.Log.Warn("Recovered from a panic",
+				p.API.LogWarn("Recovered from a panic",
 					"url", r.URL.String(),
 					"error", x,
 					"stack", string(debug.Stack()))
@@ -119,11 +121,11 @@ func (p *Plugin) logResponse(r *http.Request, status int, err error) {
 		return
 	}
 	if err != nil {
-		p.client.Log.Warn("ERROR: ", "Status", strconv.Itoa(status), "Error", err.Error(), "Path", r.URL.Path, "Method", r.Method, "query", r.URL.Query().Encode())
+		p.API.LogWarn("ERROR: ", "Status", strconv.Itoa(status), "Error", err.Error(), "Path", r.URL.Path, "Method", r.Method, "query", r.URL.Query().Encode())
 	}
 
 	if status != http.StatusOK {
-		p.client.Log.Debug("unexpected plugin response", "Status", strconv.Itoa(status), "Path", r.URL.Path, "Method", r.Method, "query", r.URL.Query().Encode())
+		p.API.LogDebug("unexpected plugin response", "Status", strconv.Itoa(status), "Path", r.URL.Path, "Method", r.Method, "query", r.URL.Query().Encode())
 	}
 }
 

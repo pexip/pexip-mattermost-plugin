@@ -3,10 +3,17 @@ import type { GlobalState } from 'mattermost-redux/types/store'
 import manifest from '../../plugin.json'
 import { Client4 } from 'mattermost-redux/client'
 
+export enum DisplayNameType {
+  Username = 'username',
+  Nickname = 'nickname',
+  FirstAndLastName = 'firstAndLastName'
+}
+
 interface PluginSettings {
   node: string
   prefix: string
   pin: number
+  displayNameType: DisplayNameType
   embedded: boolean
 }
 

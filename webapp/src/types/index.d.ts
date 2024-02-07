@@ -1,4 +1,4 @@
-import type { Component } from 'react'
+import type { Channel, ChannelMembership } from 'mattermost-redux/types/channels'
 import type { Action } from 'redux'
 
 declare global {
@@ -9,12 +9,12 @@ declare global {
 
 export interface RHSPlugin {
   id: string
-  showRHSPlugin: Action<Record<string, unknown>>
-  hideRHSPlugin: Action<Record<string, unknown>>
-  toggleRHSPlugin: Action<Record<string, unknown>>
+  showRHSPlugin: Action
+  hideRHSPlugin: Action
+  toggleRHSPlugin: Action
 }
 
 export interface PluginRegistry {
-  registerChannelHeaderButtonAction: (icon: JSX.Element, action: Action, dropdownText: string, tooltip?: string) => void
-  registerRightHandSidebarComponent: (component: Component, title: string | JSX.Element) => RHSPlugin
+  registerChannelHeaderButtonAction: (icon: JSX.Element, action: (channel: Channel, channelMembership: ChannelMembership) => Promise<void>, dropdownText: string, tooltip?: string) => void
+  registerRightHandSidebarComponent: (component: React.ElementType, title: string | JSX.Element) => RHSPlugin
 }

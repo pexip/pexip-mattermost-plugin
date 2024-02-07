@@ -9,7 +9,7 @@ import { Client4 } from 'mattermost-redux/client'
 import { ConferenceManager, type ConferenceConfig } from './services/conference-manager'
 import { App } from './App'
 import { MattermostManager } from './services/mattermost-manager'
-import { getPluginServerRoute, getPluginSettings, notifyJoinConference } from './utils'
+import { DisplayNameType, getPluginServerRoute, getPluginSettings, notifyJoinConference } from './utils'
 import { getConfig } from 'mattermost-redux/selectors/entities/general'
 
 import manifest from '../../plugin.json'
@@ -19,17 +19,17 @@ const icon = <i id='pexip-vmr-plugin-button' className='icon fa fa-video-camera'
 const dropDownText = 'Pexip Video Connect'
 
 class Plugin {
-  private store: Store<GlobalState, Action<Record<string, unknown>>>
+  private store: Store<GlobalState, Action>
   private rhsPlugin: RHSPlugin
 
-  initialize (registry: PluginRegistry, store: Store<GlobalState, Action<Record<string, unknown>>>): void {
+  initialize (registry: PluginRegistry, store: Store<GlobalState, Action>): void {
     this.store = store
     MattermostManager.setStore(store)
     const script = document.createElement('script')
-    script.src = getPluginServerRoute(store.getState()) + '/public/pexrtc-31.js'
+    script.src = getPluginServerRoute(store.getState()) + '/public/pexrtc-32.js'
     document.getElementsByTagName('head')[0].appendChild(script)
     registry.registerChannelHeaderButtonAction(icon, this.action.bind(this), dropDownText)
-    this.rhsPlugin = registry.registerRightHandSidebarComponent(App as any, 'Pexip Video Connect')
+    this.rhsPlugin = registry.registerRightHandSidebarComponent(App, 'Pexip Video Connect')
   }
 
   private async action (channel: Channel, channelMembership: ChannelMembership): Promise<void> {
@@ -40,9 +40,26 @@ class Plugin {
       Client4.setUrl(config.SiteURL)
     }
     const user = await Client4.getUser(channelMembership.user_id)
+
+    let displayName = user.username
+    switch (pluginConfig.displayNameType) {
+      case DisplayNameType.Nickname: {
+        if (user.nickname !== '') {
+          displayName = user.nickname
+        }
+        break
+      }
+      case DisplayNameType.FirstAndLastName: {
+        const realName = `${user.first_name} ${user.last_name}`.trim()
+        if (realName !== '') {
+          displayName = realName
+        }
+      }
+    }
+
     const conferenceConfig: ConferenceConfig = {
       node: pluginConfig.node,
-      displayName: user.username,
+      displayName,
       vmrPrefix: pluginConfig.prefix,
       hostPin: pluginConfig.pin.toString()
     }
@@ -54,7 +71,7 @@ class Plugin {
       notifyJoinConference(this.store.getState(), channel.id).catch((error) => {
         console.error(error)
       })
-      window.open(`https://${pluginConfig.node}/webapp3/m/${vmr}/express?pin=${pluginConfig.pin}&name=${user.username}`,
+      window.open(`https://${pluginConfig.node}/webapp3/m/${vmr}/express?pin=${pluginConfig.pin}&name=${displayName}`,
         '', 'width=800;height=800')
     }
   }

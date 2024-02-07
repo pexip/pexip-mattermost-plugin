@@ -1,10 +1,11 @@
 import type { Channel } from 'mattermost-redux/types/channels'
 import { BehaviorSubject } from 'rxjs'
+import type { Participant } from '../types/participant'
 
 export enum ConnectionState {
   Disconnected,
-  Connected,
   Connecting,
+  Connected,
   Error
 }
 
@@ -34,6 +35,7 @@ export class ConferenceManager {
   static mainStream$ = new BehaviorSubject<MediaStream | null>(null)
   static secondaryStream$ = new BehaviorSubject<MediaStream | null>(null)
   static connectionState$ = new BehaviorSubject<ConnectionState>(ConnectionState.Disconnected)
+  static participants$ = new BehaviorSubject<Participant[]>([])
 
   static connect (): void {
     console.log('Initialization conference with the following values:')
@@ -44,17 +46,21 @@ export class ConferenceManager {
     console.log('Channel: ' + ConferenceManager.channel.name)
 
     ConferenceManager.connectionState$.next(ConnectionState.Connecting)
+    ConferenceManager.participants$.next([])
 
     // @ts-expect-error: to avoid error in check-types
     ConferenceManager.pexrtc = new PexRTC()
-    ConferenceManager.pexrtc.onSetup = ConferenceManager.onSetup
-    ConferenceManager.pexrtc.onConnect = ConferenceManager.onConnect
-    ConferenceManager.pexrtc.onScreenshareConnected = ConferenceManager.onScreenshareConnected
-    ConferenceManager.pexrtc.onScreenshareStopped = ConferenceManager.onScreenshareStopped
-    ConferenceManager.pexrtc.onPresentation = ConferenceManager.onPresentation
-    ConferenceManager.pexrtc.onPresentationConnected = ConferenceManager.onPresentationConnected
-    ConferenceManager.pexrtc.onPresentationDisconnected = ConferenceManager.onPresentationDisconnected
-    ConferenceManager.pexrtc.onError = ConferenceManager.onError
+    ConferenceManager.pexrtc.onSetup = ConferenceManager.onSetup.bind(this)
+    ConferenceManager.pexrtc.onConnect = ConferenceManager.onConnect.bind(this)
+    ConferenceManager.pexrtc.onScreenshareConnected = ConferenceManager.onScreenshareConnected.bind(this)
+    ConferenceManager.pexrtc.onScreenshareStopped = ConferenceManager.onScreenshareStopped.bind(this)
+    ConferenceManager.pexrtc.onPresentation = ConferenceManager.onPresentation.bind(this)
+    ConferenceManager.pexrtc.onPresentationConnected = ConferenceManager.onPresentationConnected.bind(this)
+    ConferenceManager.pexrtc.onPresentationDisconnected = ConferenceManager.onPresentationDisconnected.bind(this)
+    ConferenceManager.pexrtc.onError = ConferenceManager.onError.bind(this)
+    ConferenceManager.pexrtc.onParticipantCreate = ConferenceManager.onParticipantCreate.bind(this)
+    ConferenceManager.pexrtc.onParticipantUpdate = ConferenceManager.onParticipantUpdate.bind(this)
+    ConferenceManager.pexrtc.onParticipantDelete = ConferenceManager.onParticipantDelete.bind(this)
     ConferenceManager.pexrtc.makeCall(ConferenceManager.config.node,
       ConferenceManager.config.vmrPrefix + ConferenceManager.channel.name, ConferenceManager.config.displayName)
 
@@ -94,7 +100,7 @@ export class ConferenceManager {
     if (ConferenceManager.isSharingScreen()) {
       ConferenceManager.pexrtc.present(null)
     } else {
-      const stream = ConferenceManager.pexrtc.present('screen')
+      const stream = ConferenceManager.pexrtc.present('screen') as MediaStream
       ConferenceManager.presentationStream = stream
       ConferenceManager.secondaryStream$.next(stream)
     }
@@ -156,7 +162,9 @@ export class ConferenceManager {
   private static onConnect (stream: MediaStream): void {
     ConferenceManager.remoteStream = stream
     ConferenceManager.mainStream$.next(stream)
-    ConferenceManager.connectionState$.next(ConnectionState.Connected)
+    if (ConferenceManager.connectionState$.getValue() !== ConnectionState.Connected) {
+      ConferenceManager.connectionState$.next(ConnectionState.Connected)
+    }
   }
 
   private static onScreenshareConnected (stream: MediaStream): void {
@@ -207,5 +215,24 @@ export class ConferenceManager {
   private static onError (error: string): void {
     ConferenceManager.error = error
     ConferenceManager.connectionState$.next(ConnectionState.Error)
+  }
+
+  private static onParticipantCreate (participant: Participant): void {
+    const participants = ConferenceManager.participants$.getValue()
+    participants.push(participant)
+    ConferenceManager.participants$.next(participants)
+  }
+
+  private static onParticipantUpdate (participant: Participant): void {
+    let participants = ConferenceManager.participants$.getValue()
+    participants = participants.map((part) => part.uuid === participant.uuid ? participant : part)
+    ConferenceManager.participants$.next(participants)
+  }
+
+  private static onParticipantDelete (participant: Participant): void {
+    const participants = ConferenceManager.participants$.getValue()
+    const index = participants.findIndex((part) => part.uuid === participant.uuid)
+    participants.splice(index, 1)
+    ConferenceManager.participants$.next(participants)
   }
 }

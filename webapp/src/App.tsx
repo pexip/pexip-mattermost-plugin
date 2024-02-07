@@ -6,9 +6,10 @@ import Loading from './Loading/Loading'
 import ErrorPanel from './ErrorPanel/ErrorPanel'
 import type { Subscription } from 'rxjs'
 
-import './App.scss'
 import { MattermostManager } from './services/mattermost-manager'
 import { notifyJoinConference } from './utils'
+
+import './App.scss'
 
 interface AppState {
   connectionState: ConnectionState
