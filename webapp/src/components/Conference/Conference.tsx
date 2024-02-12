@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 
-import { faArrowRight, faExchange } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { ConferenceManager } from '../services/conference-manager'
+// import { ConferenceManager } from '../services/conference-manager'
 import { Toolbar } from './components/Toolbar/Toolbar'
 import ParticipantList from './components/ParticipantList/ParticipantList'
 import ReactTooltip from 'react-tooltip'
@@ -27,7 +27,7 @@ interface ConferenceState {
 }
 
 export class Conference extends Component<any, ConferenceState> {
-  private channelDisplayName: string
+  // private channelDisplayName: string
 
   state = {
     localStream: null,
@@ -40,7 +40,7 @@ export class Conference extends Component<any, ConferenceState> {
   render (): JSX.Element {
     return (
       <div className='Conference'>
-        <div className='header'>{this.channelDisplayName} Room</div>
+        {/* <div className='header'>{this.channelDisplayName} Room</div> */}
         <div className='conference-container'>
           <div className='video-container main'>
             <Video mediaStream={this.state.mainStream} />
@@ -54,9 +54,9 @@ export class Conference extends Component<any, ConferenceState> {
             {this.state.secondaryStream != null && (
               <div className='video-container secondary'>
                 <Video mediaStream={this.state.secondaryStream} />
-                <div className='exchange-panel' onClick={() => { this.onToggleMainVideo() }} data-tip='Exchange videos' data-for='tooltip-exchange'>
+                {/* <div className='exchange-panel' onClick={() => { this.onToggleMainVideo() }} data-tip='Exchange videos' data-for='tooltip-exchange'>
                   <FontAwesomeIcon icon={faExchange} />
-                </div>
+                </div> */}
                 <ReactTooltip
                   id='tooltip-exchange'
                   place='bottom'
@@ -87,22 +87,22 @@ export class Conference extends Component<any, ConferenceState> {
     )
   }
 
-  componentDidMount (): void {
-    ConferenceManager.localStream$.subscribe((localStream) => {
-      this.setState({ localStream })
-    })
-    ConferenceManager.mainStream$.subscribe((mainStream) => {
-      this.setState({ mainStream })
-    })
-    ConferenceManager.secondaryStream$.subscribe((secondaryStream) => {
-      this.setState({ secondaryStream })
-    })
-    this.channelDisplayName = ConferenceManager.getChannel().display_name
-  }
+  // componentDidMount (): void {
+  //   ConferenceManager.localStream$.subscribe((localStream) => {
+  //     this.setState({ localStream })
+  //   })
+  //   ConferenceManager.mainStream$.subscribe((mainStream) => {
+  //     this.setState({ mainStream })
+  //   })
+  //   ConferenceManager.secondaryStream$.subscribe((secondaryStream) => {
+  //     this.setState({ secondaryStream })
+  //   })
+  //   this.channelDisplayName = ConferenceManager.getChannel().display_name
+  // }
 
-  private onToggleMainVideo (): void {
-    ConferenceManager.toggleMainVideo()
-  }
+  // private onToggleMainVideo (): void {
+  //   ConferenceManager.toggleMainVideo()
+  // }
 
   private onTogglePip (event: React.MouseEvent): void {
     this.pipRef.current?.classList.toggle('closed')

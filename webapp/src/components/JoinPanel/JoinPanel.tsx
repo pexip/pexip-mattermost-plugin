@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
-import { ConferenceManager } from '../services/conference-manager'
 
-import { MattermostManager } from '../services/mattermost-manager'
 import type { Channel } from 'mattermost-redux/types/channels'
+import { getMattermostStore } from '../../utils'
 
 import './JoinPanel.scss'
 
@@ -13,27 +12,27 @@ interface JoinButtonState {
 export class JoinPanel extends Component<any, JoinButtonState> {
   constructor (props: any) {
     super(props)
-    const store = MattermostManager.getStore()
+    const store = getMattermostStore()
     const state = store.getState()
     const channelId = state.entities.channels.currentChannelId
     const channel = state.entities.channels.channels[channelId]
     this.state = { channel }
-    ConferenceManager.setChannel(channel)
+    // ConferenceManager.setChannel(channel)
   }
 
   private onConnect (): void {
-    ConferenceManager.connect()
+    // ConferenceManager.connect()
   }
 
   async componentDidMount (): Promise<void> {
-    const store = MattermostManager.getStore()
+    const store = getMattermostStore()
     store.subscribe(() => {
       const state = store.getState()
       const channelId = state.entities.channels.currentChannelId
       if (this.state.channel.id !== channelId) {
         const channel = state.entities.channels.channels[channelId]
         this.setState({ channel })
-        ConferenceManager.setChannel(channel)
+        // ConferenceManager.setChannel(channel)
       }
     })
   }
@@ -65,5 +64,3 @@ export class JoinPanel extends Component<any, JoinButtonState> {
     )
   }
 }
-
-export default JoinPanel

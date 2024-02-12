@@ -16,4 +16,4 @@ const ErrorPanel = (props: ErrorPanelProps): JSX.Element => {
   )
 }
 
-export default ErrorPanel
+export { ErrorPanel }

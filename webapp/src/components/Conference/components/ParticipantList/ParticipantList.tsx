@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
-import { ConferenceManager } from '../../../services/conference-manager'
+// import { ConferenceManager } from '../../../../services/conference-manager'
 
-import type { Subscription } from 'rxjs'
-import type { Participant } from '../../../types/participant'
+// import type { Subscription } from 'rxjs'
+import type { Participant } from '../../../../types/Participant'
 
 import './ParticipantList.scss'
 
@@ -11,21 +11,21 @@ interface ParticipantListState {
 }
 
 export class ParticipantList extends Component<any, ParticipantListState> {
-  private participantsSubscription: Subscription
+  // private participantsSubscription: Subscription
 
   state = {
     participants: []
   }
 
-  componentDidMount (): void {
-    this.participantsSubscription = ConferenceManager.participants$.subscribe((participants) => {
-      this.setState({ participants })
-    })
-  }
+  // componentDidMount (): void {
+  //   this.participantsSubscription = ConferenceManager.participants$.subscribe((participants) => {
+  //     this.setState({ participants })
+  //   })
+  // }
 
-  componentWillUnmount (): void {
-    this.participantsSubscription.unsubscribe()
-  }
+  // componentWillUnmount (): void {
+  //   this.participantsSubscription.unsubscribe()
+  // }
 
   render (): JSX.Element {
     return <div className='ParticipantList'>
