@@ -19,18 +19,22 @@
     .video-container {
       position: relative;
     }
+
     video {
       width: 100%;
       height: 100%;
       background-color: black;
     }
+
     .main {
       padding-top: 56.25%;
+
       video {
         position: absolute;
         top: 0;
       }
     }
+
     .pip {
       position: absolute;
       display: flex;
@@ -40,6 +44,7 @@
       top: 0;
       right: 0;
       transition: transform .2s ease-in-out;
+
       .toggle-pip-button {
         color: white;
         background-color: rgba(125,125,125, 0.5);
@@ -56,16 +61,20 @@
         justify-content: center;
         align-items: center;
         transition: opacity transform .2s ease-in-out;
+
         &:hover {
           opacity: 1;
         }
       }
+
       &.closed {
         transform: translate(calc(100% - 42px), 0);
+
         .toggle-pip-button {
           transform: rotate(180deg);
         }
       }
+
       .secondary .exchange-panel {
         position: absolute;
         top: 0;
@@ -80,10 +89,12 @@
         opacity: 0;
         transition: opacity .2s ease-in-out;
         right: 0;
+
         &:hover {
           opacity: 1;
         }
       }
+
       .local video{
         transform: rotateY(180deg);
         -webkit-transform:rotateY(180deg); /* Safari and Chrome */

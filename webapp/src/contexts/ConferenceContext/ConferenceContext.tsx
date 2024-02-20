@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from 'react'
+import React, { createContext, useContext, useMemo, useReducer } from 'react'
 import type { ConferenceState } from './ConferenceState'
 import { ConferenceReducer } from './ConferenceReducer'
 import { connect } from './methods/connect'
@@ -16,14 +16,14 @@ const Context = createContext< ContextType | null>(null)
 const initialState: ConferenceState = {
   localStream: null,
   remoteStream: null,
-  connectionState: ConnectionState.Disconnected
+  connectionState: ConnectionState.Disconnected,
+  participants: []
 }
 
 const ConferenceContextProvider = (props: any): JSX.Element => {
-  console.log(React)
-  const [state, dispatch] = React.useReducer(ConferenceReducer, initialState)
+  const [state, dispatch] = useReducer(ConferenceReducer, initialState)
 
-  const value = React.useMemo(() => ({
+  const value = useMemo(() => ({
     connect: async () => { connect(dispatch).catch((e) => { console.error(e) }) },
     disconnect: async () => { disconnect(dispatch).catch((e) => { console.error(e) }) },
     state

@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 
 import ReactTooltip from 'react-tooltip'
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -15,41 +15,33 @@ import ReactTooltip from 'react-tooltip'
 
 import './Toolbar.scss'
 
-interface IProps {
-  onDisconnect: () => void
-}
-
-export class Toolbar extends Component<IProps> {
-  // private subscriptionMainStream: Subscription
-
-  render (): JSX.Element {
-    return (
-      <div className='Toolbar'>
-        {/* <button data-tip={ ConferenceManager.isAudioMute() ? 'Unmute audio' : 'Mute audio'} data-for='tooltip-toolbar'
-          onClick={ () => { this.onToggleMuteAudio() } }>
-            <FontAwesomeIcon icon={ ConferenceManager.isAudioMute() ? faMicrophoneSlash : faMicrophone }/>
-        </button>
-        <button data-tip={ ConferenceManager.isVideoMute() ? 'Unmute video' : 'Mute video'} data-for='tooltip-toolbar'
-          onClick={ () => { this.onToggleMuteVideo() } }>
-            <FontAwesomeIcon icon={ ConferenceManager.isVideoMute() ? faVideoSlash : faVideo }/>
-        </button>
-        <button data-tip={(ConferenceManager.isSharingScreen() ? 'Stop' : 'Start') + ' sharing screen'} data-for='tooltip-toolbar'
-          onClick={ () => { this.onShareScreen() } } className={ConferenceManager.isSharingScreen() ? 'selected' : ''}>
-            <FontAwesomeIcon icon={ faDesktop }/>
-        </button>
-        <button className='disconnect' data-tip='Disconnect' data-for='tooltip-toolbar'
-          onClick={ () => { this.onDisconnect() } }>
-            <FontAwesomeIcon icon={ faPowerOff }/>
-        </button> */}
-        <ReactTooltip
-          id='tooltip-toolbar'
-          place='bottom'
-          effect='solid'
-          multiline={false}
-        />
-      </div>
-    )
-  }
+export const Toolbar = (): JSX.Element => {
+  return (
+    <div className='Toolbar'>
+      {/* <button data-tip={ ConferenceManager.isAudioMute() ? 'Unmute audio' : 'Mute audio'} data-for='tooltip-toolbar'
+        onClick={ () => { this.onToggleMuteAudio() } }>
+          <FontAwesomeIcon icon={ ConferenceManager.isAudioMute() ? faMicrophoneSlash : faMicrophone }/>
+      </button>
+      <button data-tip={ ConferenceManager.isVideoMute() ? 'Unmute video' : 'Mute video'} data-for='tooltip-toolbar'
+        onClick={ () => { this.onToggleMuteVideo() } }>
+          <FontAwesomeIcon icon={ ConferenceManager.isVideoMute() ? faVideoSlash : faVideo }/>
+      </button>
+      <button data-tip={(ConferenceManager.isSharingScreen() ? 'Stop' : 'Start') + ' sharing screen'} data-for='tooltip-toolbar'
+        onClick={ () => { this.onShareScreen() } } className={ConferenceManager.isSharingScreen() ? 'selected' : ''}>
+          <FontAwesomeIcon icon={ faDesktop }/>
+      </button>
+      <button className='disconnect' data-tip='Disconnect' data-for='tooltip-toolbar'
+        onClick={ () => { this.onDisconnect() } }>
+          <FontAwesomeIcon icon={ faPowerOff }/>
+      </button> */}
+      <ReactTooltip
+        id='tooltip-toolbar'
+        place='bottom'
+        effect='solid'
+        multiline={false}
+      />
+    </div>
+  )
 
   // private onToggleMuteAudio (): void {
   //   ConferenceManager.toggleAudioMute()

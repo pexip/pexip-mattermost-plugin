@@ -7,6 +7,7 @@
   flex-direction: column;
   flex: 1 0 auto;
   height: 20px;
+
   h3{
     font-size: 1.14em;
     font-weight: normal;
@@ -15,10 +16,12 @@
     margin-bottom: 0;
     border-bottom: 1px solid #e8f0f8;
   }
+
   ul {
     margin: 0;
     padding: 8px;
     overflow: auto;
+  
     li {
       list-style: none;
       color: #0a2136;
@@ -26,6 +29,7 @@
       height: 32px;
       line-height: 32px;
       cursor: default;
+
       &:hover {
         background-color: #f4f7fb;
       }
