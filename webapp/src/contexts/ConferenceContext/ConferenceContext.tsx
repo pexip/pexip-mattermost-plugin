@@ -4,9 +4,13 @@ import { ConferenceReducer } from './ConferenceReducer'
 import { connect } from './methods/connect'
 import { disconnect } from './methods/disconnect'
 import { ConnectionState } from '../../types/ConnectionState'
+import type { ConferenceConfig } from '../../types/ConferenceConfig'
+import { ConferenceActionType } from './ConferenceAction'
+import type { Channel } from 'mattermost-redux/types/channels'
 
 interface ContextType {
-  connect: (conferenceAlias: string, displayName: string) => Promise<void>
+  setConfig: (config: ConferenceConfig) => void
+  connect: (channel: Channel) => Promise<void>
   disconnect: () => Promise<void>
   state: ConferenceState
 }
@@ -14,6 +18,9 @@ interface ContextType {
 const Context = createContext< ContextType | null>(null)
 
 const initialState: ConferenceState = {
+  config: null,
+  channel: null,
+  client: null,
   localStream: null,
   remoteStream: null,
   connectionState: ConnectionState.Disconnected,
@@ -24,7 +31,21 @@ const ConferenceContextProvider = (props: any): JSX.Element => {
   const [state, dispatch] = useReducer(ConferenceReducer, initialState)
 
   const value = useMemo(() => ({
-    connect: async () => { connect(dispatch).catch((e) => { console.error(e) }) },
+    setConfig: (config: ConferenceConfig): void => {
+      dispatch({ type: ConferenceActionType.SetConfig, body: config })
+    },
+    connect: async (channel: Channel) => {
+      dispatch({
+        type: ConferenceActionType.Connecting,
+        body: { channel }
+      })
+      connect({
+        host: 'https://' + state.config?.node,
+        conferenceAlias: state.config?.vmrPrefix + channel.name,
+        hostPin: state.config?.hostPin ?? '',
+        displayName: state.config?.displayName ?? 'User'
+      }, dispatch).catch((e) => { console.error(e) })
+    },
     disconnect: async () => { disconnect(dispatch).catch((e) => { console.error(e) }) },
     state
   }), [state])

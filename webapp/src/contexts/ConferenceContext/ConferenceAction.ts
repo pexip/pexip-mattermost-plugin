@@ -1,4 +1,6 @@
 export enum ConferenceActionType {
+  SetConfig,
+  Connecting,
   Connected,
   Disconnected,
   Error,

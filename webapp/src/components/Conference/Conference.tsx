@@ -11,16 +11,18 @@ import { Icon, IconTypes, Video } from '@pexip/components'
 export const Conference = (): JSX.Element => {
   const { state } = useConferenceContext()
 
-  // private channelDisplayName: string
-
   const pipRef = React.createRef<HTMLDivElement>()
 
   const handleTogglePip = (): void => {
   }
 
+  const handleToggleMainVideo = (): void => {
+
+  }
+
   return (
     <div className='Conference'>
-      {/* <div className='header'>{this.channelDisplayName} Room</div> */}
+      <div className='header'>{state.channel?.display_name} Room</div>
       <div className='conference-container'>
         {state.remoteStream != null && (
           <div className='video-container main'>
@@ -36,9 +38,10 @@ export const Conference = (): JSX.Element => {
           {state.remoteStream != null && (
             <div className='video-container secondary'>
               <Video srcObject={state.remoteStream} />
-              {/* <div className='exchange-panel' onClick={() => { this.onToggleMainVideo() }} data-tip='Exchange videos' data-for='tooltip-exchange'>
-                <FontAwesomeIcon icon={faExchange} />
-              </div> */}
+              <div className='exchange-panel' onClick={handleToggleMainVideo} data-tip='Exchange videos' data-for='tooltip-exchange'>
+                <Icon source={IconTypes.IconArrowRight} />
+                <Icon source={IconTypes.IconArrowLeft} />
+              </div>
               <ReactTooltip
                 id='tooltip-exchange'
                 place='bottom'

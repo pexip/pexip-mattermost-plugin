@@ -15,10 +15,11 @@ interface AppProps {
 }
 
 export const App = (props: AppProps): JSX.Element => {
-  const { state } = useConferenceContext()
+  const { setConfig, state } = useConferenceContext()
 
   useEffect(() => {
-    console.log('App launched')
+    console.log('Pexip Video Connect launched')
+    setConfig(props.config)
   }, [])
 
   let component

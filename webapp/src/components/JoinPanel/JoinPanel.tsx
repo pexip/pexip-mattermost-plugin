@@ -1,58 +1,50 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { getMattermostStore } from '../../utils'
 import { useConferenceContext } from '../../contexts/ConferenceContext/ConferenceContext'
+import type { Channel } from 'mattermost-redux/types/channels'
 
 import './JoinPanel.scss'
 
 export const JoinPanel = (): JSX.Element => {
   const { connect } = useConferenceContext()
 
-  // constructor (props: any) {
-  //   super(props)
-  //   const store = getMattermostStore()
-  //   const state = store.getState()
-  //   const channelId = state.entities.channels.currentChannelId
-  //   const channel = state.entities.channels.channels[channelId]
-  //   this.state = { channel }
-  //   // ConferenceManager.setChannel(channel)
-  // }
-
-  // private onConnect (): void {
-  //   // ConferenceManager.connect()
-  // }
-
-  // async componentDidMount (): Promise<void> {
-  //   const store = getMattermostStore()
-  //   store.subscribe(() => {
-  //     const state = store.getState()
-  //     const channelId = state.entities.channels.currentChannelId
-  //     if (this.state.channel.id !== channelId) {
-  //       const channel = state.entities.channels.channels[channelId]
-  //       this.setState({ channel })
-  //       // ConferenceManager.setChannel(channel)
-  //     }
-  //   })
-  // }
+  const [channel, setChannel] = useState<Channel>()
 
   const handleConnect = async (): Promise<void> => {
-    const conferenceAlias = ''
-    const displayName = 'Marcos'
-    await connect(conferenceAlias, displayName)
+    if (channel != null) {
+      await connect(channel)
+    } else {
+      console.error('Cannot get the current channel')
+    }
   }
 
-  const store = getMattermostStore()
-  const state = store.getState()
+  const refreshChannel = (): void => {
+    const store = getMattermostStore()
+    const state = store.getState()
+    const channelId = state.entities.channels.currentChannelId
+    if (channel?.id !== channelId) {
+      const channel = state.entities.channels.channels[channelId]
+      setChannel(channel)
+    }
+  }
 
-  const channelId = state.entities.channels.currentChannelId
-  const channel = state.entities.channels.channels[channelId]
+  useEffect(() => {
+    const store = getMattermostStore()
 
-  const isChannel = channel.team_id !== ''
+    refreshChannel()
+    const unsubscribe = store.subscribe(() => {
+      refreshChannel()
+    })
+    return unsubscribe
+  }, [])
+
+  const isChannel = channel?.team_id !== ''
 
   let component
   if (isChannel) {
     component = <>
-      <p>Connect to {'"' + channel.display_name + '"'} room? </p>
+      <p>Connect to {'"' + channel?.display_name + '"'} room? </p>
       <button onClick={ () => { handleConnect().catch((e) => { console.error(e) }) }}>
         Join conference
       </button>
