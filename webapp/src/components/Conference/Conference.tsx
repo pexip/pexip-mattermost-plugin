@@ -1,12 +1,12 @@
 import React from 'react'
 
-import { Toolbar } from './components/Toolbar/Toolbar'
-import ParticipantList from './components/ParticipantList/ParticipantList'
+import { Icon, IconTypes, Video } from '@pexip/components'
 import ReactTooltip from 'react-tooltip'
-import { useConferenceContext } from '../../contexts/ConferenceContext/ConferenceContext'
+import { useConferenceContext } from '@contexts/ConferenceContext/ConferenceContext'
+import { Toolbar } from './Toolbar/Toolbar'
+import ParticipantList from './ParticipantList/ParticipantList'
 
 import './Conference.scss'
-import { Icon, IconTypes, Video } from '@pexip/components'
 
 export const Conference = (): JSX.Element => {
   const { state } = useConferenceContext()

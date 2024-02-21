@@ -1,7 +1,7 @@
 import React from 'react'
 
 import type { Participant } from '@pexip/infinity'
-import { useConferenceContext } from '../../../../contexts/ConferenceContext/ConferenceContext'
+import { useConferenceContext } from '@contexts/ConferenceContext/ConferenceContext'
 
 import './ParticipantList.scss'
 
