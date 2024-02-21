@@ -13,7 +13,15 @@ export const Conference = (): JSX.Element => {
 
   const pipRef = React.createRef<HTMLDivElement>()
 
-  const handleTogglePip = (): void => {
+  const handleTogglePip = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
+    pipRef.current?.classList.toggle('closed')
+    const element = event.currentTarget as HTMLButtonElement
+    const closed = pipRef.current?.classList.contains('closed') ?? false
+    if (closed) {
+      element.setAttribute('data-tip', 'Show pip')
+    } else {
+      element.setAttribute('data-tip', 'Hide pip')
+    }
   }
 
   const handleToggleMainVideo = (): void => {
@@ -88,17 +96,6 @@ export const Conference = (): JSX.Element => {
 // private onToggleMainVideo (): void {
 //   ConferenceManager.toggleMainVideo()
 // }
-
-//   private onTogglePip (event: React.MouseEvent): void {
-//     this.pipRef.current?.classList.toggle('closed')
-//     const element = event.currentTarget as HTMLButtonElement
-//     const closed = this.pipRef.current?.classList.contains('closed') ?? false
-//     if (closed) {
-//       element.setAttribute('data-tip', 'Show pip')
-//     } else {
-//       element.setAttribute('data-tip', 'Hide pip')
-//     }
-//   }
 
 //   private onDisconnect (): void {
 //     this.setState({})
