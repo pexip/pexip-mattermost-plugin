@@ -1,57 +1,39 @@
 import React from 'react'
 
-import ReactTooltip from 'react-tooltip'
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-// import {
-//   faDesktop,
-//   faMicrophone,
-//   faMicrophoneSlash,
-//   faPowerOff,
-//   faVideo,
-//   faVideoSlash
-// } from '@fortawesome/free-solid-svg-icons'
-// import type { Subscription } from 'rxjs'
-// import { ConferenceManager } from '../../../services/conference-manager'
+import { Icon, IconTypes } from '@pexip/components'
+import { useConferenceContext } from '@contexts/ConferenceContext/ConferenceContext'
+import { Tooltip } from '@components/Tooltip/Tooltip'
 
 import './Toolbar.scss'
 
 export const Toolbar = (): JSX.Element => {
+  const { toggleMuteAudio, toggleMuteVideo, togglePresenting, disconnect, state } = useConferenceContext()
+  const { isAudioMuted, isVideoMuted, isPresenting } = state
+
   return (
     <div className='Toolbar'>
-      {/* <button data-tip={ ConferenceManager.isAudioMute() ? 'Unmute audio' : 'Mute audio'} data-for='tooltip-toolbar'
-        onClick={ () => { this.onToggleMuteAudio() } }>
-          <FontAwesomeIcon icon={ ConferenceManager.isAudioMute() ? faMicrophoneSlash : faMicrophone }/>
-      </button>
-      <button data-tip={ ConferenceManager.isVideoMute() ? 'Unmute video' : 'Mute video'} data-for='tooltip-toolbar'
-        onClick={ () => { this.onToggleMuteVideo() } }>
-          <FontAwesomeIcon icon={ ConferenceManager.isVideoMute() ? faVideoSlash : faVideo }/>
-      </button>
-      <button data-tip={(ConferenceManager.isSharingScreen() ? 'Stop' : 'Start') + ' sharing screen'} data-for='tooltip-toolbar'
-        onClick={ () => { this.onShareScreen() } } className={ConferenceManager.isSharingScreen() ? 'selected' : ''}>
-          <FontAwesomeIcon icon={ faDesktop }/>
-      </button>
-      <button className='disconnect' data-tip='Disconnect' data-for='tooltip-toolbar'
-        onClick={ () => { this.onDisconnect() } }>
-          <FontAwesomeIcon icon={ faPowerOff }/>
-      </button> */}
-      <ReactTooltip
-        id='tooltip-toolbar'
-        place='bottom'
-        effect='solid'
-        multiline={false}
-      />
+      <Tooltip text={ isAudioMuted ? 'Unmute audio' : 'Mute audio'}>
+        <button onClick={ () => { toggleMuteAudio().catch((e) => { console.error(e) }) }}>
+            <Icon source={ isAudioMuted ? IconTypes.IconMicrophoneOff : IconTypes.IconMicrophoneOn }/>
+        </button>
+      </Tooltip>
+      <Tooltip text={ isVideoMuted ? 'Unmute video' : 'Mute video'}>
+        <button onClick={ () => { toggleMuteVideo().catch((e) => { console.error(e) }) }}>
+            <Icon source={ isVideoMuted ? IconTypes.IconVideoOff : IconTypes.IconVideoOn }/>
+        </button>
+      </Tooltip>
+      <Tooltip text={(isPresenting ? 'Stop' : 'Start') + ' sharing screen'}>
+        <button onClick={ () => { togglePresenting().catch((e) => { console.error(e) }) }} className={state.isPresenting ? 'selected' : ''}>
+            <Icon source={ IconTypes.IconPresentationOn }/>
+        </button>
+      </Tooltip>
+      <Tooltip text='Disconnect'>
+        <button className='disconnect' onClick={() => { disconnect().catch((e) => { console.error(e) }) }}>
+            <Icon source={ IconTypes.IconLeave }/>
+        </button>
+      </Tooltip>
     </div>
   )
-
-  // private onToggleMuteAudio (): void {
-  //   ConferenceManager.toggleAudioMute()
-  //   this.setState({})
-  // }
-
-  // private onToggleMuteVideo (): void {
-  //   ConferenceManager.toggleVideoMute()
-  //   this.setState({})
-  // }
 
   // private onShareScreen (): void {
   //   ConferenceManager.shareScreen()
@@ -66,10 +48,5 @@ export const Toolbar = (): JSX.Element => {
   //     })
   //   }
   //   this.setState({})
-  // }
-
-  // private onDisconnect (): void {
-  //   ConferenceManager.disconnect()
-  //   this.props.onDisconnect()
   // }
 }

@@ -15,6 +15,8 @@
 
   .conference-container {
     position: relative;
+    display: flex;
+    flex-direction: column;
 
     .video-container {
       position: relative;
@@ -46,25 +48,29 @@
       right: 0;
       transition: transform .2s ease-in-out;
 
-      .toggle-pip-button {
-        color: white;
-        background-color: rgba(125,125,125, 0.5);
-        border-radius: 50%;
-        margin: 5px;
-        width: 32px;
-        height: 32px;
-        cursor: pointer;
-        font-size: 18px;
-        align-self: center;
-        opacity: 0.7;
-        border-width: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        transition: opacity transform .2s ease-in-out;
+      .TogglePipTooltipContainer {
+        height: fit-content;
 
-        &:hover {
-          opacity: 1;
+        .toggle-pip-button {
+          color: white;
+          background-color: rgba(125,125,125, 0.5);
+          border-radius: 50%;
+          margin: 5px;
+          width: 32px;
+          height: 32px;
+          cursor: pointer;
+          font-size: 18px;
+          align-self: center;
+          opacity: 0.7;
+          border-width: 0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          transition: opacity transform .2s ease-in-out;
+
+          &:hover {
+            opacity: 1;
+          }
         }
       }
 
@@ -76,23 +82,44 @@
         }
       }
 
-      .secondary .exchange-panel {
-        position: absolute;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(255, 255, 255, 0.3);
-        justify-content: center;
-        display: flex;
-        align-items: center;
-        color: white;
-        cursor: pointer;
-        opacity: 0;
-        transition: opacity .2s ease-in-out;
-        right: 0;
+      .secondary {
 
-        &:hover {
-          opacity: 1;
+        .SwapVideosTooltipContainer {
+          width: 100%;
+          height: 100%;
+          position: absolute;
+          left: 0;
+          top: 0;
+
+          > div {
+            width: 100%;
+            height: 100%;
+
+            .exchange-panel {
+              position: absolute;
+              top: 0;
+              width: 100%;
+              height: 100%;
+              background-color: rgba(255, 255, 255, 0.3);
+              justify-content: center;
+              display: flex;
+              align-items: center;
+              color: white;
+              cursor: pointer;
+              opacity: 0;
+              transition: opacity .2s ease-in-out;
+              right: 0;
+              flex-direction: column;
+
+              > svg {
+                margin: -4px 0;
+              }
+  
+              &:hover {
+                opacity: 1;
+              }
+            }
+          }
         }
       }
 
@@ -101,13 +128,6 @@
         -webkit-transform:rotateY(180deg); /* Safari and Chrome */
         -moz-transform:rotateY(180deg); /* Firefox */
       }
-    }
-
-    #tooltip-exchange, #tooltip-toggle-pip {
-      opacity: 1;
-      font-size: 12px;
-      font-weight: bold;
-      padding: 6px;
     }
   }
 }

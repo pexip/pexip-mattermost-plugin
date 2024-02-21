@@ -1,12 +1,12 @@
 import React from 'react'
 
 import { Icon, IconTypes, Video } from '@pexip/components'
-import ReactTooltip from 'react-tooltip'
 import { useConferenceContext } from '@contexts/ConferenceContext/ConferenceContext'
 import { Toolbar } from './Toolbar/Toolbar'
 import ParticipantList from './ParticipantList/ParticipantList'
 
 import './Conference.scss'
+import { Tooltip } from '../Tooltip/Tooltip'
 
 export const Conference = (): JSX.Element => {
   const { state } = useConferenceContext()
@@ -15,13 +15,13 @@ export const Conference = (): JSX.Element => {
 
   const handleTogglePip = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
     pipRef.current?.classList.toggle('closed')
-    const element = event.currentTarget as HTMLButtonElement
-    const closed = pipRef.current?.classList.contains('closed') ?? false
-    if (closed) {
-      element.setAttribute('data-tip', 'Show pip')
-    } else {
-      element.setAttribute('data-tip', 'Hide pip')
-    }
+    // const element = event.currentTarget as HTMLButtonElement
+    // const closed = pipRef.current?.classList.contains('closed') ?? false
+    // if (closed) {
+    //   element.setAttribute('data-tip', 'Show pip')
+    // } else {
+    //   element.setAttribute('data-tip', 'Hide pip')
+    // }
   }
 
   const handleToggleMainVideo = (): void => {
@@ -46,30 +46,20 @@ export const Conference = (): JSX.Element => {
           {state.remoteStream != null && (
             <div className='video-container secondary'>
               <Video srcObject={state.remoteStream} />
-              <div className='exchange-panel' onClick={handleToggleMainVideo} data-tip='Exchange videos' data-for='tooltip-exchange'>
-                <Icon source={IconTypes.IconArrowRight} />
-                <Icon source={IconTypes.IconArrowLeft} />
-              </div>
-              <ReactTooltip
-                id='tooltip-exchange'
-                place='bottom'
-                effect='solid'
-                multiline={false}
-              />
+              <Tooltip text='Swap videos' position='bottomCenter' className='SwapVideosTooltipContainer'>
+                <div className='exchange-panel' onClick={handleToggleMainVideo}>
+                  <Icon source={IconTypes.IconArrowRight} />
+                  <Icon source={IconTypes.IconArrowLeft} />
+                </div>
+              </Tooltip>
             </div>
           )}
           {(state.localStream != null || state.remoteStream != null) && (
-            <>
-              <button className='toggle-pip-button' onClick={handleTogglePip} data-tip='Hide pip' data-for='tooltip-toggle-pip'>
+            <Tooltip text='Hide pip' position='bottomCenter' className='TogglePipTooltipContainer'>
+              <button className='toggle-pip-button' onClick={handleTogglePip}>
                 <Icon source={IconTypes.IconArrowRight}/>
               </button>
-              <ReactTooltip
-                id='tooltip-toggle-pip'
-                place='bottom'
-                effect='solid'
-                multiline={false}
-              />
-            </>
+            </Tooltip>
           )}
         </div>
 

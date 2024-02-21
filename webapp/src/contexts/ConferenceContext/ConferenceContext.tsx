@@ -12,6 +12,9 @@ interface ContextType {
   setConfig: (config: ConferenceConfig) => void
   connect: (channel: Channel) => Promise<void>
   disconnect: () => Promise<void>
+  toggleMuteAudio: () => Promise<void>
+  toggleMuteVideo: () => Promise<void>
+  togglePresenting: () => Promise<void>
   state: ConferenceState
 }
 
@@ -23,7 +26,11 @@ const initialState: ConferenceState = {
   client: null,
   localStream: null,
   remoteStream: null,
+  presentationStream: null,
   connectionState: ConnectionState.Disconnected,
+  isAudioMuted: false,
+  isVideoMuted: false,
+  isPresenting: false,
   participants: []
 }
 
@@ -47,6 +54,9 @@ const ConferenceContextProvider = (props: any): JSX.Element => {
       }, dispatch).catch((e) => { console.error(e) })
     },
     disconnect: async () => { disconnect(dispatch).catch((e) => { console.error(e) }) },
+    toggleMuteAudio: async () => {},
+    toggleMuteVideo: async () => {},
+    togglePresenting: async () => {},
     state
   }), [state])
 

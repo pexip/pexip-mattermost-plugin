@@ -9,7 +9,11 @@ interface ConferenceState {
   client: Client | null
   localStream: MediaStream | null
   remoteStream: MediaStream | null
+  presentationStream: MediaStream | null
   connectionState: ConnectionState
+  isAudioMuted: boolean
+  isVideoMuted: boolean
+  isPresenting: boolean
   participants: Participant[]
 }
 

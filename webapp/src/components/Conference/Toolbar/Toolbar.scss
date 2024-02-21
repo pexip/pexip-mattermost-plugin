@@ -2,13 +2,13 @@
   display: flex;
   background: var(--global-header-background);
   padding: 5px;
+  justify-content: space-around;
 
   button {
-    width: 32px;
-    height: 32px;
+    padding: 0.2em;
     border-width: 0;
     border-radius: 4px;
-    padding: 6px;
+    padding: 6px 10px;
     margin: auto;
     background-color: transparent;
     cursor: pointer;
@@ -30,12 +30,5 @@
     svg {
       font-size: 18px;
     }
-  }
-
-  #tooltip-toolbar {
-    opacity: 1;
-    font-size: 12px;
-    font-weight: bold;
-    padding: 6px;
   }
 }

@@ -14,6 +14,8 @@ import manifest from '../../plugin.json'
 import type { ConferenceConfig } from './types/ConferenceConfig'
 import { ConferenceContextProvider } from './contexts/ConferenceContext/ConferenceContext'
 
+import '@pexip/components/dist/style.css'
+
 const pluginId = manifest.id
 const icon = <i id='pexip-vmr-plugin-button' className='icon fa fa-video-camera'/>
 const dropDownText = 'Pexip Video Connect'
