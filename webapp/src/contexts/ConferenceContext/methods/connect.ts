@@ -24,6 +24,17 @@ export const connect = async (params: ConnectParams, dispatch: React.Dispatch<Co
     })
   })
 
+  clientSignals.onParticipants.add((event) => {
+    if (event.id === 'main') {
+      dispatch({
+        type: ConferenceActionType.Participants,
+        body: {
+          participants: event.participants
+        }
+      })
+    }
+  })
+
   const localStream = await navigator.mediaDevices.getUserMedia({
     audio: true,
     video: true

@@ -5,6 +5,7 @@ export enum ConferenceActionType {
   Disconnected,
   Error,
   RemoteStream,
+  Participants,
 }
 
 export interface ConferenceAction {

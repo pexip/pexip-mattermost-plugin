@@ -3,7 +3,7 @@ import React from 'react'
 import { Icon, IconTypes, Video } from '@pexip/components'
 import { useConferenceContext } from '@contexts/ConferenceContext/ConferenceContext'
 import { Toolbar } from './Toolbar/Toolbar'
-import ParticipantList from './ParticipantList/ParticipantList'
+import { ParticipantList } from './ParticipantList/ParticipantList'
 
 import './Conference.scss'
 import { Tooltip } from '../Tooltip/Tooltip'

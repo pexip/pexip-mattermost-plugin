@@ -31,6 +31,13 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
         remoteStream: action.body.remoteStream
       }
     }
+    case ConferenceActionType.Participants: {
+      console.log(action.body.participants)
+      return {
+        ...prevState,
+        participants: action.body.participants
+      }
+    }
     default:
       return prevState
   }
