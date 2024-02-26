@@ -35,6 +35,15 @@ export const connect = async (params: ConnectParams, dispatch: React.Dispatch<Co
     }
   })
 
+  callSignals.onRemotePresentationStream.add((presentationStream) => {
+    dispatch({
+      type: ConferenceActionType.RemotePresentationStream,
+      body: {
+        presentationStream
+      }
+    })
+  })
+
   const localStream = await navigator.mediaDevices.getUserMedia({
     audio: true,
     video: true

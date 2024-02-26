@@ -7,6 +7,9 @@ import { ConnectionState } from '../../types/ConnectionState'
 import type { ConferenceConfig } from '../../types/ConferenceConfig'
 import { ConferenceActionType } from './ConferenceAction'
 import type { Channel } from 'mattermost-redux/types/channels'
+import { toggleMuteAudio } from './methods/toggleMuteAudio'
+import { toggleMuteVideo } from './methods/toggleMuteVideo'
+import { toggleMutePresenting } from './methods/togglePresenting'
 
 interface ContextType {
   setConfig: (config: ConferenceConfig) => void
@@ -15,6 +18,7 @@ interface ContextType {
   toggleMuteAudio: () => Promise<void>
   toggleMuteVideo: () => Promise<void>
   togglePresenting: () => Promise<void>
+  swapVideos: () => void
   state: ConferenceState
 }
 
@@ -24,13 +28,14 @@ const initialState: ConferenceState = {
   config: null,
   channel: null,
   client: null,
-  localStream: null,
-  remoteStream: null,
-  presentationStream: null,
+  localStream: undefined,
+  remoteStream: undefined,
+  presentationStream: undefined,
   connectionState: ConnectionState.Disconnected,
-  isAudioMuted: false,
-  isVideoMuted: false,
-  isPresenting: false,
+  audioMuted: false,
+  videoMuted: false,
+  presenting: false,
+  presentationInMain: false,
   participants: []
 }
 
@@ -54,9 +59,14 @@ const ConferenceContextProvider = (props: any): JSX.Element => {
       }, dispatch).catch((e) => { console.error(e) })
     },
     disconnect: async () => { disconnect(dispatch).catch((e) => { console.error(e) }) },
-    toggleMuteAudio: async () => {},
-    toggleMuteVideo: async () => {},
-    togglePresenting: async () => {},
+    toggleMuteAudio: async () => { toggleMuteAudio(state, dispatch).catch((e) => { console.error(e) }) },
+    toggleMuteVideo: async () => { toggleMuteVideo(state, dispatch).catch((e) => { console.error(e) }) },
+    togglePresenting: async () => { toggleMutePresenting(state, dispatch).catch((e) => { console.error(e) }) },
+    swapVideos: async () => {
+      dispatch({
+        type: ConferenceActionType.SwapVideos
+      })
+    },
     state
   }), [state])
 
@@ -66,7 +76,7 @@ const ConferenceContextProvider = (props: any): JSX.Element => {
 const useConferenceContext = (): ContextType => {
   const context = useContext(Context)
   if (context == null) {
-    throw new Error('useConferenceContext has to be used within <ConferenceContextProvider')
+    throw new Error('useConferenceContext has to be used within <ConferenceContextProvider>')
   }
   return context
 }

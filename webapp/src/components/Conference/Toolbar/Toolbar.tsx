@@ -8,22 +8,22 @@ import './Toolbar.scss'
 
 export const Toolbar = (): JSX.Element => {
   const { toggleMuteAudio, toggleMuteVideo, togglePresenting, disconnect, state } = useConferenceContext()
-  const { isAudioMuted, isVideoMuted, isPresenting } = state
+  const { audioMuted, videoMuted, presenting } = state
 
   return (
     <div className='Toolbar'>
-      <Tooltip text={ isAudioMuted ? 'Unmute audio' : 'Mute audio'}>
+      <Tooltip text={ audioMuted ? 'Unmute audio' : 'Mute audio'}>
         <button onClick={ () => { toggleMuteAudio().catch((e) => { console.error(e) }) }}>
-            <Icon source={ isAudioMuted ? IconTypes.IconMicrophoneOff : IconTypes.IconMicrophoneOn }/>
+            <Icon source={ audioMuted ? IconTypes.IconMicrophoneOff : IconTypes.IconMicrophoneOn }/>
         </button>
       </Tooltip>
-      <Tooltip text={ isVideoMuted ? 'Unmute video' : 'Mute video'}>
+      <Tooltip text={ videoMuted ? 'Unmute video' : 'Mute video'}>
         <button onClick={ () => { toggleMuteVideo().catch((e) => { console.error(e) }) }}>
-            <Icon source={ isVideoMuted ? IconTypes.IconVideoOff : IconTypes.IconVideoOn }/>
+            <Icon source={ videoMuted ? IconTypes.IconVideoOff : IconTypes.IconVideoOn }/>
         </button>
       </Tooltip>
-      <Tooltip text={(isPresenting ? 'Stop' : 'Start') + ' sharing screen'}>
-        <button onClick={ () => { togglePresenting().catch((e) => { console.error(e) }) }} className={state.isPresenting ? 'selected' : ''}>
+      <Tooltip text={(presenting ? 'Stop' : 'Start') + ' sharing screen'}>
+        <button onClick={ () => { togglePresenting().catch((e) => { console.error(e) }) }} className={presenting ? 'selected' : ''}>
             <Icon source={ IconTypes.IconPresentationOn }/>
         </button>
       </Tooltip>
@@ -34,19 +34,4 @@ export const Toolbar = (): JSX.Element => {
       </Tooltip>
     </div>
   )
-
-  // private onShareScreen (): void {
-  //   ConferenceManager.shareScreen()
-  //   // If the other end start present, hide the update the sharing button state
-  //   this.subscriptionMainStream?.unsubscribe()
-  //   if (ConferenceManager.isSharingScreen()) {
-  //     this.subscriptionMainStream = ConferenceManager.mainStream$.subscribe(() => {
-  //       if (!ConferenceManager.isSharingScreen()) {
-  //         this.subscriptionMainStream.unsubscribe()
-  //         this.setState({})
-  //       }
-  //     })
-  //   }
-  //   this.setState({})
-  // }
 }

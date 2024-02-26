@@ -32,10 +32,43 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
       }
     }
     case ConferenceActionType.Participants: {
-      console.log(action.body.participants)
       return {
         ...prevState,
         participants: action.body.participants
+      }
+    }
+    case ConferenceActionType.ToggleMuteAudio: {
+      return {
+        ...prevState,
+        audioMuted: !prevState.audioMuted
+      }
+    }
+    case ConferenceActionType.ToggleMuteVideo: {
+      return {
+        ...prevState,
+        videoMuted: !prevState.videoMuted
+      }
+    }
+    case ConferenceActionType.TogglePresenting: {
+      return {
+        ...prevState,
+        presenting: action.body.presenting,
+        presentationStream: action.body.presentationStream,
+        presentationInMain: false
+      }
+    }
+    case ConferenceActionType.RemotePresentationStream: {
+      return {
+        ...prevState,
+        presenting: false,
+        presentationStream: action.body.presentationStream,
+        presentationInMain: true
+      }
+    }
+    case ConferenceActionType.SwapVideos: {
+      return {
+        ...prevState,
+        presentationInMain: !prevState.presentationInMain
       }
     }
     default:

@@ -6,6 +6,11 @@ export enum ConferenceActionType {
   Error,
   RemoteStream,
   Participants,
+  ToggleMuteAudio,
+  ToggleMuteVideo,
+  TogglePresenting,
+  RemotePresentationStream,
+  SwapVideos
 }
 
 export interface ConferenceAction {

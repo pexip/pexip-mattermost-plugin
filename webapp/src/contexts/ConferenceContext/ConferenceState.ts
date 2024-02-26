@@ -7,13 +7,14 @@ interface ConferenceState {
   config: ConferenceConfig | null
   channel: Channel | null
   client: Client | null
-  localStream: MediaStream | null
-  remoteStream: MediaStream | null
-  presentationStream: MediaStream | null
+  localStream: MediaStream | undefined
+  remoteStream: MediaStream | undefined
+  presentationStream: MediaStream | undefined
   connectionState: ConnectionState
-  isAudioMuted: boolean
-  isVideoMuted: boolean
-  isPresenting: boolean
+  audioMuted: boolean
+  videoMuted: boolean
+  presenting: boolean
+  presentationInMain: boolean
   participants: Participant[]
 }
 

@@ -15,5 +15,3 @@ export const ParticipantList = (): JSX.Element => {
     </ul>
   </div>
 }
-
-export default ParticipantList

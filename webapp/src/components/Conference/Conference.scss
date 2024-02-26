@@ -49,7 +49,8 @@
       transition: transform .2s ease-in-out;
 
       .TogglePipTooltipContainer {
-        height: fit-content;
+        display: flex;
+        align-items: center;
 
         .toggle-pip-button {
           color: white;
