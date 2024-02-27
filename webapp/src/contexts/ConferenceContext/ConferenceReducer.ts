@@ -14,7 +14,8 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
       return {
         ...prevState,
         connectionState: ConnectionState.Connecting,
-        channel: action.body.channel
+        channel: action.body.channel,
+        errorMessage: ''
       }
     }
     case ConferenceActionType.Connected: {
@@ -23,6 +24,13 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
         connectionState: ConnectionState.Connected,
         client: action.body.client,
         localStream: action.body.localStream
+      }
+    }
+    case ConferenceActionType.Error: {
+      return {
+        ...prevState,
+        connectionState: ConnectionState.Error,
+        errorMessage: action.body.error
       }
     }
     case ConferenceActionType.RemoteStream: {

@@ -16,6 +16,7 @@ interface ConferenceState {
   presenting: boolean
   presentationInMain: boolean
   participants: Participant[]
+  errorMessage: string
 }
 
 export type { ConferenceState }

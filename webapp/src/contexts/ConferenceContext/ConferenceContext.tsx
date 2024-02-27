@@ -36,7 +36,8 @@ const initialState: ConferenceState = {
   videoMuted: false,
   presenting: false,
   presentationInMain: false,
-  participants: []
+  participants: [],
+  errorMessage: ''
 }
 
 const ConferenceContextProvider = (props: any): JSX.Element => {
