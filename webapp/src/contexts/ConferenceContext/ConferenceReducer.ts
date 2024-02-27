@@ -26,6 +26,13 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
         localStream: action.body.localStream
       }
     }
+    case ConferenceActionType.Disconnected: {
+      return {
+        ...prevState,
+        connectionState: ConnectionState.Disconnected,
+        errorMessage: ''
+      }
+    }
     case ConferenceActionType.Error: {
       return {
         ...prevState,

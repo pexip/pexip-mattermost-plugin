@@ -59,7 +59,7 @@ const ConferenceContextProvider = (props: any): JSX.Element => {
         displayName: state.config?.displayName ?? 'User'
       }, dispatch).catch((e) => { console.error(e) })
     },
-    disconnect: async () => { disconnect(dispatch).catch((e) => { console.error(e) }) },
+    disconnect: async () => { disconnect(state, dispatch).catch((e) => { console.error(e) }) },
     toggleMuteAudio: async () => { toggleMuteAudio(state, dispatch).catch((e) => { console.error(e) }) },
     toggleMuteVideo: async () => { toggleMuteVideo(state, dispatch).catch((e) => { console.error(e) }) },
     togglePresenting: async () => { toggleMutePresenting(state, dispatch).catch((e) => { console.error(e) }) },

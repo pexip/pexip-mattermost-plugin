@@ -56,7 +56,7 @@ export const Conference = (): JSX.Element => {
           )}
 
           {(localStream != null || presentationStream != null) && (
-            <Tooltip text={pipHidden ? 'Show videos' : 'Hide videos'} position='bottomCenter' className='TogglePipTooltipContainer'>
+            <Tooltip text={pipHidden ? 'Show videos' : 'Hide videos'} position='bottomLeft' className='TogglePipTooltipContainer'>
               <button className='toggle-pip-button' onClick={handleTogglePip}>
                 <Icon source={IconTypes.IconArrowRight}/>
               </button>

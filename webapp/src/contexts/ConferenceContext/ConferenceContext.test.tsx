@@ -194,7 +194,7 @@ describe('ConferenceContext', () => {
     })
 
     it('should change the connectionState to "Error" if something fails', async () => {
-      const error = 'Cannot use the camera'
+      const error = { message: 'Cannot use the camera' }
       mockGetUserMedia.mockRejectedValue(error)
       render(
         <ConferenceContextProvider>
@@ -208,7 +208,7 @@ describe('ConferenceContext', () => {
       const connectionState = screen.getByTestId('connectionState')
       const errorMessage = screen.getByTestId('errorMessage')
       expect(parseInt(connectionState.innerHTML)).toBe(ConnectionState.Error)
-      expect(errorMessage.innerHTML).toBe(error)
+      expect(errorMessage.innerHTML).toBe(error.message)
     })
 
     it('should return "Cannot connect" message if response.status != 200', async () => {

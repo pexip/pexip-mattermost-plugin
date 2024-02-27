@@ -47,12 +47,11 @@ export const connect = async (params: ConnectParams, dispatch: React.Dispatch<Co
   let localStream
   let response
   try {
-    console.log(1)
     localStream = await navigator.mediaDevices.getUserMedia({
       audio: true,
       video: true
     })
-    console.log(2)
+
     response = await client.call({
       host,
       conferenceAlias,
@@ -62,12 +61,11 @@ export const connect = async (params: ConnectParams, dispatch: React.Dispatch<Co
       callType: ClientCallType.AudioVideo,
       mediaStream: localStream
     })
-    console.log(3)
   } catch (e) {
     dispatch({
       type: ConferenceActionType.Error,
       body: {
-        error: e
+        error: e.message
       }
     })
     return

@@ -1,17 +1,14 @@
 import React from 'react'
 
 import './ErrorPanel.scss'
+import { useConferenceContext } from 'src/contexts/ConferenceContext/ConferenceContext'
 
-interface ErrorPanelProps {
-  message: string
-  onGoBack: () => void
-}
-
-const ErrorPanel = (props: ErrorPanelProps): JSX.Element => {
+const ErrorPanel = (): JSX.Element => {
+  const { state, disconnect } = useConferenceContext()
   return (
     <div className="ErrorPanel">
-      <p>{props.message}</p>
-      <button onClick={props.onGoBack}>Go back</button>
+      <p>{state.errorMessage}</p>
+      <button onClick={() => { disconnect().catch((e) => { console.error(e) }) }}>Go back</button>
     </div>
   )
 }
