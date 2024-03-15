@@ -24,10 +24,12 @@ class MediaStream {
 window.MediaStream = MediaStream
 
 const mockGetUserMedia = jest.fn()
+const mockGetDisplayMedia = jest.fn()
 
 Object.defineProperty(global.navigator, 'mediaDevices', {
   value: {
-    getUserMedia: mockGetUserMedia
+    getUserMedia: mockGetUserMedia,
+    getDisplayMedia: mockGetDisplayMedia
   }
 })
 
@@ -87,7 +89,8 @@ const ConferenceContextTester = (): JSX.Element => {
     connect,
     disconnect,
     toggleMuteAudio,
-    toggleMuteVideo
+    toggleMuteVideo,
+    togglePresenting
   } = useConferenceContext()
 
   const handleSetConfig = (): void => {
@@ -110,6 +113,10 @@ const ConferenceContextTester = (): JSX.Element => {
     toggleMuteVideo().catch((e) => { console.error(e) })
   }
 
+  const handlePresenting = (): void => {
+    togglePresenting().catch((e) => { console.error(e) })
+  }
+
   return (
     <div data-testid='ConferenceContextTester'>
       <span data-testid='config'>{JSON.stringify(state.config)}</span>
@@ -118,17 +125,20 @@ const ConferenceContextTester = (): JSX.Element => {
       <span data-testid='errorMessage'>{state.errorMessage}</span>
       <span data-testid='audioMuted'>{state.audioMuted ? 'true' : 'false'}</span>
       <span data-testid='videoMuted'>{state.videoMuted ? 'true' : 'false'}</span>
+      <span data-testid='presenting'>{state.presenting ? 'true' : 'false'}</span>
       <button data-testid='buttonSetConfig' onClick={handleSetConfig} />
       <button data-testid='buttonConnect' onClick={handleConnect} />
       <button data-testid='buttonDisconnect' onClick={handleDisconnect} />
       <button data-testid='buttonToggleMuteAudio' onClick={handleMuteAudio} />
       <button data-testid='buttonToggleMuteVideo' onClick={handleMuteVideo} />
+      <button data-testid='buttonTogglePresenting' onClick={handlePresenting} />
     </div>
   )
 }
 
 beforeEach(() => {
   mockGetUserMedia.mockReturnValue(new MediaStream())
+  mockGetDisplayMedia.mockClear()
   mockCall.mockReturnValue({ status: 200 })
   mockMuteAudio.mockClear()
   mockMuteVideo.mockClear()
@@ -452,7 +462,60 @@ describe('ConferenceContext', () => {
   })
 
   describe('togglePresenting', () => {
+    it('should have the value "presenting" to "false" at the beginning', () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      const presenting = screen.getByTestId('presenting')
+      expect(presenting.innerHTML).toBe('false')
+    })
 
+    it('should change the value "presenting" to "true" when triggered', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonTogglePresenting')
+        fireEvent.click(button)
+      })
+      const presenting = screen.getByTestId('presenting')
+      expect(presenting.innerHTML).toBe('true')
+    })
+
+    it('should change the value "presenting" to "false" when triggered twice', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonTogglePresenting')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonTogglePresenting')
+        fireEvent.click(button)
+      })
+      const presenting = screen.getByTestId('presenting')
+      expect(presenting.innerHTML).toBe('false')
+    })
+
+    it('should trigger "getDisplayMedia" when called', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonTogglePresenting')
+        fireEvent.click(button)
+      })
+      expect(mockGetDisplayMedia).toHaveBeenCalledTimes(1)
+    })
   })
 
   describe('swapVideos', () => {
