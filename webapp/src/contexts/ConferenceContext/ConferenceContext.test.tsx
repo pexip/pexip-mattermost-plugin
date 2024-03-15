@@ -32,6 +32,9 @@ Object.defineProperty(global.navigator, 'mediaDevices', {
 })
 
 const mockCall = jest.fn()
+const mockDisconnect = jest.fn()
+const mockMuteAudio = jest.fn()
+const mockMuteVideo = jest.fn()
 jest.mock('@pexip/infinity', () => ({
   createInfinityClientSignals: () => ({
     onParticipants: { add: jest.fn() }
@@ -41,7 +44,10 @@ jest.mock('@pexip/infinity', () => ({
     onRemotePresentationStream: { add: jest.fn() }
   }),
   createInfinityClient: () => ({
-    call: mockCall
+    call: mockCall,
+    disconnect: mockDisconnect,
+    mute: mockMuteAudio,
+    muteVideo: mockMuteVideo
   }),
   ClientCallType: {
     AudioVideo: 0
@@ -75,7 +81,14 @@ const mockChannel: Channel = {
 }
 
 const ConferenceContextTester = (): JSX.Element => {
-  const { state, setConfig, connect } = useConferenceContext()
+  const {
+    state,
+    setConfig,
+    connect,
+    disconnect,
+    toggleMuteAudio,
+    toggleMuteVideo
+  } = useConferenceContext()
 
   const handleSetConfig = (): void => {
     setConfig(mockConfig)
@@ -85,14 +98,31 @@ const ConferenceContextTester = (): JSX.Element => {
     connect(mockChannel).catch((e) => { console.error(e) })
   }
 
+  const handleDisconnect = (): void => {
+    disconnect().catch((e) => { console.error(e) })
+  }
+
+  const handleMuteAudio = (): void => {
+    toggleMuteAudio().catch((e) => { console.error(e) })
+  }
+
+  const handleMuteVideo = (): void => {
+    toggleMuteVideo().catch((e) => { console.error(e) })
+  }
+
   return (
     <div data-testid='ConferenceContextTester'>
       <span data-testid='config'>{JSON.stringify(state.config)}</span>
       <span data-testid='connectionState'>{state.connectionState}</span>
       <span data-testid='channel'>{JSON.stringify(state.channel)}</span>
       <span data-testid='errorMessage'>{state.errorMessage}</span>
+      <span data-testid='audioMuted'>{state.audioMuted ? 'true' : 'false'}</span>
+      <span data-testid='videoMuted'>{state.videoMuted ? 'true' : 'false'}</span>
       <button data-testid='buttonSetConfig' onClick={handleSetConfig} />
       <button data-testid='buttonConnect' onClick={handleConnect} />
+      <button data-testid='buttonDisconnect' onClick={handleDisconnect} />
+      <button data-testid='buttonToggleMuteAudio' onClick={handleMuteAudio} />
+      <button data-testid='buttonToggleMuteVideo' onClick={handleMuteVideo} />
     </div>
   )
 }
@@ -100,6 +130,8 @@ const ConferenceContextTester = (): JSX.Element => {
 beforeEach(() => {
   mockGetUserMedia.mockReturnValue(new MediaStream())
   mockCall.mockReturnValue({ status: 200 })
+  mockMuteAudio.mockClear()
+  mockMuteVideo.mockClear()
 })
 
 describe('ConferenceContext', () => {
@@ -163,13 +195,13 @@ describe('ConferenceContext', () => {
       expect(parseInt(connectionState.innerHTML)).toBe(ConnectionState.Connecting)
     })
 
-    it('should set the "channel" in the state while establishing the call', () => {
+    it('should set the "channel" in the state while establishing the call', async () => {
       render(
         <ConferenceContextProvider>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
-      act(() => {
+      await act(async () => {
         const button = screen.getByTestId('buttonConnect')
         fireEvent.click(button)
       })
@@ -230,15 +262,193 @@ describe('ConferenceContext', () => {
   })
 
   describe('disconnect', () => {
-
+    it('should change the connectionState to "Disconnected"', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonConnect')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonDisconnect')
+        fireEvent.click(button)
+      })
+      const connectionState = screen.getByTestId('connectionState')
+      const errorMessage = screen.getByTestId('errorMessage')
+      expect(parseInt(connectionState.innerHTML)).toBe(ConnectionState.Disconnected)
+      expect(errorMessage.innerHTML).toBe('')
+    })
   })
 
   describe('toggleMuteAudio', () => {
+    it('should have the initial value to "false"', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      const muted = screen.getByTestId('audioMuted')
+      expect(muted.innerHTML).toBe('false')
+    })
 
+    it('should change to "true" when triggered', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonToggleMuteAudio')
+        fireEvent.click(button)
+      })
+      const muted = screen.getByTestId('audioMuted')
+      expect(muted.innerHTML).toBe('true')
+    })
+
+    it('should change to "false" when triggered twice', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonToggleMuteAudio')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonToggleMuteAudio')
+        fireEvent.click(button)
+      })
+      const muted = screen.getByTestId('audioMuted')
+      expect(muted.innerHTML).toBe('false')
+    })
+
+    it('should call "client.mute" with the new value', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonConnect')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonToggleMuteAudio')
+        fireEvent.click(button)
+      })
+      expect(mockMuteAudio).toHaveBeenCalledTimes(1)
+      expect(mockMuteAudio).toHaveBeenCalledWith({ mute: true })
+    })
+
+    it('should call "client.mute" with the new value when called twice', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonConnect')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonToggleMuteAudio')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonToggleMuteAudio')
+        fireEvent.click(button)
+      })
+      expect(mockMuteAudio).toHaveBeenCalledTimes(2)
+      expect(mockMuteAudio).toHaveBeenCalledWith({ mute: false })
+    })
   })
 
   describe('toggleMuteVideo', () => {
+    it('should have the initial value to "false"', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      const muted = screen.getByTestId('videoMuted')
+      expect(muted.innerHTML).toBe('false')
+    })
 
+    it('should change to "true" when triggered', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonToggleMuteVideo')
+        fireEvent.click(button)
+      })
+      const muted = screen.getByTestId('videoMuted')
+      expect(muted.innerHTML).toBe('true')
+    })
+
+    it('should change to "false" when triggered twice', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonToggleMuteVideo')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonToggleMuteVideo')
+        fireEvent.click(button)
+      })
+      const muted = screen.getByTestId('videoMuted')
+      expect(muted.innerHTML).toBe('false')
+    })
+
+    it('should call "client.muteVideo" with the new value', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonConnect')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonToggleMuteVideo')
+        fireEvent.click(button)
+      })
+      expect(mockMuteVideo).toHaveBeenCalledTimes(1)
+      expect(mockMuteVideo).toHaveBeenCalledWith({ muteVideo: true })
+    })
+
+    it('should call "client.muteVideo" with the new value when called twice', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonConnect')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonToggleMuteVideo')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonToggleMuteVideo')
+        fireEvent.click(button)
+      })
+      expect(mockMuteVideo).toHaveBeenCalledTimes(2)
+      expect(mockMuteVideo).toHaveBeenCalledWith({ muteVideo: false })
+    })
   })
 
   describe('togglePresenting', () => {
