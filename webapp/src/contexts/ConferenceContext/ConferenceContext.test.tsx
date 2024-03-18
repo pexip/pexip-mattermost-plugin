@@ -90,7 +90,8 @@ const ConferenceContextTester = (): JSX.Element => {
     disconnect,
     toggleMuteAudio,
     toggleMuteVideo,
-    togglePresenting
+    togglePresenting,
+    swapVideos
   } = useConferenceContext()
 
   const handleSetConfig = (): void => {
@@ -117,6 +118,10 @@ const ConferenceContextTester = (): JSX.Element => {
     togglePresenting().catch((e) => { console.error(e) })
   }
 
+  const handleSwapVideos = (): void => {
+    swapVideos()
+  }
+
   return (
     <div data-testid='ConferenceContextTester'>
       <span data-testid='config'>{JSON.stringify(state.config)}</span>
@@ -126,12 +131,14 @@ const ConferenceContextTester = (): JSX.Element => {
       <span data-testid='audioMuted'>{state.audioMuted ? 'true' : 'false'}</span>
       <span data-testid='videoMuted'>{state.videoMuted ? 'true' : 'false'}</span>
       <span data-testid='presenting'>{state.presenting ? 'true' : 'false'}</span>
+      <span data-testid='presentationInMain'>{state.presentationInMain ? 'true' : 'false'}</span>
       <button data-testid='buttonSetConfig' onClick={handleSetConfig} />
       <button data-testid='buttonConnect' onClick={handleConnect} />
       <button data-testid='buttonDisconnect' onClick={handleDisconnect} />
       <button data-testid='buttonToggleMuteAudio' onClick={handleMuteAudio} />
       <button data-testid='buttonToggleMuteVideo' onClick={handleMuteVideo} />
       <button data-testid='buttonTogglePresenting' onClick={handlePresenting} />
+      <button data-testid='buttonSwapVideos' onClick={handleSwapVideos} />
     </div>
   )
 }
@@ -519,6 +526,84 @@ describe('ConferenceContext', () => {
   })
 
   describe('swapVideos', () => {
+    it('should have "presentationInMain" to "false" by default', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      const presentationInMain = screen.getByTestId('presentationInMain')
+      expect(presentationInMain.innerHTML).toBe('false')
+    })
 
+    it('should have "presentationInMain" to "false" when enable presentation by button and true before', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonSwapVideos')
+        fireEvent.click(button)
+      })
+      const presentationInMain = screen.getByTestId('presentationInMain')
+      expect(presentationInMain.innerHTML).toBe('true')
+      await act(async () => {
+        const button = screen.getByTestId('buttonTogglePresenting')
+        fireEvent.click(button)
+      })
+      expect(presentationInMain.innerHTML).toBe('false')
+    })
+
+    it('should have "presentationInMain" to "true" when clicked once', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonSwapVideos')
+        fireEvent.click(button)
+      })
+      const presentationInMain = screen.getByTestId('presentationInMain')
+      expect(presentationInMain.innerHTML).toBe('true')
+    })
+
+    it('should have "presentationInMain" to "true" when clicked twice', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonSwapVideos')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonSwapVideos')
+        fireEvent.click(button)
+      })
+      const presentationInMain = screen.getByTestId('presentationInMain')
+      expect(presentationInMain.innerHTML).toBe('false')
+    })
+
+    it('should have "presentationInMain" to "false" when enable presentation by button and true before', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonSwapVideos')
+        fireEvent.click(button)
+      })
+      const presentationInMain = screen.getByTestId('presentationInMain')
+      expect(presentationInMain.innerHTML).toBe('true')
+      await act(async () => {
+        const button = screen.getByTestId('buttonTogglePresenting')
+        fireEvent.click(button)
+      })
+      expect(presentationInMain.innerHTML).toBe('false')
+    })
   })
 })
