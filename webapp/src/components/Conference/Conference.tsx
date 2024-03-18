@@ -5,6 +5,7 @@ import { useConferenceContext } from '@contexts/ConferenceContext/ConferenceCont
 import { Toolbar } from './Toolbar/Toolbar'
 import { ParticipantList } from './ParticipantList/ParticipantList'
 import { Tooltip } from '../Tooltip/Tooltip'
+import { Selfview } from '@pexip/media-components'
 
 import './Conference.scss'
 
@@ -39,7 +40,7 @@ export const Conference = (): JSX.Element => {
 
           {localStream != null && (
             <div className='video-container local'>
-              <Video srcObject={localStream} />
+              <Selfview localMediaStream={localStream} isVideoInputMuted={false} shouldShowUserAvatar={false} username={''}/>
             </div>
           )}
 
