@@ -7,7 +7,7 @@
     "build": "webpack --mode=production",
     "lint": "eslint --ignore-pattern node_modules --ignore-pattern dist --ext .js --ext .jsx --ext tsx --ext ts . --quiet --cache",
     "check-types": "tsc --noEmit",
-    "test": "jest ./ --silent"
+    "test": "jest --silent"
   },
   "dependencies": {
     "@pexip/components": "^16.12.1",
@@ -48,7 +48,7 @@
     "sass": "^1.71.1",
     "sass-loader": "^14.1.1",
     "style-loader": "^3.3.4",
-    "ts-jest": "^29.1.2",
+    "ts-jest": "29.1.2",
     "ts-loader": "^9.5.1",
     "typescript": "^5.4.2",
     "vite": "5.1.6",
@@ -62,7 +62,10 @@
       "<rootDir>/src/setupTests.ts"
     ],
     "moduleNameMapper": {
-      "\\.(css|scss)$": "identity-obj-proxy"
+      "\\.(css|scss)$": "identity-obj-proxy",
+      "^src/(.*)$": "<rootDir>/src/$1",
+      "^@components/(.*)$": "<rootDir>/src/components/$1",
+      "^@contexts/(.*)$": "<rootDir>/src/contexts/$1"
     }
   }
 }

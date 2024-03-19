@@ -6,7 +6,7 @@ export const toggleMutePresenting = async (state: ConferenceState, dispatch: Rea
 
   let presentationStream
   if (presenting) {
-    console.log('stoping')
+    console.log('Stopping presentation')
   } else {
     presentationStream = await navigator.mediaDevices.getDisplayMedia()
     client?.present(presentationStream)

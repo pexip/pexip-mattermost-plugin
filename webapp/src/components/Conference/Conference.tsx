@@ -15,6 +15,7 @@ export const Conference = (): JSX.Element => {
     channel,
     localStream,
     remoteStream,
+    videoMuted,
     presentationStream,
     presentationInMain
   } = state
@@ -28,19 +29,19 @@ export const Conference = (): JSX.Element => {
   }
 
   return (
-    <div className='Conference'>
+    <div className='Conference' data-testid='Conference'>
       <div className='header'>{channel?.display_name} Room</div>
       <div className='conference-container'>
 
         <div className='video-container main'>
-          <Video srcObject={presentationInMain ? presentationStream : remoteStream} />
+          <Video srcObject={presentationInMain ? presentationStream : remoteStream} data-testid='MainVideo' />
         </div>
 
         <div className='pip' ref={pipRef}>
 
-          {localStream != null && (
+          {(localStream != null && !videoMuted) && (
             <div className='video-container local'>
-              <Selfview localMediaStream={localStream} isVideoInputMuted={false} shouldShowUserAvatar={false} username={''}/>
+              <Selfview localMediaStream={localStream} isVideoInputMuted={false} shouldShowUserAvatar={false} username={''} data-testid='SelfView'/>
             </div>
           )}
 
@@ -56,9 +57,9 @@ export const Conference = (): JSX.Element => {
             </div>
           )}
 
-          {(localStream != null || presentationStream != null) && (
+          {((localStream != null && !videoMuted) || presentationStream != null) && (
             <Tooltip text={pipHidden ? 'Show videos' : 'Hide videos'} position='bottomLeft' className='TogglePipTooltipContainer'>
-              <button className='toggle-pip-button' onClick={handleTogglePip}>
+              <button className='toggle-pip-button' data-testid='TogglePipButton' onClick={handleTogglePip}>
                 <Icon source={IconTypes.IconArrowRight}/>
               </button>
             </Tooltip>
