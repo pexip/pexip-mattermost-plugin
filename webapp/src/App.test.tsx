@@ -5,20 +5,13 @@ import { type ConferenceConfig } from './types/ConferenceConfig'
 import { ConferenceContextProvider } from './contexts/ConferenceContext/ConferenceContext'
 
 const mockConfig: ConferenceConfig = {
-  node: '',
-  displayName: '',
-  vmrPrefix: '',
-  hostPin: ''
+  node: 'my-server.com',
+  displayName: 'User',
+  vmrPrefix: 'matt-',
+  hostPin: '0000'
 }
 
-jest.mock('@pexip/infinity', () => {
-  // const mockInfinity = { ...require('./__mocks__/infinity') }
-  // setMockParticipants = mockInfinity.setMockParticipants
-  // mockDisconnect = mockInfinity.mockDisconnect
-  // mockDisconnectAll = mockInfinity.mockDisconnectAll
-  // triggerParticipantLeft = mockInfinity.triggerParticipantLeft
-  // return mockInfinity
-}, { virtual: true })
+jest.mock('@pexip/infinity', () => {}, { virtual: true })
 
 jest.mock('./components/Conference/Conference', () => {
   const mock = (): JSX.Element => <div></div>

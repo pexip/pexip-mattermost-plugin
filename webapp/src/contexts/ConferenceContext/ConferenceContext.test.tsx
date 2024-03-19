@@ -34,7 +34,7 @@ Object.defineProperty(global.navigator, 'mediaDevices', {
 })
 
 const mockCall = jest.fn()
-const mockDisconnect = jest.fn()
+const mockDisconnect = jest.fn().mockResolvedValue(undefined)
 const mockMuteAudio = jest.fn()
 const mockMuteVideo = jest.fn()
 jest.mock('@pexip/infinity', () => ({

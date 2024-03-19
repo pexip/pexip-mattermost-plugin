@@ -27,6 +27,9 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
       }
     }
     case ConferenceActionType.Disconnected: {
+      prevState.client?.disconnect({ reason: action.body.reason }).catch((e) => { console.error(e) })
+      prevState.localStream?.getTracks().forEach((track) => { track.stop() })
+
       return {
         ...prevState,
         connectionState: ConnectionState.Disconnected,

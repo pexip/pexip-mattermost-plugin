@@ -10,6 +10,7 @@ import type { Channel } from 'mattermost-redux/types/channels'
 import { toggleMuteAudio } from './methods/toggleMuteAudio'
 import { toggleMuteVideo } from './methods/toggleMuteVideo'
 import { toggleMutePresenting } from './methods/togglePresenting'
+import { type DisconnectReason } from '@pexip/infinity'
 
 interface ContextType {
   setConfig: (config: ConferenceConfig) => void
@@ -43,6 +44,11 @@ const initialState: ConferenceState = {
 const ConferenceContextProvider = (props: any): JSX.Element => {
   const [state, dispatch] = useReducer(ConferenceReducer, initialState)
 
+  const beforeUnloadHandler = (event: Event): void => {
+    const disconnectReason: DisconnectReason = 'Browser closed'
+    disconnect(dispatch, disconnectReason).catch((e) => { console.error(e) })
+  }
+
   const value = useMemo(() => ({
     setConfig: (config: ConferenceConfig): void => {
       dispatch({ type: ConferenceActionType.SetConfig, body: config })
@@ -58,8 +64,13 @@ const ConferenceContextProvider = (props: any): JSX.Element => {
         hostPin: state.config?.hostPin ?? '',
         displayName: state.config?.displayName ?? 'User'
       }, dispatch).catch((e) => { console.error(e) })
+      addEventListener('beforeunload', beforeUnloadHandler)
     },
-    disconnect: async () => { disconnect(state, dispatch).catch((e) => { console.error(e) }) },
+    disconnect: async () => {
+      const disconnectReason: DisconnectReason = 'User initiated disconnect'
+      disconnect(dispatch, disconnectReason).catch((e) => { console.error(e) })
+      removeEventListener('beforeunload', beforeUnloadHandler)
+    },
     toggleMuteAudio: async () => { toggleMuteAudio(state, dispatch).catch((e) => { console.error(e) }) },
     toggleMuteVideo: async () => { toggleMuteVideo(state, dispatch).catch((e) => { console.error(e) }) },
     togglePresenting: async () => { toggleMutePresenting(state, dispatch).catch((e) => { console.error(e) }) },

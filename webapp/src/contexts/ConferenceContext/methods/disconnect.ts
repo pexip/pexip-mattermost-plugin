@@ -1,12 +1,11 @@
+import { type DisconnectReason } from '@pexip/infinity'
 import { ConferenceActionType, type ConferenceAction } from '../ConferenceAction'
-import { type ConferenceState } from '../ConferenceState'
 
-export const disconnect = async (state: ConferenceState, dispatch: React.Dispatch<ConferenceAction>): Promise<void> => {
+export const disconnect = async (dispatch: React.Dispatch<ConferenceAction>, reason: DisconnectReason): Promise<void> => {
   dispatch({
-    type: ConferenceActionType.Disconnected
+    type: ConferenceActionType.Disconnected,
+    body: {
+      reason
+    }
   })
-
-  await state.client?.disconnect({ reason: 'User initiated disconnect' })
-
-  state.localStream?.getTracks().forEach((track) => { track.stop() })
 }
