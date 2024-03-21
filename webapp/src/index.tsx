@@ -6,17 +6,28 @@ import type { GlobalState } from 'mattermost-redux/types/store'
 import type { Channel, ChannelMembership } from 'mattermost-redux/types/channels'
 import { Client4 } from 'mattermost-redux/client'
 
-import { ConferenceManager, type ConferenceConfig } from './services/conference-manager'
-import { App } from './App'
-import { MattermostManager } from './services/mattermost-manager'
-import { DisplayNameType, getPluginServerRoute, getPluginSettings, notifyJoinConference } from './utils'
 import { getConfig } from 'mattermost-redux/selectors/entities/general'
+import { DisplayNameType, type PluginSettings, getPluginSettings, notifyJoinConference, setMattermostStore, getMattermostStore } from './utils'
+import { App } from './App'
 
 import manifest from '../../plugin.json'
+import type { ConferenceConfig } from './types/ConferenceConfig'
+import { ConferenceContextProvider } from './contexts/ConferenceContext/ConferenceContext'
+
+import '@pexip/components/dist/style.css'
 
 const pluginId = manifest.id
 const icon = <i id='pexip-vmr-plugin-button' className='icon fa fa-video-camera'/>
 const dropDownText = 'Pexip Video Connect'
+
+let conferenceConfig: ConferenceConfig
+const RightHandSidebarComponent = (): JSX.Element => {
+  return (
+    <ConferenceContextProvider>
+      <App config={conferenceConfig} />
+    </ConferenceContextProvider>
+  )
+}
 
 class Plugin {
   private store: Store<GlobalState, Action>
@@ -24,25 +35,46 @@ class Plugin {
 
   initialize (registry: PluginRegistry, store: Store<GlobalState, Action>): void {
     this.store = store
-    MattermostManager.setStore(store)
-    const script = document.createElement('script')
-    script.src = getPluginServerRoute(store.getState()) + '/public/pexrtc-32.js'
-    document.getElementsByTagName('head')[0].appendChild(script)
+    setMattermostStore(store)
     registry.registerChannelHeaderButtonAction(icon, this.action.bind(this), dropDownText)
-    this.rhsPlugin = registry.registerRightHandSidebarComponent(App, 'Pexip Video Connect')
+    this.rhsPlugin = registry.registerRightHandSidebarComponent(RightHandSidebarComponent, 'Pexip Video Connect')
   }
 
   private async action (channel: Channel, channelMembership: ChannelMembership): Promise<void> {
-    const state = MattermostManager.getStore().getState()
-    const config = getConfig(state)
-    const pluginConfig = await getPluginSettings(state)
-    if (config.SiteURL != null) {
-      Client4.setUrl(config.SiteURL)
+    const settings = await this.getSettings()
+    const userId: string = channelMembership.user_id
+    conferenceConfig = await this.getConferenceConfig(settings, userId)
+
+    if (settings.embedded) {
+      this.store.dispatch(this.rhsPlugin.toggleRHSPlugin)
+    } else {
+      const vmr = settings.prefix + channel.name
+      const channelId: string = channel.id
+      notifyJoinConference(this.store.getState(), channelId).catch((error) => {
+        console.error(error)
+      })
+      const { node, hostPin, displayName } = conferenceConfig
+      window.open(`https://${node}/webapp3/m/${vmr}/express?pin=${hostPin}&name=${displayName}`,
+        '', 'width=800;height=800')
     }
-    const user = await Client4.getUser(channelMembership.user_id)
+  }
+
+  private async getSettings (): Promise<PluginSettings> {
+    const state: GlobalState = getMattermostStore().getState()
+    return await getPluginSettings(state)
+  }
+
+  private async getConferenceConfig (settings: PluginSettings, userId: string): Promise<ConferenceConfig> {
+    const state: GlobalState = getMattermostStore().getState()
+    const config = getConfig(state)
+    if (config.SiteURL != null) {
+      const url: string = config.SiteURL
+      Client4.setUrl(url)
+    }
+    const user = await Client4.getUser(userId)
 
     let displayName = user.username
-    switch (pluginConfig.displayNameType) {
+    switch (settings.displayNameType) {
       case DisplayNameType.Nickname: {
         if (user.nickname !== '') {
           displayName = user.nickname
@@ -58,22 +90,12 @@ class Plugin {
     }
 
     const conferenceConfig: ConferenceConfig = {
-      node: pluginConfig.node,
+      node: settings.node,
       displayName,
-      vmrPrefix: pluginConfig.prefix,
-      hostPin: pluginConfig.pin.toString()
+      vmrPrefix: settings.prefix,
+      hostPin: settings.pin.toString()
     }
-    ConferenceManager.setConfig(conferenceConfig)
-    if (pluginConfig.embedded) {
-      this.store.dispatch(this.rhsPlugin.toggleRHSPlugin)
-    } else {
-      const vmr = pluginConfig.prefix + channel.name
-      notifyJoinConference(this.store.getState(), channel.id).catch((error) => {
-        console.error(error)
-      })
-      window.open(`https://${pluginConfig.node}/webapp3/m/${vmr}/express?pin=${pluginConfig.pin}&name=${displayName}`,
-        '', 'width=800;height=800')
-    }
+    return conferenceConfig
   }
 }
 

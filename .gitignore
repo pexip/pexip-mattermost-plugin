@@ -5,3 +5,8 @@ dist/
 
 # Jetbrains
 .idea/
+
+# npm files in root path
+/package.json
+/package-lock.json
+/node_modules

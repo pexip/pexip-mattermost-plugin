@@ -1,37 +1,113 @@
-import path from 'path'
+// Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
+// See LICENSE.txt for license information.
 
+import { exec } from 'child_process'
+import path from 'path'
+import manifest from '../plugin.json' with {type: 'json'}
 import { fileURLToPath } from 'url'
+
 const _filename = fileURLToPath(import.meta.url)
 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/naming-convention
 const __dirname = path.dirname(_filename)
 
-export default {
-  entry: './src/index.tsx',
+const PLUGIN_ID = manifest.id
+
+const NPM_TARGET = process.env.npm_lifecycle_event
+const isDev = NPM_TARGET === 'debug' || NPM_TARGET === 'debug:watch'
+
+const plugins = []
+if (NPM_TARGET === 'build:watch' || NPM_TARGET === 'debug:watch') {
+  plugins.push({
+    apply: (compiler) => {
+      compiler.hooks.watchRun.tap('WatchStartPlugin', () => {
+        console.log('Change detected. Rebuilding webapp.')
+      })
+      compiler.hooks.afterEmit.tap('AfterEmitPlugin', () => {
+        exec('cd .. && make deploy-from-watch', (err, stdout, stderr) => {
+          if (err != null) {
+            console.error(err)
+          }
+          if (stdout != null) {
+            process.stdout.write(stdout)
+          }
+          if (stderr != null) {
+            process.stderr.write(stderr)
+          }
+        })
+      })
+    }
+  })
+}
+
+const config = {
+  entry: [
+    './src/index.tsx'
+  ],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src')
+    },
+    modules: [
+      'src',
+      'node_modules',
+      path.resolve(__dirname)
+    ],
+    extensions: ['*', '.js', '.jsx', '.ts', '.tsx']
+  },
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
-        use: 'ts-loader',
-        exclude: /node_modules/
+        test: /\.(js|jsx|ts|tsx)$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            cacheDirectory: true
+
+            // Babel configuration is in babel.config.js because jest requires it to be there.
+          }
+        }
       },
       {
-        test: /\.s[ac]ss$/i,
+        test: /\.(scss|css)$/,
         use: [
-          // Creates `style` nodes from JS strings
           'style-loader',
-          // Translates CSS into CommonJS
-          'css-loader',
-          // Compiles Sass to CSS
-          'sass-loader'
+          {
+            loader: 'css-loader'
+          },
+          {
+            loader: 'sass-loader',
+            options: {
+              sassOptions: {
+                includePaths: ['node_modules/compass-mixins/lib', 'sass']
+              }
+            }
+          }
         ]
       }
     ]
   },
-  resolve: {
-    extensions: ['.tsx', '.ts', '.js']
+  externals: {
+    react: 'React',
+    'react-dom': 'ReactDOM',
+    redux: 'Redux',
+    'react-redux': 'ReactRedux',
+    'prop-types': 'PropTypes',
+    'react-bootstrap': 'ReactBootstrap',
+    'react-router-dom': 'ReactRouterDom'
   },
   output: {
-    filename: 'main.js',
-    path: path.resolve(__dirname, 'dist')
-  }
+    devtoolNamespace: PLUGIN_ID,
+    path: path.join(__dirname, '/dist'),
+    publicPath: '/',
+    filename: 'main.js'
+  },
+  mode: (isDev) ? 'eval-source-map' : 'production',
+  plugins
 }
+
+if (isDev) {
+  Object.assign(config, { devtool: 'eval-source-map' })
+}
+
+export default config

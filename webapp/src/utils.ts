@@ -2,6 +2,9 @@ import { getConfig } from 'mattermost-redux/selectors/entities/general'
 import type { GlobalState } from 'mattermost-redux/types/store'
 import manifest from '../../plugin.json'
 import { Client4 } from 'mattermost-redux/client'
+import type { Store, Action } from 'redux'
+
+let mattermostStore: Store<GlobalState, Action>
 
 export enum DisplayNameType {
   Username = 'username',
@@ -9,17 +12,12 @@ export enum DisplayNameType {
   FirstAndLastName = 'firstAndLastName'
 }
 
-interface PluginSettings {
+export interface PluginSettings {
   node: string
   prefix: string
   pin: number
   displayNameType: DisplayNameType
   embedded: boolean
-}
-
-export const getPluginServerRoute = (state: GlobalState): string => {
-  const config = getConfig(state)
-  return (config.SiteURL ?? '') + '/plugins/' + manifest.id
 }
 
 export const getPluginSettings = async (state: GlobalState): Promise<PluginSettings> => {
@@ -35,4 +33,17 @@ export const notifyJoinConference = async (state: GlobalState, channelId: string
     method: 'POST',
     body: JSON.stringify({ channelId })
   }))
+}
+
+export const setMattermostStore = (store: Store<GlobalState, Action>): void => {
+  mattermostStore = store
+}
+
+export const getMattermostStore = (): Store<GlobalState, Action> => {
+  return mattermostStore
+}
+
+const getPluginServerRoute = (state: GlobalState): string => {
+  const config = getConfig(state)
+  return (config.SiteURL ?? '') + '/plugins/' + manifest.id
 }
