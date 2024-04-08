@@ -13,6 +13,9 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
     case ConferenceActionType.Connecting: {
       return {
         ...prevState,
+        audioMuted: false,
+        videoMuted: false,
+        presenting: false,
         connectionState: ConnectionState.Connecting,
         channel: action.body.channel,
         errorMessage: ''
@@ -27,11 +30,13 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
       }
     }
     case ConferenceActionType.Disconnected: {
-      prevState.client?.disconnect({ reason: action.body.reason }).catch((e) => { console.error(e) })
       prevState.localStream?.getTracks().forEach((track) => { track.stop() })
+      prevState.presentationStream?.getTracks().forEach((track) => { track.stop() })
 
       return {
         ...prevState,
+        localStream: undefined,
+        presentationStream: undefined,
         connectionState: ConnectionState.Disconnected,
         errorMessage: ''
       }

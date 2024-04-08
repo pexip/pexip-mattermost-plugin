@@ -1,6 +1,6 @@
 import React from 'react'
 import { ConferenceContextProvider, useConferenceContext } from './ConferenceContext'
-import { render, screen, fireEvent, act } from '@testing-library/react'
+import { render, screen, fireEvent, act, waitFor } from '@testing-library/react'
 import { type ConferenceConfig } from 'src/types/ConferenceConfig'
 import { ConnectionState } from '../../types/ConnectionState'
 import { type Channel } from 'mattermost-redux/types/channels'
@@ -39,7 +39,8 @@ const mockMuteAudio = jest.fn()
 const mockMuteVideo = jest.fn()
 jest.mock('@pexip/infinity', () => ({
   createInfinityClientSignals: () => ({
-    onParticipants: { add: jest.fn() }
+    onParticipants: { add: jest.fn() },
+    onDisconnected: { add: jest.fn() }
   }),
   createCallSignals: () => ({
     onRemoteStream: { add: jest.fn() },
@@ -174,14 +175,16 @@ describe('ConferenceContext', () => {
   })
 
   describe('setConfig', () => {
-    it('should save the configuration', () => {
+    it('should save the configuration', async () => {
       render(
         <ConferenceContextProvider>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
-      const button = screen.getByTestId('buttonSetConfig')
-      fireEvent.click(button)
+      await act(async () => {
+        const button = screen.getByTestId('buttonSetConfig')
+        fireEvent.click(button)
+      })
       const config = screen.getByTestId('config')
       expect(JSON.parse(config.innerHTML)).toStrictEqual(mockConfig)
     })
@@ -198,7 +201,7 @@ describe('ConferenceContext', () => {
       expect(parseInt(connectionState.innerHTML)).toBe(ConnectionState.Disconnected)
     })
 
-    it('should change the connectionState to "Connecting" while establishing the call', () => {
+    it('should change the connectionState to "Connecting" while establishing the call', async () => {
       render(
         <ConferenceContextProvider>
           <ConferenceContextTester />
@@ -208,8 +211,10 @@ describe('ConferenceContext', () => {
         const button = screen.getByTestId('buttonConnect')
         fireEvent.click(button)
       })
-      const connectionState = screen.getByTestId('connectionState')
-      expect(parseInt(connectionState.innerHTML)).toBe(ConnectionState.Connecting)
+      await waitFor(() => {
+        const connectionState = screen.getByTestId('connectionState')
+        expect(parseInt(connectionState.innerHTML)).toBe(ConnectionState.Connecting)
+      })
     })
 
     it('should set the "channel" in the state while establishing the call', async () => {
@@ -275,6 +280,40 @@ describe('ConferenceContext', () => {
       const errorMessage = screen.getByTestId('errorMessage')
       expect(parseInt(connectionState.innerHTML)).toBe(ConnectionState.Error)
       expect(errorMessage.innerHTML).toBe('Cannot connect')
+    })
+
+    it('should set to "false" the state for muteAudio, muteVideo and presenting when reconnected', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+
+      await act(async () => {
+        let button = screen.getByTestId('buttonConnect')
+        fireEvent.click(button)
+        button = screen.getByTestId('buttonToggleMuteAudio')
+        fireEvent.click(button)
+        button = screen.getByTestId('buttonToggleMuteVideo')
+        fireEvent.click(button)
+        button = screen.getByTestId('buttonTogglePresenting')
+        fireEvent.click(button)
+      })
+
+      await act(async () => {
+        let button = screen.getByTestId('buttonDisconnect')
+        fireEvent.click(button)
+        button = screen.getByTestId('buttonConnect')
+        fireEvent.click(button)
+      })
+
+      const audioMuted = screen.getByTestId('audioMuted')
+      const videoMuted = screen.getByTestId('videoMuted')
+      const presenting = screen.getByTestId('presenting')
+
+      expect(audioMuted.innerHTML).toBe('false')
+      expect(videoMuted.innerHTML).toBe('false')
+      expect(presenting.innerHTML).toBe('false')
     })
   })
 

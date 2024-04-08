@@ -46,7 +46,7 @@ const ConferenceContextProvider = (props: any): JSX.Element => {
 
   const beforeUnloadHandler = (event: Event): void => {
     const disconnectReason: DisconnectReason = 'Browser closed'
-    disconnect(dispatch, disconnectReason).catch((e) => { console.error(e) })
+    disconnect(state, dispatch, disconnectReason).catch((e) => { console.error(e) })
   }
 
   const value = useMemo(() => ({
@@ -68,7 +68,7 @@ const ConferenceContextProvider = (props: any): JSX.Element => {
     },
     disconnect: async () => {
       const disconnectReason: DisconnectReason = 'User initiated disconnect'
-      disconnect(dispatch, disconnectReason).catch((e) => { console.error(e) })
+      disconnect(state, dispatch, disconnectReason).catch((e) => { console.error(e) })
       removeEventListener('beforeunload', beforeUnloadHandler)
     },
     toggleMuteAudio: async () => { toggleMuteAudio(state, dispatch).catch((e) => { console.error(e) }) },

@@ -35,6 +35,10 @@ export const connect = async (params: ConnectParams, dispatch: React.Dispatch<Co
     }
   })
 
+  clientSignals.onDisconnected.add(() => {
+    dispatch({ type: ConferenceActionType.Disconnected })
+  })
+
   callSignals.onRemotePresentationStream.add((presentationStream) => {
     dispatch({
       type: ConferenceActionType.RemotePresentationStream,
