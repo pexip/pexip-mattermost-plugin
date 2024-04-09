@@ -11,6 +11,13 @@
     "resolveJsonModule": true,
     "strictNullChecks": true,
     "strictBindCallApply": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "src/*": ["./src/*"],
+      "@components/*": ["./src/components/*"],
+      "@contexts/*": ["./src/contexts/*"]
+    }
   }
 }
