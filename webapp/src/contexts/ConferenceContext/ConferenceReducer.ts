@@ -13,9 +13,6 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
     case ConferenceActionType.Connecting: {
       return {
         ...prevState,
-        audioMuted: false,
-        videoMuted: false,
-        presenting: false,
         connectionState: ConnectionState.Connecting,
         channel: action.body.channel,
         errorMessage: ''
@@ -26,7 +23,10 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
         ...prevState,
         connectionState: ConnectionState.Connected,
         client: action.body.client,
-        localStream: action.body.localStream
+        localStream: action.body.localStream,
+        audioMuted: false,
+        videoMuted: false,
+        presenting: false
       }
     }
     case ConferenceActionType.Disconnected: {
