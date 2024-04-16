@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/mattermost/mattermost/server/public/model"
 	"github.com/mattermost/mattermost/server/public/plugin"
 	"github.com/pkg/errors"
 )
@@ -16,10 +17,23 @@ const (
 	routeAPI                     = "/api"
 	routeAPISettings             = "/settings"
 	routeAPINotifyJoinConference = "/notify_join_conference"
+	routeAPIChangeUserSettings   = "/change_user_settings"
+)
+
+const (
+	changeUserSettingsEvent = "change_user_settings"
 )
 
 type InNotifyJoinConference struct {
 	ChannelID string `json:"channelId"`
+}
+
+type InChangeUserSettings struct {
+	Submission struct {
+		InputVideoDeviceID  string `json:"inputVideoDeviceId"`
+		InputAudioDeviceID  string `json:"inputAudioDeviceId"`
+		OutputAudioDeviceID string `json:"outputAudioDeviceId"`
+	} `json:"submission"`
 }
 
 func (p *Plugin) initializeRouter() {
@@ -28,6 +42,7 @@ func (p *Plugin) initializeRouter() {
 	apiRouter := p.router.PathPrefix(routeAPI).Subrouter()
 	apiRouter.HandleFunc(routeAPISettings, p.checkAuth(p.handleResponse(p.httpGetSettings))).Methods(http.MethodGet)
 	apiRouter.HandleFunc(routeAPINotifyJoinConference, p.checkAuth(p.handleResponse(p.httpNotifyJoinConference))).Methods(http.MethodPost)
+	apiRouter.HandleFunc(routeAPIChangeUserSettings, p.checkAuth(p.handleResponse(p.httpChangeUserSettings))).Methods(http.MethodPost)
 }
 
 func (p *Plugin) httpGetSettings(w http.ResponseWriter, _ *http.Request) (int, error) {
@@ -74,6 +89,24 @@ func (p *Plugin) httpNotifyJoinConference(w http.ResponseWriter, r *http.Request
 		return respondErr(w, http.StatusInternalServerError,
 			errors.WithMessage(err, "cannot post message in the channel"))
 	}
+
+	return 200, err
+}
+
+func (p *Plugin) httpChangeUserSettings(w http.ResponseWriter, r *http.Request) (int, error) {
+	in := InChangeUserSettings{}
+	err := json.NewDecoder(r.Body).Decode(&in)
+
+	if err != nil {
+		return respondErr(w, http.StatusBadRequest,
+			errors.WithMessage(err, "failed to decode incoming request"))
+	}
+
+	p.API.PublishWebSocketEvent(changeUserSettingsEvent, map[string]interface{}{
+		"inputVideoDeviceId":  in.Submission.InputVideoDeviceID,
+		"inputAudioDeviceId":  in.Submission.InputAudioDeviceID,
+		"outputAudioDeviceId": in.Submission.OutputAudioDeviceID,
+	}, &model.WebsocketBroadcast{UserId: r.Header.Get("Mattermost-User-Id")})
 
 	return 200, err
 }
