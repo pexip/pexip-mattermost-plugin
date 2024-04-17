@@ -24,6 +24,7 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
         connectionState: ConnectionState.Connected,
         client: action.body.client,
         localStream: action.body.localStream,
+        audioSinkId: action.body.audioSinkId,
         audioMuted: false,
         videoMuted: false,
         presenting: false

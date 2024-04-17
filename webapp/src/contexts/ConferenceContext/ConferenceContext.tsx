@@ -31,6 +31,7 @@ const initialState: ConferenceState = {
   client: null,
   localStream: undefined,
   remoteStream: undefined,
+  audioSinkId: undefined,
   presentationStream: undefined,
   connectionState: ConnectionState.Disconnected,
   audioMuted: false,

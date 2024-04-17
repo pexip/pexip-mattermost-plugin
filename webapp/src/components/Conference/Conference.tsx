@@ -15,6 +15,7 @@ export const Conference = (): JSX.Element => {
     channel,
     localStream,
     remoteStream,
+    audioSinkId,
     videoMuted,
     presentationStream,
     presentationInMain
@@ -34,7 +35,7 @@ export const Conference = (): JSX.Element => {
       <div className='conference-container'>
 
         <div className='video-container main'>
-          <Video srcObject={presentationInMain ? presentationStream : remoteStream} data-testid='MainVideo' />
+          <Video srcObject={presentationInMain ? presentationStream : remoteStream} data-testid='MainVideo' sinkId={audioSinkId} />
         </div>
 
         <div className='pip' ref={pipRef}>
@@ -47,7 +48,7 @@ export const Conference = (): JSX.Element => {
 
           {presentationStream != null && (
             <div className='video-container secondary'>
-              <Video srcObject={!presentationInMain ? presentationStream : remoteStream} />
+              <Video srcObject={!presentationInMain ? presentationStream : remoteStream} sinkId={audioSinkId} />
               <Tooltip text='Swap videos' position='bottomCenter' className='SwapVideosTooltipContainer'>
                 <div className='exchange-panel' onClick={swapVideos}>
                   <Icon source={IconTypes.IconArrowRight} />

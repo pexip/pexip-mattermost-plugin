@@ -18,6 +18,8 @@ interface InteractiveDialog {
   notify_on_cancel: boolean
 }
 
+let userSettingsCallback: (userSettings: UserSettings) => void
+
 export const openUserSettingsDialog = async (): Promise<void> => {
   const title = 'Pexip Settings'
   const mediaDevices = await navigator.mediaDevices.enumerateDevices()
@@ -80,6 +82,11 @@ export const setUserSettings = (userSettings: UserSettings): void => {
   localStorage.setItem(inputVideoDeviceIdKey, userSettings.inputVideoDeviceId)
   localStorage.setItem(inputAudioDeviceIdKey, userSettings.inputAudioDeviceId)
   localStorage.setItem(outputAudioDeviceKey, userSettings.outputAudioDeviceId)
+  userSettingsCallback(userSettings)
+}
+
+export const setUserSettingsListener = (callback: (userSettings: UserSettings) => void): void => {
+  userSettingsCallback = callback
 }
 
 const createUserSettingsDialog = (
@@ -89,10 +96,8 @@ const createUserSettingsDialog = (
   selectedInputAudioDeviceId: string,
   selectedOutputAudioDeviceId: string
 ): InteractiveDialog => {
-  const dialog: InteractiveDialog = {
-    title,
-    icon_url: getPluginServerRoute() + '/public/icon.png',
-    elements: [{
+  const elements = [
+    {
       display_name: 'Camera',
       name: 'inputVideoDeviceId',
       type: 'select',
@@ -110,7 +115,12 @@ const createUserSettingsDialog = (
         text: device.label,
         value: device.deviceId
       }))
-    }, {
+    }
+  ]
+
+  // Check if the browser supports changing the output audio device.
+  if ('setSinkId' in AudioContext.prototype) {
+    elements.push({
       display_name: 'Speaker',
       name: 'outputAudioDeviceId',
       type: 'select',
@@ -119,7 +129,13 @@ const createUserSettingsDialog = (
         text: device.label,
         value: device.deviceId
       }))
-    }],
+    })
+  }
+
+  const dialog: InteractiveDialog = {
+    title,
+    icon_url: getPluginServerRoute() + '/public/icon.png',
+    elements,
     submit_label: 'Change',
     notify_on_cancel: false
   }

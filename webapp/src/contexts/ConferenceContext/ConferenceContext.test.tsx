@@ -25,11 +25,13 @@ window.MediaStream = MediaStream
 
 const mockGetUserMedia = jest.fn()
 const mockGetDisplayMedia = jest.fn()
+const mockEnumerateDevices = jest.fn()
 
 Object.defineProperty(global.navigator, 'mediaDevices', {
   value: {
     getUserMedia: mockGetUserMedia,
-    getDisplayMedia: mockGetDisplayMedia
+    getDisplayMedia: mockGetDisplayMedia,
+    enumerateDevices: mockEnumerateDevices
   }
 })
 
@@ -145,11 +147,10 @@ const ConferenceContextTester = (): JSX.Element => {
 }
 
 beforeEach(() => {
+  jest.clearAllMocks()
   mockGetUserMedia.mockReturnValue(new MediaStream())
-  mockGetDisplayMedia.mockClear()
   mockCall.mockReturnValue({ status: 200 })
-  mockMuteAudio.mockClear()
-  mockMuteVideo.mockClear()
+  mockEnumerateDevices.mockResolvedValue([])
 })
 
 describe('ConferenceContext', () => {
