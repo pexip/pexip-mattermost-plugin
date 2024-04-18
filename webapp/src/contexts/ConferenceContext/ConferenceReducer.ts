@@ -30,6 +30,13 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
         presenting: false
       }
     }
+    case ConferenceActionType.ChangeDevices: {
+      return {
+        ...prevState,
+        localStream: action.body.localStream,
+        audioSinkId: action.body.audioSinkId !== undefined ? action.body.audioSinkId : prevState.audioSinkId
+      }
+    }
     case ConferenceActionType.Disconnected: {
       prevState.localStream?.getTracks().forEach((track) => { track.stop() })
       prevState.presentationStream?.getTracks().forEach((track) => { track.stop() })

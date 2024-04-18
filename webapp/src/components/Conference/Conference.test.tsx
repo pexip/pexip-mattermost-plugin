@@ -2,9 +2,27 @@ import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { Conference } from './Conference'
 
+class MediaStream {
+  id: string = '1234'
+  active: boolean = true
+  addTrack: any = jest.fn()
+  getTracks: any = jest.fn(() => [])
+  onaddtrack: any = jest.fn()
+  onremovetrack: any = jest.fn()
+  clone: any = jest.fn()
+  getAudioTracks: any = jest.fn(() => [])
+  getTrackById: any = jest.fn()
+  getVideoTracks: any = jest.fn(() => [])
+  removeTrack: any = jest.fn()
+  addEventListener: any = jest.fn()
+  removeEventListener: any = jest.fn()
+  dispatchEvent: any = jest.fn()
+}
+window.MediaStream = MediaStream
+
 jest.mock('@pexip/components', () => ({
   Icon: () => <div />,
-  Video: (props: any) => <video {...props} />,
+  Video: (props: any) => <video data-srcobject={JSON.stringify(props.srcObject)} data-testid={props['data-testid']}/>,
   IconTypes: {
     IconMicrophoneOn: '',
     IconMicrophoneOff: ''
@@ -34,11 +52,11 @@ jest.mock('@components/Tooltip/Tooltip', () => ({
 }))
 
 jest.mock('@pexip/media-components', () => ({
-  Selfview: (props: any) => <video {...props}></video>
+  Selfview: (props: any) => <video data-testid={props['data-testid']}></video>
 }))
 
 beforeEach(() => {
-  mockLocalStream = 'mediaStream'
+  mockLocalStream = new MediaStream()
   mockVideoMuted = false
   mockRemoteStream = null
   mockPresentationStream = null
@@ -54,7 +72,7 @@ describe('Conference', () => {
 
   describe('SelfView', () => {
     it('should be rendered if localStream != null and !videoMuted', () => {
-      mockLocalStream = 'mediaStream'
+      mockLocalStream = new MediaStream()
       render(<Conference />)
       const selfView = screen.queryByTestId('SelfView')
       expect(selfView).toBeInTheDocument()
@@ -77,28 +95,33 @@ describe('Conference', () => {
 
   describe('Main video', () => {
     it('should display the remote video if not presentation available', () => {
-      mockRemoteStream = 'remoteStream'
+      mockRemoteStream = new MediaStream()
+      mockRemoteStream.id = 'remoteStream'
       render(<Conference />)
       const mainVideo = screen.getByTestId('MainVideo')
-      expect(mainVideo.getAttribute('srcObject')).toBe(mockRemoteStream)
+      expect(JSON.parse(mainVideo.getAttribute('data-srcobject') ?? '').id).toBe(mockRemoteStream.id)
     })
 
     it('should display presentation if presentation != null and presentationInMain == true', () => {
-      mockRemoteStream = 'remoteStream'
-      mockPresentationStream = 'presentationInMain'
+      mockRemoteStream = new MediaStream()
+      mockRemoteStream.id = 'remoteStream'
+      mockPresentationStream = new MediaStream()
+      mockPresentationStream.id = 'presentationInMain'
       mockPresentationInMain = true
       render(<Conference />)
       const mainVideo = screen.getByTestId('MainVideo')
-      expect(mainVideo.getAttribute('srcObject')).toBe(mockPresentationStream)
+      expect(JSON.parse(mainVideo.getAttribute('data-srcobject') ?? '').id).toBe(mockPresentationStream.id)
     })
 
     it('should display remote video if presentation != null and presentationInMain == false', () => {
-      mockRemoteStream = 'remoteStream'
-      mockPresentationStream = 'presentationInMain'
+      mockRemoteStream = new MediaStream()
+      mockRemoteStream.id = 'remoteStream'
+      mockPresentationStream = new MediaStream()
+      mockPresentationStream.id = 'presentationInMain'
       mockPresentationInMain = false
       render(<Conference />)
       const mainVideo = screen.getByTestId('MainVideo')
-      expect(mainVideo.getAttribute('srcObject')).toBe(mockRemoteStream)
+      expect(JSON.parse(mainVideo.getAttribute('data-srcobject') ?? '').id).toBe(mockRemoteStream.id)
     })
   })
 

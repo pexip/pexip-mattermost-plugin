@@ -13,9 +13,9 @@ class MediaStream {
   onaddtrack: any = jest.fn()
   onremovetrack: any = jest.fn()
   clone: any = jest.fn()
-  getAudioTracks: any = jest.fn()
+  getAudioTracks: any = jest.fn(() => [])
   getTrackById: any = jest.fn()
-  getVideoTracks: any = jest.fn()
+  getVideoTracks: any = jest.fn(() => [])
   removeTrack: any = jest.fn()
   addEventListener: any = jest.fn()
   removeEventListener: any = jest.fn()
@@ -39,6 +39,7 @@ const mockCall = jest.fn()
 const mockDisconnect = jest.fn().mockResolvedValue(undefined)
 const mockMuteAudio = jest.fn()
 const mockMuteVideo = jest.fn()
+const mockSetStream = jest.fn()
 jest.mock('@pexip/infinity', () => ({
   createInfinityClientSignals: () => ({
     onParticipants: { add: jest.fn() },
@@ -52,7 +53,8 @@ jest.mock('@pexip/infinity', () => ({
     call: mockCall,
     disconnect: mockDisconnect,
     mute: mockMuteAudio,
-    muteVideo: mockMuteVideo
+    muteVideo: mockMuteVideo,
+    setStream: mockSetStream
   }),
   ClientCallType: {
     AudioVideo: 0

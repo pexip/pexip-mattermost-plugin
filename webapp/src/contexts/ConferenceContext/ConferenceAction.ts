@@ -2,6 +2,7 @@ export enum ConferenceActionType {
   SetConfig,
   Connecting,
   Connected,
+  ChangeDevices,
   Disconnected,
   Error,
   RemoteStream,

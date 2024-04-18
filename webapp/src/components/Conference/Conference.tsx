@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 
 import { Icon, IconTypes, Video } from '@pexip/components'
 import { useConferenceContext } from '@contexts/ConferenceContext/ConferenceContext'
@@ -29,6 +29,15 @@ export const Conference = (): JSX.Element => {
     setPipHidden(!pipHidden)
   }
 
+  const videoTracks = localStream?.getVideoTracks()
+  const videoTrackId = videoTracks != null && videoTracks.length !== 0 ? videoTracks[0].id : ''
+
+  // Only re-render the selfie if the videoTrack id changes
+  console.log(videoTrackId)
+  const selfie = useMemo((): JSX.Element => {
+    return <Selfview localMediaStream={localStream} isVideoInputMuted={false} shouldShowUserAvatar={false} username={''} data-testid='SelfView'/>
+  }, [videoTrackId])
+
   return (
     <div className='Conference' data-testid='Conference'>
       <div className='header'>{channel?.display_name} Room</div>
@@ -42,7 +51,7 @@ export const Conference = (): JSX.Element => {
 
           {(localStream != null && !videoMuted) && (
             <div className='video-container local'>
-              <Selfview localMediaStream={localStream} isVideoInputMuted={false} shouldShowUserAvatar={false} username={''} data-testid='SelfView'/>
+              {selfie}
             </div>
           )}
 

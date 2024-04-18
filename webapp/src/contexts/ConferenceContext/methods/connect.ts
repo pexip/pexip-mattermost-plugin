@@ -1,27 +1,12 @@
 import { ClientCallType, createCallSignals, createInfinityClient, createInfinityClientSignals } from '@pexip/infinity'
 import { ConferenceActionType, type ConferenceAction } from '../ConferenceAction'
-import { type UserSettings, setUserSettingsListener, getUserSettings } from 'src/utils/user-settings'
+import { getUserSettings } from 'src/utils/user-settings'
 
 interface ConnectParams {
   host: string
   conferenceAlias: string
   hostPin: string
   displayName: string
-}
-
-const handleChangeUserSettings = async (userSettings: UserSettings): Promise<MediaStream> => {
-  const localStream = await navigator.mediaDevices.getUserMedia({
-    audio: { deviceId: userSettings.inputAudioDeviceId },
-    video: { deviceId: userSettings.inputVideoDeviceId }
-  })
-
-  // Check if the browser supports changing the output audio device.
-  // if ('setSinkId' in AudioContext.prototype) {
-  //   const audioContext = new AudioContext()
-  //   await (audioContext as any).setSinkId(userSettings.outputAudioDeviceId)
-  // }
-
-  return localStream
 }
 
 export const connect = async (params: ConnectParams, dispatch: React.Dispatch<ConferenceAction>): Promise<void> => {
@@ -93,30 +78,57 @@ export const connect = async (params: ConnectParams, dispatch: React.Dispatch<Co
   }
 
   if (response?.status === 200) {
-    setUserSettingsListener((userSettings) => {
-      localStream.getTracks().forEach((track) => { track.stop() })
-      handleChangeUserSettings(userSettings)
-        .then((localStream) => {
-          client.setStream(localStream)
-          dispatch({
-            type: ConferenceActionType.Connected,
-            body: {
-              client,
-              localStream,
-              audioSinkId: userSettings.outputAudioDeviceId
-            }
-          })
-        })
-        .catch((e) => { console.error(e) })
-      dispatch({
-        type: ConferenceActionType.Connected,
-        body: {
-          client,
-          localStream,
-          audioSinkId: userSettings.outputAudioDeviceId
-        }
-      })
-    })
+    // setUserSettingsListener((userSettings) => {
+    //   // TODO: Only stop the local stream that changed or that aren\'t muted
+
+    //   // TODO: Get the localStream
+    //   const audioTracks = localStream.getAudioTracks()
+    //   const audioMuted = audioTracks.length === 0 || !audioTracks.some((track) => track.readyState === 'live')
+
+    //   const videoTracks = localStream.getVideoTracks()
+    //   const videoMuted = videoTracks.length === 0 || !videoTracks.some((track) => track.readyState === 'live')
+
+    //   console.error(audioTracks.length)
+    //   console.error(audioTracks[0].readyState)
+    //   console.error(videoTracks.length)
+    //   console.error(videoTracks[0].readyState)
+    //   // TODO: Only stop the local stream that changed or that aren't muted
+    //   // track.getCapabilities().deviceId
+    //   console.error(audioMuted, videoMuted)
+
+    //   if (!(audioMuted && videoMuted)) {
+    //     // console.error({
+    //     //   audio: audioMuted ? false : { deviceId: userSettings.inputAudioDeviceId },
+    //     //   video: videoMuted ? false : { deviceId: userSettings.inputVideoDeviceId }
+    //     // })
+    //     localStream.getTracks().forEach((track) => { track.stop() })
+
+    //     navigator.mediaDevices.getUserMedia({
+    //       audio: audioMuted ? false : { deviceId: userSettings.inputAudioDeviceId },
+    //       video: videoMuted ? false : { deviceId: userSettings.inputVideoDeviceId }
+    //     })
+    //       .then((localStream) => {
+    //         client.setStream(localStream)
+    //         dispatch({
+    //           type: ConferenceActionType.ChangeDevices,
+    //           body: {
+    //             localStream,
+    //             audioSinkId: userSettings.outputAudioDeviceId
+    //           }
+    //         })
+    //       })
+    //       .catch((e) => { console.error(e) })
+    // }
+    // TODO: Change sinkId
+    // dispatch({
+    //   type: ConferenceActionType.Connected,
+    //   body: {
+    //     client,
+    //     localStream,
+    //     audioSinkId: userSettings.outputAudioDeviceId
+    //   }
+    // })
+    // })
     dispatch({
       type: ConferenceActionType.Connected,
       body: {
