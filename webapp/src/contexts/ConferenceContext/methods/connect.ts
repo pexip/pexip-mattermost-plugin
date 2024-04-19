@@ -78,6 +78,10 @@ export const connect = async (params: ConnectParams, dispatch: React.Dispatch<Co
   }
 
   if (response?.status === 200) {
+    // setUserSettingsEventListener((userSettings) => {
+    //   const { audioMuted } = state
+    //   console.error(audioMuted)
+    // })
     // setUserSettingsListener((userSettings) => {
     //   // TODO: Only stop the local stream that changed or that aren\'t muted
 

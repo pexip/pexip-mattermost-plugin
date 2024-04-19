@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 import { Icon, IconTypes, Video } from '@pexip/components'
 import { useConferenceContext } from '@contexts/ConferenceContext/ConferenceContext'
@@ -8,9 +8,10 @@ import { Tooltip } from '../Tooltip/Tooltip'
 import { Selfview } from '@pexip/media-components'
 
 import './Conference.scss'
+import { setUserSettingsEventListener } from 'src/utils/user-settings'
 
 export const Conference = (): JSX.Element => {
-  const { state, swapVideos } = useConferenceContext()
+  const { state, swapVideos, changeDevices } = useConferenceContext()
   const {
     channel,
     localStream,
@@ -33,10 +34,16 @@ export const Conference = (): JSX.Element => {
   const videoTrackId = videoTracks != null && videoTracks.length !== 0 ? videoTracks[0].id : ''
 
   // Only re-render the selfie if the videoTrack id changes
-  console.log(videoTrackId)
   const selfie = useMemo((): JSX.Element => {
     return <Selfview localMediaStream={localStream} isVideoInputMuted={false} shouldShowUserAvatar={false} username={''} data-testid='SelfView'/>
   }, [videoTrackId])
+
+  useEffect(() => {
+    // Subscribe to changes to user settings
+    setUserSettingsEventListener((userSettings) => {
+      changeDevices(userSettings).catch((e) => { console.error(e) })
+    })
+  }, [])
 
   return (
     <div className='Conference' data-testid='Conference'>

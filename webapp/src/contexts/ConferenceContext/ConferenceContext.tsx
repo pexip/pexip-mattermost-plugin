@@ -11,6 +11,8 @@ import { toggleMuteAudio } from './methods/toggleMuteAudio'
 import { toggleMuteVideo } from './methods/toggleMuteVideo'
 import { toggleMutePresenting } from './methods/togglePresenting'
 import { type DisconnectReason } from '@pexip/infinity'
+import { changeDevices } from './methods/changeDevices'
+import { type UserSettings } from 'src/utils/user-settings'
 
 interface ContextType {
   setConfig: (config: ConferenceConfig) => void
@@ -19,6 +21,7 @@ interface ContextType {
   toggleMuteAudio: () => Promise<void>
   toggleMuteVideo: () => Promise<void>
   togglePresenting: () => Promise<void>
+  changeDevices: (userSettings: UserSettings) => Promise<void>
   swapVideos: () => void
   state: ConferenceState
 }
@@ -75,6 +78,7 @@ const ConferenceContextProvider = (props: any): JSX.Element => {
     toggleMuteAudio: async () => { toggleMuteAudio(state, dispatch).catch((e) => { console.error(e) }) },
     toggleMuteVideo: async () => { toggleMuteVideo(state, dispatch).catch((e) => { console.error(e) }) },
     togglePresenting: async () => { toggleMutePresenting(state, dispatch).catch((e) => { console.error(e) }) },
+    changeDevices: async (userSettings: UserSettings) => { changeDevices(userSettings, state, dispatch).catch((e) => { console.error(e) }) },
     swapVideos: async () => {
       dispatch({
         type: ConferenceActionType.SwapVideos
