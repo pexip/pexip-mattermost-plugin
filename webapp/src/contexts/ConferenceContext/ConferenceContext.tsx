@@ -48,7 +48,7 @@ const initialState: ConferenceState = {
 const ConferenceContextProvider = (props: any): JSX.Element => {
   const [state, dispatch] = useReducer(ConferenceReducer, initialState)
 
-  const beforeUnloadHandler = (event: Event): void => {
+  const beforeUnloadHandler = (): void => {
     const disconnectReason: DisconnectReason = 'Browser closed'
     disconnect(state, dispatch, disconnectReason).catch((e) => { console.error(e) })
   }
@@ -79,11 +79,7 @@ const ConferenceContextProvider = (props: any): JSX.Element => {
     toggleMuteVideo: async () => { toggleMuteVideo(state, dispatch).catch((e) => { console.error(e) }) },
     togglePresenting: async () => { toggleMutePresenting(state, dispatch).catch((e) => { console.error(e) }) },
     changeDevices: async (userSettings: UserSettings) => { changeDevices(userSettings, state, dispatch).catch((e) => { console.error(e) }) },
-    swapVideos: async () => {
-      dispatch({
-        type: ConferenceActionType.SwapVideos
-      })
-    },
+    swapVideos: async () => { dispatch({ type: ConferenceActionType.SwapVideos }) },
     state
   }), [state])
 

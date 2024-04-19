@@ -5,6 +5,13 @@ import { type ConferenceState } from '../ConferenceState'
 export const changeDevices = async (userSettings: UserSettings, state: ConferenceState, dispatch: React.Dispatch<ConferenceAction>): Promise<void> => {
   const { audioMuted, videoMuted, localStream, client } = state
 
+  dispatch({
+    type: ConferenceActionType.ChangeDevices,
+    body: {
+      audioSinkId: userSettings.outputAudioDeviceId
+    }
+  })
+
   if (!(audioMuted && videoMuted)) {
     let audioDeviceIdChanged = true
     let videoDeviceIdChanged = true
@@ -53,8 +60,7 @@ export const changeDevices = async (userSettings: UserSettings, state: Conferenc
       dispatch({
         type: ConferenceActionType.ChangeDevices,
         body: {
-          localStream: newStream,
-          audioSinkId: userSettings.outputAudioDeviceId
+          localStream: newStream
         }
       })
     }

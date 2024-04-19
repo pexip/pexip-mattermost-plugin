@@ -8,7 +8,7 @@ import { Tooltip } from '../Tooltip/Tooltip'
 import { Selfview } from '@pexip/media-components'
 
 import './Conference.scss'
-import { setUserSettingsEventListener } from 'src/utils/user-settings'
+import { type UserSettings, setUserSettingsEventListener } from 'src/utils/user-settings'
 
 export const Conference = (): JSX.Element => {
   const { state, swapVideos, changeDevices } = useConferenceContext()
@@ -38,12 +38,14 @@ export const Conference = (): JSX.Element => {
     return <Selfview localMediaStream={localStream} isVideoInputMuted={false} shouldShowUserAvatar={false} username={''} data-testid='SelfView'/>
   }, [videoTrackId])
 
+  const handleUserSettings = (userSettings: UserSettings): void => {
+    changeDevices(userSettings).catch((e) => { console.error(e) })
+  }
+
   useEffect(() => {
-    // Subscribe to changes to user settings
-    setUserSettingsEventListener((userSettings) => {
-      changeDevices(userSettings).catch((e) => { console.error(e) })
-    })
-  }, [])
+    // Subscribe to changes after each rendering
+    setUserSettingsEventListener(handleUserSettings)
+  })
 
   return (
     <div className='Conference' data-testid='Conference'>

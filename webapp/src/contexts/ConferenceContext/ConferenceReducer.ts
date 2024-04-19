@@ -33,7 +33,7 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
     case ConferenceActionType.ChangeDevices: {
       return {
         ...prevState,
-        localStream: action.body.localStream,
+        localStream: action.body.localStream !== undefined ? action.body.localStream : prevState.localStream,
         audioSinkId: action.body.audioSinkId !== undefined ? action.body.audioSinkId : prevState.audioSinkId
       }
     }

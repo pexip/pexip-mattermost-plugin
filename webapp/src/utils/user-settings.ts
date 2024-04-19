@@ -1,5 +1,4 @@
 import { getPluginServerRoute } from './http-requests'
-// import { EventEmitter } from 'event-emitter3'
 
 const inputVideoDeviceIdKey = 'pexip:inputVideoDeviceId'
 const inputAudioDeviceIdKey = 'pexip:inputAudioDeviceId'
@@ -19,7 +18,6 @@ interface InteractiveDialog {
   notify_on_cancel: boolean
 }
 
-// const emitter = new EventEmitter()
 let userSettingsCallback: (userSettings: UserSettings) => void
 
 export const openUserSettingsDialog = async (): Promise<void> => {

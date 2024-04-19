@@ -5,7 +5,9 @@ import { type ConferenceState } from '../ConferenceState'
 export const toggleMuteAudio = async (state: ConferenceState, dispatch: React.Dispatch<ConferenceAction>): Promise<void> => {
   const { client, audioMuted, localStream } = state
 
-  if (audioMuted) {
+  if (!audioMuted) {
+    localStream?.getAudioTracks().forEach((track) => { track.stop() })
+  } else {
     const userSettings = await getUserSettings()
 
     const newStream = await navigator.mediaDevices.getUserMedia({
@@ -25,8 +27,6 @@ export const toggleMuteAudio = async (state: ConferenceState, dispatch: React.Di
         localStream: newStream
       }
     })
-  } else {
-    localStream?.getAudioTracks().forEach((track) => { track.stop() })
   }
 
   dispatch({
