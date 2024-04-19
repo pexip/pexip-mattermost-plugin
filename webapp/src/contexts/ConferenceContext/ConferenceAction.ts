@@ -2,7 +2,6 @@ export enum ConferenceActionType {
   SetConfig,
   Connecting,
   Connected,
-  ChangeDevices,
   Disconnected,
   Error,
   RemoteStream,
@@ -11,7 +10,8 @@ export enum ConferenceActionType {
   ToggleMuteVideo,
   TogglePresenting,
   RemotePresentationStream,
-  SwapVideos
+  SwapVideos,
+  ChangeDevices
 }
 
 export interface ConferenceAction {

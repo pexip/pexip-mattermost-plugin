@@ -78,8 +78,8 @@ const ConferenceContextProvider = (props: any): JSX.Element => {
     toggleMuteAudio: async () => { toggleMuteAudio(state, dispatch).catch((e) => { console.error(e) }) },
     toggleMuteVideo: async () => { toggleMuteVideo(state, dispatch).catch((e) => { console.error(e) }) },
     togglePresenting: async () => { toggleMutePresenting(state, dispatch).catch((e) => { console.error(e) }) },
-    changeDevices: async (userSettings: UserSettings) => { changeDevices(userSettings, state, dispatch).catch((e) => { console.error(e) }) },
     swapVideos: async () => { dispatch({ type: ConferenceActionType.SwapVideos }) },
+    changeDevices: async (userSettings: UserSettings) => { changeDevices(userSettings, state, dispatch).catch((e) => { console.error(e) }) },
     state
   }), [state])
 
