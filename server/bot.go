@@ -13,7 +13,7 @@ const (
 	botUserName    = "pexip"
 	botDisplayName = "Pexip Video Connect"
 	botDescription = "A bot account created by the Pexip Video Connect plugin."
-	iconFilePath   = "./plugins/com.pexip.pexip-video-connect/assets/icon.png"
+	iconFilePath   = "./plugins/com.pexip.pexip-video-connect/public/icon.svg"
 )
 
 func (p *Plugin) initializeBot() error {

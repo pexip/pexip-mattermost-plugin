@@ -6,9 +6,9 @@ import { Toolbar } from './Toolbar/Toolbar'
 import { ParticipantList } from './ParticipantList/ParticipantList'
 import { Tooltip } from '../Tooltip/Tooltip'
 import { Selfview } from '@pexip/media-components'
+import { type UserSettings, setUserSettingsEventListener } from 'src/utils/user-settings'
 
 import './Conference.scss'
-import { type UserSettings, setUserSettingsEventListener } from 'src/utils/user-settings'
 
 export const Conference = (): JSX.Element => {
   const { state, swapVideos, changeDevices } = useConferenceContext()

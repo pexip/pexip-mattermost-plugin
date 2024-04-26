@@ -134,7 +134,7 @@ const createUserSettingsDialog = (
 
   const dialog: InteractiveDialog = {
     title,
-    icon_url: getPluginServerRoute() + '/public/icon.png',
+    icon_url: getPluginServerRoute() + '/public/icon.svg',
     elements,
     submit_label: 'Change',
     notify_on_cancel: false
