@@ -8,7 +8,13 @@ Start by cloning the repository:
 git clone --depth 1 https://github.com/pexip/pexip-matermost-plugin com.pexip.pexip-video-connect
 ```
 
-To compile you will need **node v18** and **npm v8**. This is important, because if you use another version of node, you will find some compatibility problems between packages.
+To compile the project you will need at least the following versions:
+
+| NodeJS   | npm     |
+| -------- | ------- |
+| v20.11.1 | v10.2.4 |
+
+This is important, because if you use another version of node, you will find some compatibility problems between packages.
 
 You can download and install nvm to manage your node versions by following the instructions [here](https://github.com/nvm-sh/nvm). Once you've setup the project simply run `nvm i` within the root folder to use the suggested version of node.
 
@@ -29,7 +35,6 @@ dist/com.pexip.pexip-video-connect-<version>.tar.gz
 This plugin was developed using the template provided by Mattermost: https://github.com/mattermost/mattermost-plugin-starter-template.
 
 To learn more about plugins, see [Mattermost documentation](https://developers.mattermost.com/extend/plugins/).
-
 
 ## How to launch a Mattermost in Docker
 
