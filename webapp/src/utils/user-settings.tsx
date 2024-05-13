@@ -1,3 +1,4 @@
+import React from 'react'
 import { getPluginServerRoute } from './http-requests'
 
 const inputVideoDeviceIdKey = 'pexip:inputVideoDeviceId'
@@ -11,7 +12,7 @@ export interface UserSettings {
 }
 
 interface InteractiveDialog {
-  title: string
+  title: JSX.Element
   icon_url: string
   elements: any[]
   submit_label: string
@@ -21,7 +22,7 @@ interface InteractiveDialog {
 let userSettingsCallback: (userSettings: UserSettings) => void
 
 export const openUserSettingsDialog = async (): Promise<void> => {
-  const title = 'Pexip Settings'
+  const title = <span style={{ marginLeft: '0.5em' }}>Pexip Settings</span>
   const mediaDevices = await navigator.mediaDevices.enumerateDevices()
   const {
     inputVideoDeviceId: selectedInputVideoDeviceId,
@@ -35,9 +36,9 @@ export const openUserSettingsDialog = async (): Promise<void> => {
     selectedInputVideoDeviceId,
     selectedInputAudioDeviceId,
     selectedOutputDeviceId
-  );
+  )
   // https://mattermost.atlassian.net/browse/MM-15340
-  (window as any).openInteractiveDialog({
+  ;(window as any).openInteractiveDialog({
     dialog,
     url: getPluginServerRoute() + '/api/change_user_settings'
   })
@@ -90,7 +91,7 @@ export const setUserSettingsEventListener = (callback: (userSettings: UserSettin
 }
 
 const createUserSettingsDialog = (
-  title: string,
+  title: JSX.Element,
   mediaDevices: MediaDeviceInfo[],
   selectedInputVideoDeviceId: string,
   selectedInputAudioDeviceId: string,
@@ -102,19 +103,24 @@ const createUserSettingsDialog = (
       name: 'inputVideoDeviceId',
       type: 'select',
       default: selectedInputVideoDeviceId,
-      options: mediaDevices.filter((device) => device.kind === 'videoinput').map((device) => ({
-        text: device.label,
-        value: device.deviceId
-      }))
-    }, {
+      options: mediaDevices
+        .filter((device) => device.kind === 'videoinput')
+        .map((device) => ({
+          text: device.label,
+          value: device.deviceId
+        }))
+    },
+    {
       display_name: 'Microphone',
       name: 'inputAudioDeviceId',
       type: 'select',
       default: selectedInputAudioDeviceId,
-      options: mediaDevices.filter((device) => device.kind === 'audioinput').map((device) => ({
-        text: device.label,
-        value: device.deviceId
-      }))
+      options: mediaDevices
+        .filter((device) => device.kind === 'audioinput')
+        .map((device) => ({
+          text: device.label,
+          value: device.deviceId
+        }))
     }
   ]
 
@@ -125,10 +131,12 @@ const createUserSettingsDialog = (
       name: 'outputAudioDeviceId',
       type: 'select',
       default: selectedOutputAudioDeviceId,
-      options: mediaDevices.filter((device) => device.kind === 'audiooutput').map((device) => ({
-        text: device.label,
-        value: device.deviceId
-      }))
+      options: mediaDevices
+        .filter((device) => device.kind === 'audiooutput')
+        .map((device) => ({
+          text: device.label,
+          value: device.deviceId
+        }))
     })
   }
 
