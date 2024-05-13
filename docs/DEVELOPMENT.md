@@ -20,7 +20,14 @@ You can download and install nvm to manage your node versions by following the i
 
 For compiling the server part you will need to have **Go** installed in your system. You can check how install it in the [Go docs](https://go.dev/doc/install).
 
-Build the plugin, you only have to run the following command:
+If you are using Linux (e.g. Ubuntu 24.04), you can install all **Go** dependencies with the following commands:
+
+```bash
+$ sudo apt install golang-go
+$ sudo snap install golangci-lint --classic
+```
+
+To build the plugin, you only have to run the following command:
 
 ```bash
 make
@@ -46,19 +53,19 @@ $ docker run --name mattermost-preview -d --publish 8065:8065 mattermost/matterm
 
 For now on, we will suppose that you are using the docker container and the app is accessible from https://localhost:8065:
 
-- Launch mattermost in a web browser: https://localhost:8065
+-   Launch mattermost in a web browser: https://localhost:8065
 
-- Introduce all the mandatory info: username, password, organization, url, etc.
+-   Introduce all the mandatory info: username, password, organization, url, etc.
 
 ## How to upload the plugin
 
-- Open the admin web page: https://localhost:8065/admin_console
+-   Open the admin web page: https://localhost:8065/admin_console
 
-- In the left menu go to the **Plugins** section and there select **Plugin Management**.
+-   In the left menu go to the **Plugins** section and there select **Plugin Management**.
 
-- In the section **Upload Plugin** click on **Choose File** and select the file `dist/com.pexip.pexip-video-connect-<version>.tar.gz`.
+-   In the section **Upload Plugin** click on **Choose File** and select the file `dist/com.pexip.pexip-video-connect-<version>.tar.gz`.
 
-- Click on **Upload**.
+-   Click on **Upload**.
 
 ## Configuration
 
