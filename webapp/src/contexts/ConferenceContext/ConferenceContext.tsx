@@ -60,7 +60,17 @@ const ConferenceContextProvider = (props: any): JSX.Element => {
   }
 
   useEffect(() => {
-    // TODO: Update the device state and trigger changeDevices if needed
+    navigator.mediaDevices.ondevicechange = async () => {
+      const devicesIds = await filterMediaDevices({
+        inputVideoDeviceId: state.inputVideoDeviceId,
+        inputAudioDeviceId: state.inputAudioDeviceId,
+        outputAudioDeviceId: state.outputAudioDeviceId
+      })
+      const { inputAudioDeviceId, inputVideoDeviceId, outputAudioDeviceId } = devicesIds
+      changeDevices({ inputAudioDeviceId, inputVideoDeviceId, outputAudioDeviceId }, state, dispatch).catch((e) => {
+        console.error(e)
+      })
+    }
   }, [])
 
   const value = useMemo(

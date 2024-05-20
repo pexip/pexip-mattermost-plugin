@@ -11,6 +11,12 @@ const mockConfig: ConferenceConfig = {
   hostPin: '0000'
 }
 
+Object.defineProperty(global.navigator, 'mediaDevices', {
+  value: {
+    ondevicechange: jest.fn()
+  }
+})
+
 jest.mock('@pexip/infinity', () => {}, { virtual: true })
 
 jest.mock('./components/Conference/Conference', () => {
@@ -38,7 +44,7 @@ describe('App component', () => {
   it('should render', () => {
     render(
       <ConferenceContextProvider>
-        <App config={mockConfig}/>
+        <App config={mockConfig} />
       </ConferenceContextProvider>
     )
     const app = screen.getByTestId('App')

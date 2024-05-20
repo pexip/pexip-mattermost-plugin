@@ -34,7 +34,8 @@ Object.defineProperty(global.navigator, 'mediaDevices', {
   value: {
     getUserMedia: mockGetUserMedia,
     getDisplayMedia: mockGetDisplayMedia,
-    enumerateDevices: mockEnumerateDevices
+    enumerateDevices: mockEnumerateDevices,
+    ondevicechange: jest.fn()
   }
 })
 
