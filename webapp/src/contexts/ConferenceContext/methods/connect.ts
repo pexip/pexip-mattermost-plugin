@@ -1,12 +1,14 @@
 import { ClientCallType, createCallSignals, createInfinityClient, createInfinityClientSignals } from '@pexip/infinity'
 import { ConferenceActionType, type ConferenceAction } from '../ConferenceAction'
-import { getUserSettings } from 'src/utils/user-settings'
 
 interface ConnectParams {
   host: string
   conferenceAlias: string
   hostPin: string
   displayName: string
+  inputVideoDeviceId: string
+  inputAudioDeviceId: string
+  outputAudioDeviceId: string
 }
 
 export const connect = async (params: ConnectParams, dispatch: React.Dispatch<ConferenceAction>): Promise<void> => {
@@ -52,10 +54,9 @@ export const connect = async (params: ConnectParams, dispatch: React.Dispatch<Co
   let localStream: MediaStream
   let response
   try {
-    const userSettings = await getUserSettings()
     localStream = await navigator.mediaDevices.getUserMedia({
-      audio: { deviceId: userSettings.inputAudioDeviceId },
-      video: { deviceId: userSettings.inputVideoDeviceId }
+      audio: { deviceId: params.inputAudioDeviceId },
+      video: { deviceId: params.inputVideoDeviceId }
     })
 
     response = await client.call({
@@ -83,6 +84,14 @@ export const connect = async (params: ConnectParams, dispatch: React.Dispatch<Co
       body: {
         client,
         localStream
+      }
+    })
+    dispatch({
+      type: ConferenceActionType.ChangeDevices,
+      body: {
+        inputVideoDeviceId: params.inputVideoDeviceId,
+        inputAudioDeviceId: params.inputAudioDeviceId,
+        outputAudioDeviceId: params.outputAudioDeviceId
       }
     })
   } else {

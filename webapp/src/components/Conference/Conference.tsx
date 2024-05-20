@@ -6,7 +6,7 @@ import { Toolbar } from './Toolbar/Toolbar'
 import { ParticipantList } from './ParticipantList/ParticipantList'
 import { Tooltip } from '../Tooltip/Tooltip'
 import { Selfview } from '@pexip/media-components'
-import { type UserSettings, setUserSettingsEventListener } from 'src/utils/user-settings'
+import { type UserSettings, setUserSettingsCallback } from 'src/utils/user-settings'
 
 import './Conference.scss'
 
@@ -16,7 +16,7 @@ export const Conference = (): JSX.Element => {
     channel,
     localStream,
     remoteStream,
-    audioSinkId,
+    outputAudioDeviceId,
     videoMuted,
     presentationStream,
     presentationInMain
@@ -35,38 +35,46 @@ export const Conference = (): JSX.Element => {
 
   // Only re-render the selfie if the videoTrack id changes
   const selfie = useMemo((): JSX.Element => {
-    return <Selfview localMediaStream={localStream} isVideoInputMuted={false} shouldShowUserAvatar={false} username={''} data-testid='SelfView'/>
+    return (
+      <Selfview
+        localMediaStream={localStream}
+        isVideoInputMuted={false}
+        shouldShowUserAvatar={false}
+        username={''}
+        data-testid='SelfView'
+      />
+    )
   }, [videoTrackId])
 
   const handleUserSettings = (userSettings: UserSettings): void => {
-    changeDevices(userSettings).catch((e) => { console.error(e) })
+    changeDevices(userSettings).catch((e) => {
+      console.error(e)
+    })
   }
 
   useEffect(() => {
     // Subscribe to changes after each rendering
-    setUserSettingsEventListener(handleUserSettings)
+    setUserSettingsCallback(handleUserSettings)
   })
 
   return (
     <div className='Conference' data-testid='Conference'>
       <div className='header'>{channel?.display_name} Room</div>
       <div className='conference-container'>
-
         <div className='video-container main'>
-          <Video srcObject={presentationInMain ? presentationStream : remoteStream} data-testid='MainVideo' sinkId={audioSinkId} />
+          <Video
+            srcObject={presentationInMain ? presentationStream : remoteStream}
+            data-testid='MainVideo'
+            sinkId={outputAudioDeviceId}
+          />
         </div>
 
         <div className='pip' ref={pipRef}>
-
-          {(localStream != null && !videoMuted) && (
-            <div className='video-container local'>
-              {selfie}
-            </div>
-          )}
+          {localStream != null && !videoMuted && <div className='video-container local'>{selfie}</div>}
 
           {presentationStream != null && (
             <div className='video-container secondary'>
-              <Video srcObject={!presentationInMain ? presentationStream : remoteStream} sinkId={audioSinkId} />
+              <Video srcObject={!presentationInMain ? presentationStream : remoteStream} sinkId={outputAudioDeviceId} />
               <Tooltip text='Swap videos' position='bottomCenter' className='SwapVideosTooltipContainer'>
                 <div className='exchange-panel' onClick={swapVideos}>
                   <Icon source={IconTypes.IconArrowRight} />
@@ -77,16 +85,19 @@ export const Conference = (): JSX.Element => {
           )}
 
           {((localStream != null && !videoMuted) || presentationStream != null) && (
-            <Tooltip text={pipHidden ? 'Show videos' : 'Hide videos'} position='bottomLeft' className='TogglePipTooltipContainer'>
+            <Tooltip
+              text={pipHidden ? 'Show videos' : 'Hide videos'}
+              position='bottomLeft'
+              className='TogglePipTooltipContainer'
+            >
               <button className='toggle-pip-button' data-testid='TogglePipButton' onClick={handleTogglePip}>
-                <Icon source={IconTypes.IconArrowRight}/>
+                <Icon source={IconTypes.IconArrowRight} />
               </button>
             </Tooltip>
           )}
-
         </div>
 
-        <Toolbar/>
+        <Toolbar />
       </div>
       <ParticipantList />
     </div>

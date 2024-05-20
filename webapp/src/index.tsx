@@ -13,12 +13,12 @@ import { ConferenceContextProvider } from './contexts/ConferenceContext/Conferen
 import { DisplayNameType } from './types/DisplayNameType'
 import { type PluginSettings } from './types/PluginSettings'
 import { getMattermostStore, setMattermostStore } from './utils/mattermost-store'
-import { type UserSettings, setUserSettings } from './utils/user-settings'
+import { type UserSettings, triggerUserSettingsEvent } from './utils/user-settings'
 
 import '@pexip/components/dist/style.css'
 
 const pluginId = manifest.id
-const icon = <i id='pexip-vmr-plugin-button' className='icon fa fa-video-camera'/>
+const icon = <i id='pexip-vmr-plugin-button' className='icon fa fa-video-camera' />
 const dropDownText = 'Pexip Video Connect'
 
 let conferenceConfig: ConferenceConfig
@@ -34,21 +34,18 @@ class Plugin {
   private store: Store<GlobalState, Action>
   private rhsPlugin: RHSPlugin
 
-  initialize (registry: PluginRegistry, store: Store<GlobalState, Action>): void {
+  initialize(registry: PluginRegistry, store: Store<GlobalState, Action>): void {
     this.store = store
     setMattermostStore(store)
     registry.registerChannelHeaderButtonAction(icon, this.action.bind(this), dropDownText)
-    registry.registerWebSocketEventHandler(
-      'custom_' + manifest.id + '_change_user_settings',
-      (message) => {
-        setUserSettings(message.data as UserSettings)
-      }
-    )
+    registry.registerWebSocketEventHandler('custom_' + manifest.id + '_change_user_settings', (message) => {
+      triggerUserSettingsEvent(message.data as UserSettings)
+    })
 
     this.rhsPlugin = registry.registerRightHandSidebarComponent(RightHandSidebarComponent, 'Pexip Video Connect')
   }
 
-  private async action (channel: Channel, channelMembership: ChannelMembership): Promise<void> {
+  private async action(channel: Channel, channelMembership: ChannelMembership): Promise<void> {
     const settings = await getPluginSettings()
     const userId: string = channelMembership.user_id
     conferenceConfig = await this.getConferenceConfig(settings, userId)
@@ -58,14 +55,19 @@ class Plugin {
     } else {
       const vmr = settings.prefix + channel.name
       const channelId: string = channel.id
-      notifyJoinConference(channelId).catch((error) => { console.error(error) })
+      notifyJoinConference(channelId).catch((error) => {
+        console.error(error)
+      })
       const { node, hostPin, displayName } = conferenceConfig
-      window.open(`https://${node}/webapp3/m/${vmr}/express?pin=${hostPin}&name=${displayName}`,
-        '', 'width=800;height=800')
+      window.open(
+        `https://${node}/webapp3/m/${vmr}/express?pin=${hostPin}&name=${displayName}`,
+        '',
+        'width=800;height=800'
+      )
     }
   }
 
-  private async getConferenceConfig (settings: PluginSettings, userId: string): Promise<ConferenceConfig> {
+  private async getConferenceConfig(settings: PluginSettings, userId: string): Promise<ConferenceConfig> {
     const state: GlobalState = getMattermostStore().getState()
     const config = getConfig(state)
     if (config.SiteURL != null) {

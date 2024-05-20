@@ -9,7 +9,9 @@ interface ConferenceState {
   client: Client | null
   localStream: MediaStream | undefined
   remoteStream: MediaStream | undefined
-  audioSinkId: string | undefined
+  inputVideoDeviceId: string
+  inputAudioDeviceId: string
+  outputAudioDeviceId: string
   presentationStream: MediaStream | undefined
   connectionState: ConnectionState
   audioMuted: boolean

@@ -22,7 +22,7 @@ window.MediaStream = MediaStream
 
 jest.mock('@pexip/components', () => ({
   Icon: () => <div />,
-  Video: (props: any) => <video data-srcobject={JSON.stringify(props.srcObject)} data-testid={props['data-testid']}/>,
+  Video: (props: any) => <video data-srcobject={JSON.stringify(props.srcObject)} data-testid={props['data-testid']} />,
   IconTypes: {
     IconMicrophoneOn: '',
     IconMicrophoneOff: ''
@@ -78,14 +78,14 @@ describe('Conference', () => {
       expect(selfView).toBeInTheDocument()
     })
 
-    it('shouldn\'t be rendered if localStream == null', () => {
+    it("shouldn't be rendered if localStream == null", () => {
       mockLocalStream = null
       render(<Conference />)
       const selfView = screen.queryByTestId('SelfView')
       expect(selfView).not.toBeInTheDocument()
     })
 
-    it('shouldn\'t be rendered if videoMuted', () => {
+    it("shouldn't be rendered if videoMuted", () => {
       mockVideoMuted = true
       render(<Conference />)
       const selfView = screen.queryByTestId('SelfView')
@@ -140,14 +140,14 @@ describe('Conference', () => {
       expect(pipButton).toBeInTheDocument()
     })
 
-    it('shouldn\'t be displayed if localStream == null and presentationStream == null', () => {
+    it("shouldn't be displayed if localStream == null and presentationStream == null", () => {
       mockLocalStream = null
       render(<Conference />)
       const pipButton = screen.queryByTestId('TogglePipButton')
       expect(pipButton).not.toBeInTheDocument()
     })
 
-    it('shouldn\'t be displayed if localStream != null and videoMuted == true', () => {
+    it("shouldn't be displayed if localStream != null and videoMuted == true", () => {
       mockVideoMuted = true
       render(<Conference />)
       const pipButton = screen.queryByTestId('TogglePipButton')

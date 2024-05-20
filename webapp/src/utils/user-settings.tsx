@@ -1,10 +1,6 @@
 import React from 'react'
 import { getPluginServerRoute } from './http-requests'
 
-const inputVideoDeviceIdKey = 'pexip:inputVideoDeviceId'
-const inputAudioDeviceIdKey = 'pexip:inputAudioDeviceId'
-const outputAudioDeviceKey = 'pexip:outputAudioDeviceId'
-
 export interface UserSettings {
   inputVideoDeviceId: string
   inputAudioDeviceId: string
@@ -21,22 +17,11 @@ interface InteractiveDialog {
 
 let userSettingsCallback: (userSettings: UserSettings) => void
 
-export const openUserSettingsDialog = async (): Promise<void> => {
+export const openUserSettingsDialog = async (currentSettings: UserSettings): Promise<void> => {
   const title = <span style={{ marginLeft: '0.5em' }}>Pexip Settings</span>
   const mediaDevices = await navigator.mediaDevices.enumerateDevices()
-  const {
-    inputVideoDeviceId: selectedInputVideoDeviceId,
-    inputAudioDeviceId: selectedInputAudioDeviceId,
-    outputAudioDeviceId: selectedOutputDeviceId
-  } = await getUserSettings()
 
-  const dialog = createUserSettingsDialog(
-    title,
-    mediaDevices,
-    selectedInputVideoDeviceId,
-    selectedInputAudioDeviceId,
-    selectedOutputDeviceId
-  )
+  const dialog = createUserSettingsDialog(title, currentSettings, mediaDevices)
   // https://mattermost.atlassian.net/browse/MM-15340
   ;(window as any).openInteractiveDialog({
     dialog,
@@ -44,65 +29,25 @@ export const openUserSettingsDialog = async (): Promise<void> => {
   })
 }
 
-export const getUserSettings = async (): Promise<UserSettings> => {
-  let inputVideoDeviceId = localStorage.getItem(inputVideoDeviceIdKey) ?? ''
-  let inputAudioDeviceId = localStorage.getItem(inputAudioDeviceIdKey) ?? ''
-  let outputAudioDeviceId = localStorage.getItem(outputAudioDeviceKey) ?? ''
-
-  const mediaDevices = await navigator.mediaDevices.enumerateDevices()
-
-  if (inputVideoDeviceId === '') {
-    const videoDevices = mediaDevices.filter((device) => device.kind === 'videoinput')
-    if (videoDevices.length > 0) {
-      inputVideoDeviceId = videoDevices[0].deviceId
-    }
-  }
-
-  if (inputAudioDeviceId === '') {
-    const audioDevices = mediaDevices.filter((device) => device.kind === 'audioinput')
-    if (audioDevices.length > 0) {
-      inputAudioDeviceId = audioDevices[0].deviceId
-    }
-  }
-
-  if (outputAudioDeviceId === '') {
-    const audioDevices = mediaDevices.filter((device) => device.kind === 'audiooutput')
-    if (audioDevices.length > 0) {
-      outputAudioDeviceId = audioDevices[0].deviceId
-    }
-  }
-
-  return {
-    inputVideoDeviceId,
-    inputAudioDeviceId,
-    outputAudioDeviceId
-  }
-}
-
-export const setUserSettings = (userSettings: UserSettings): void => {
-  localStorage.setItem(inputVideoDeviceIdKey, userSettings.inputVideoDeviceId)
-  localStorage.setItem(inputAudioDeviceIdKey, userSettings.inputAudioDeviceId)
-  localStorage.setItem(outputAudioDeviceKey, userSettings.outputAudioDeviceId)
+export const triggerUserSettingsEvent = (userSettings: UserSettings): void => {
   userSettingsCallback(userSettings)
 }
 
-export const setUserSettingsEventListener = (callback: (userSettings: UserSettings) => void): void => {
+export const setUserSettingsCallback = (callback: (userSettings: UserSettings) => void): void => {
   userSettingsCallback = callback
 }
 
 const createUserSettingsDialog = (
   title: JSX.Element,
-  mediaDevices: MediaDeviceInfo[],
-  selectedInputVideoDeviceId: string,
-  selectedInputAudioDeviceId: string,
-  selectedOutputAudioDeviceId: string
+  currentSettings: UserSettings,
+  mediaDevices: MediaDeviceInfo[]
 ): InteractiveDialog => {
   const elements = [
     {
       display_name: 'Camera',
       name: 'inputVideoDeviceId',
       type: 'select',
-      default: selectedInputVideoDeviceId,
+      default: currentSettings.inputVideoDeviceId,
       options: mediaDevices
         .filter((device) => device.kind === 'videoinput')
         .map((device) => ({
@@ -114,7 +59,7 @@ const createUserSettingsDialog = (
       display_name: 'Microphone',
       name: 'inputAudioDeviceId',
       type: 'select',
-      default: selectedInputAudioDeviceId,
+      default: currentSettings.inputAudioDeviceId,
       options: mediaDevices
         .filter((device) => device.kind === 'audioinput')
         .map((device) => ({
@@ -130,7 +75,7 @@ const createUserSettingsDialog = (
       display_name: 'Speaker',
       name: 'outputAudioDeviceId',
       type: 'select',
-      default: selectedOutputAudioDeviceId,
+      default: currentSettings.outputAudioDeviceId,
       options: mediaDevices
         .filter((device) => device.kind === 'audiooutput')
         .map((device) => ({

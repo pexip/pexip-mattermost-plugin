@@ -43,26 +43,30 @@ const mockDisconnect = jest.fn().mockResolvedValue(undefined)
 const mockMuteAudio = jest.fn()
 const mockMuteVideo = jest.fn()
 const mockSetStream = jest.fn()
-jest.mock('@pexip/infinity', () => ({
-  createInfinityClientSignals: () => ({
-    onParticipants: { add: jest.fn() },
-    onDisconnected: { add: jest.fn() }
+jest.mock(
+  '@pexip/infinity',
+  () => ({
+    createInfinityClientSignals: () => ({
+      onParticipants: { add: jest.fn() },
+      onDisconnected: { add: jest.fn() }
+    }),
+    createCallSignals: () => ({
+      onRemoteStream: { add: jest.fn() },
+      onRemotePresentationStream: { add: jest.fn() }
+    }),
+    createInfinityClient: () => ({
+      call: mockCall,
+      disconnect: mockDisconnect,
+      mute: mockMuteAudio,
+      muteVideo: mockMuteVideo,
+      setStream: mockSetStream
+    }),
+    ClientCallType: {
+      AudioVideo: 0
+    }
   }),
-  createCallSignals: () => ({
-    onRemoteStream: { add: jest.fn() },
-    onRemotePresentationStream: { add: jest.fn() }
-  }),
-  createInfinityClient: () => ({
-    call: mockCall,
-    disconnect: mockDisconnect,
-    mute: mockMuteAudio,
-    muteVideo: mockMuteVideo,
-    setStream: mockSetStream
-  }),
-  ClientCallType: {
-    AudioVideo: 0
-  }
-}), { virtual: true })
+  { virtual: true }
+)
 
 const mockConfig: ConferenceConfig = {
   node: 'node-mock',
@@ -114,23 +118,33 @@ const ConferenceContextTester = (): JSX.Element => {
   }
 
   const handleConnect = (): void => {
-    connect(mockChannel).catch((e) => { console.error(e) })
+    connect(mockChannel).catch((e) => {
+      console.error(e)
+    })
   }
 
   const handleDisconnect = (): void => {
-    disconnect().catch((e) => { console.error(e) })
+    disconnect().catch((e) => {
+      console.error(e)
+    })
   }
 
   const handleMuteAudio = (): void => {
-    toggleMuteAudio().catch((e) => { console.error(e) })
+    toggleMuteAudio().catch((e) => {
+      console.error(e)
+    })
   }
 
   const handleMuteVideo = (): void => {
-    toggleMuteVideo().catch((e) => { console.error(e) })
+    toggleMuteVideo().catch((e) => {
+      console.error(e)
+    })
   }
 
   const handlePresenting = (): void => {
-    togglePresenting().catch((e) => { console.error(e) })
+    togglePresenting().catch((e) => {
+      console.error(e)
+    })
   }
 
   const handleSwapVideos = (): void => {
@@ -138,7 +152,9 @@ const ConferenceContextTester = (): JSX.Element => {
   }
 
   const handleChangeDevices = (): void => {
-    changeDevices(mockUserSettings).catch((e) => { console.error(e) })
+    changeDevices(mockUserSettings).catch((e) => {
+      console.error(e)
+    })
   }
 
   return (
@@ -147,7 +163,7 @@ const ConferenceContextTester = (): JSX.Element => {
       <span data-testid='connectionState'>{state.connectionState}</span>
       <span data-testid='channel'>{JSON.stringify(state.channel)}</span>
       <span data-testid='errorMessage'>{state.errorMessage}</span>
-      <span data-testid='audioSinkId'>{state.audioSinkId}</span>
+      <span data-testid='outputAudioDeviceId'>{state.outputAudioDeviceId}</span>
       <span data-testid='audioMuted'>{state.audioMuted ? 'true' : 'false'}</span>
       <span data-testid='videoMuted'>{state.videoMuted ? 'true' : 'false'}</span>
       <span data-testid='presenting'>{state.presenting ? 'true' : 'false'}</span>
@@ -185,9 +201,7 @@ describe('ConferenceContext', () => {
   it('should trigger an exception if not inside the ConferenceContextProvider', () => {
     expect.assertions(1)
     try {
-      render(
-        <ConferenceContextTester />
-      )
+      render(<ConferenceContextTester />)
     } catch (e) {
       expect(e.message).toBe('useConferenceContext has to be used within <ConferenceContextProvider>')
     }
@@ -746,7 +760,7 @@ describe('ConferenceContext', () => {
   })
 
   describe('changeDevices', () => {
-    it('should change the audioSinkId in the state', async () => {
+    it('should change the outputAudioDeviceId in the state', async () => {
       render(
         <ConferenceContextProvider>
           <ConferenceContextTester />
@@ -756,8 +770,8 @@ describe('ConferenceContext', () => {
         const button = screen.getByTestId('buttonChangeDevices')
         fireEvent.click(button)
       })
-      const audioSinkId = screen.getByTestId('audioSinkId')
-      expect(audioSinkId.innerHTML).toBe(mockUserSettings.outputAudioDeviceId)
+      const outputAudioDeviceId = screen.getByTestId('outputAudioDeviceId')
+      expect(outputAudioDeviceId.innerHTML).toBe(mockUserSettings.outputAudioDeviceId)
     })
 
     it('should call getUserMedia with the proper deviceId for audio and video', async () => {

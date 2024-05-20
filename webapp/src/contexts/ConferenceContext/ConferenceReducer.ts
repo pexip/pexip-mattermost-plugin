@@ -24,22 +24,38 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
         connectionState: ConnectionState.Connected,
         client: action.body.client,
         localStream: action.body.localStream,
-        audioSinkId: action.body.audioSinkId,
         audioMuted: false,
         videoMuted: false,
         presenting: false
       }
     }
     case ConferenceActionType.ChangeDevices: {
+      const inputVideoDeviceId: string = action.body.inputVideoDeviceId
+      const inputAudioDeviceId: string = action.body.inputAudioDeviceId
+      const outputAudioDeviceId: string = action.body.outputAudioDeviceId
+
       return {
         ...prevState,
-        localStream: action.body.localStream !== undefined ? action.body.localStream : prevState.localStream,
-        audioSinkId: action.body.audioSinkId !== undefined ? action.body.audioSinkId : prevState.audioSinkId
+        inputVideoDeviceId,
+        inputAudioDeviceId,
+        outputAudioDeviceId
       }
     }
+
+    case ConferenceActionType.UpdateLocalStream: {
+      return {
+        ...prevState,
+        localStream: action.body.localStream !== undefined ? action.body.localStream : prevState.localStream
+      }
+    }
+
     case ConferenceActionType.Disconnected: {
-      prevState.localStream?.getTracks().forEach((track) => { track.stop() })
-      prevState.presentationStream?.getTracks().forEach((track) => { track.stop() })
+      prevState.localStream?.getTracks().forEach((track) => {
+        track.stop()
+      })
+      prevState.presentationStream?.getTracks().forEach((track) => {
+        track.stop()
+      })
 
       return {
         ...prevState,

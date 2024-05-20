@@ -1,14 +1,26 @@
-import { type UserSettings } from 'src/utils/user-settings'
 import { ConferenceActionType, type ConferenceAction } from '../ConferenceAction'
 import { type ConferenceState } from '../ConferenceState'
 
-export const changeDevices = async (userSettings: UserSettings, state: ConferenceState, dispatch: React.Dispatch<ConferenceAction>): Promise<void> => {
+export interface DevicesIds {
+  inputAudioDeviceId: string
+  inputVideoDeviceId: string
+  outputAudioDeviceId: string
+}
+
+export const changeDevices = async (
+  devicesIds: DevicesIds,
+  state: ConferenceState,
+  dispatch: React.Dispatch<ConferenceAction>
+): Promise<void> => {
+  const { inputAudioDeviceId, inputVideoDeviceId, outputAudioDeviceId } = devicesIds
   const { audioMuted, videoMuted, localStream, client } = state
 
   dispatch({
     type: ConferenceActionType.ChangeDevices,
     body: {
-      audioSinkId: userSettings.outputAudioDeviceId
+      inputVideoDeviceId,
+      inputAudioDeviceId,
+      outputAudioDeviceId
     }
   })
 
@@ -21,12 +33,11 @@ export const changeDevices = async (userSettings: UserSettings, state: Conferenc
     if (localStream != null) {
       if (localStream.getAudioTracks().length > 0) {
         audioTrack = localStream.getAudioTracks()[0]
-        audioDeviceIdChanged =
-          audioTrack.getSettings().deviceId !== userSettings.inputAudioDeviceId
+        audioDeviceIdChanged = audioTrack.getSettings().deviceId !== inputAudioDeviceId
       }
       if (localStream.getVideoTracks().length > 0) {
         videoTrack = localStream.getVideoTracks()[0]
-        videoDeviceIdChanged = videoTrack.getSettings().deviceId !== userSettings.inputVideoDeviceId
+        videoDeviceIdChanged = videoTrack.getSettings().deviceId !== inputVideoDeviceId
       }
     }
 
@@ -35,8 +46,8 @@ export const changeDevices = async (userSettings: UserSettings, state: Conferenc
 
     if (shouldRequestNewAudio || shouldRequestNewVideo) {
       const newStream = await navigator.mediaDevices.getUserMedia({
-        audio: shouldRequestNewAudio ? { deviceId: userSettings.inputAudioDeviceId } : false,
-        video: shouldRequestNewVideo ? { deviceId: userSettings.inputVideoDeviceId } : false
+        audio: shouldRequestNewAudio ? { deviceId: inputAudioDeviceId } : false,
+        video: shouldRequestNewVideo ? { deviceId: inputVideoDeviceId } : false
       })
 
       if (!audioMuted && audioTrack != null) {
@@ -58,7 +69,7 @@ export const changeDevices = async (userSettings: UserSettings, state: Conferenc
       client?.setStream(newStream)
 
       dispatch({
-        type: ConferenceActionType.ChangeDevices,
+        type: ConferenceActionType.UpdateLocalStream,
         body: {
           localStream: newStream
         }
