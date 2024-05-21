@@ -4,7 +4,7 @@ import { render, screen, fireEvent, act, waitFor } from '@testing-library/react'
 import { type ConferenceConfig } from 'src/types/ConferenceConfig'
 import { ConnectionState } from '../../types/ConnectionState'
 import { type Channel } from 'mattermost-redux/types/channels'
-import { type UserSettings } from 'src/utils/user-settings'
+import { type DevicesIds } from './methods/changeDevices'
 
 const mockAudioTrackStop = jest.fn()
 const mockVideoTrackStop = jest.fn()
@@ -95,7 +95,7 @@ const mockChannel: Channel = {
   group_constrained: false
 }
 
-const mockUserSettings: UserSettings = {
+const mockDevicesIds: DevicesIds = {
   inputAudioDeviceId: 'input-audio-device-id-mock',
   inputVideoDeviceId: 'input-video-device-id-mock',
   outputAudioDeviceId: 'output-audio-device-id-mock'
@@ -153,7 +153,7 @@ const ConferenceContextTester = (): JSX.Element => {
   }
 
   const handleChangeDevices = (): void => {
-    changeDevices(mockUserSettings).catch((e) => {
+    changeDevices(mockDevicesIds).catch((e) => {
       console.error(e)
     })
   }
@@ -772,7 +772,7 @@ describe('ConferenceContext', () => {
         fireEvent.click(button)
       })
       const outputAudioDeviceId = screen.getByTestId('outputAudioDeviceId')
-      expect(outputAudioDeviceId.innerHTML).toBe(mockUserSettings.outputAudioDeviceId)
+      expect(outputAudioDeviceId.innerHTML).toBe(mockDevicesIds.outputAudioDeviceId)
     })
 
     it('should call getUserMedia with the proper deviceId for audio and video', async () => {
@@ -787,8 +787,8 @@ describe('ConferenceContext', () => {
       })
       expect(mockGetUserMedia).toHaveBeenCalledTimes(1)
       expect(mockGetUserMedia).toHaveBeenCalledWith({
-        audio: { deviceId: mockUserSettings.inputAudioDeviceId },
-        video: { deviceId: mockUserSettings.inputVideoDeviceId }
+        audio: { deviceId: mockDevicesIds.inputAudioDeviceId },
+        video: { deviceId: mockDevicesIds.inputVideoDeviceId }
       })
     })
 
@@ -808,7 +808,7 @@ describe('ConferenceContext', () => {
       })
       expect(mockGetUserMedia).toHaveBeenCalledTimes(1)
       expect(mockGetUserMedia).toHaveBeenCalledWith({
-        audio: { deviceId: mockUserSettings.inputAudioDeviceId },
+        audio: { deviceId: mockDevicesIds.inputAudioDeviceId },
         video: false
       })
     })
@@ -830,7 +830,7 @@ describe('ConferenceContext', () => {
       expect(mockGetUserMedia).toHaveBeenCalledTimes(1)
       expect(mockGetUserMedia).toHaveBeenCalledWith({
         audio: false,
-        video: { deviceId: mockUserSettings.inputVideoDeviceId }
+        video: { deviceId: mockDevicesIds.inputVideoDeviceId }
       })
     })
 
@@ -851,6 +851,29 @@ describe('ConferenceContext', () => {
         fireEvent.click(button)
       })
       expect(mockGetUserMedia).not.toHaveBeenCalled()
+    })
+
+    it('should be triggered when "onDeviceChange" received', async () => {
+      const audioDeviceId = '1234'
+      const videoDeviceId = '5678'
+      navigator.mediaDevices.enumerateDevices = jest.fn().mockResolvedValue([
+        {
+          deviceId: audioDeviceId,
+          kind: 'audioinput'
+        },
+        {
+          deviceId: videoDeviceId,
+          kind: 'videoinput'
+        }
+      ])
+      await act(async () => {
+        ;(navigator as any).mediaDevices.ondevicechange()
+      })
+      expect(mockGetUserMedia).toHaveBeenCalledTimes(1)
+      expect(mockGetUserMedia).toHaveBeenCalledWith({
+        audio: { deviceId: audioDeviceId },
+        video: { deviceId: videoDeviceId }
+      })
     })
   })
 })
