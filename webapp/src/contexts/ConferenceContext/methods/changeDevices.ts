@@ -72,11 +72,18 @@ export const changeDevices = async (
           localStream: newStream
         }
       })
+
+      // Get the deviceId from the localStream
+      const newInputAudioDeviceId =
+        newStream.getAudioTracks().length > 0 ? newStream.getAudioTracks()[0].getSettings().deviceId : ''
+      const newInputVideoDeviceId =
+        newStream.getVideoTracks().length > 0 ? newStream.getVideoTracks()[0].getSettings().deviceId : ''
+
       dispatch({
         type: ConferenceActionType.ChangeDevices,
         body: {
-          inputAudioDeviceId,
-          inputVideoDeviceId
+          inputVideoDeviceId: newInputVideoDeviceId,
+          inputAudioDeviceId: newInputAudioDeviceId
         }
       })
     }

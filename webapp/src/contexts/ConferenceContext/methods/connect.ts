@@ -86,11 +86,18 @@ export const connect = async (params: ConnectParams, dispatch: React.Dispatch<Co
         localStream
       }
     })
+
+    // Get the deviceId from the localStream, because in Firefox the user can choose a different device
+    const newInputAudioDeviceId =
+      localStream.getAudioTracks().length > 0 ? localStream.getAudioTracks()[0].getSettings().deviceId : ''
+    const newInputVideoDeviceId =
+      localStream.getVideoTracks().length > 0 ? localStream.getVideoTracks()[0].getSettings().deviceId : ''
+
     dispatch({
       type: ConferenceActionType.ChangeDevices,
       body: {
-        inputVideoDeviceId: params.inputVideoDeviceId,
-        inputAudioDeviceId: params.inputAudioDeviceId,
+        inputVideoDeviceId: newInputVideoDeviceId,
+        inputAudioDeviceId: newInputAudioDeviceId,
         outputAudioDeviceId: params.outputAudioDeviceId
       }
     })
