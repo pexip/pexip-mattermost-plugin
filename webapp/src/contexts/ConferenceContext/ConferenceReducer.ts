@@ -36,9 +36,9 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
 
       return {
         ...prevState,
-        inputVideoDeviceId,
-        inputAudioDeviceId,
-        outputAudioDeviceId
+        ...(inputVideoDeviceId != null && { inputVideoDeviceId }),
+        ...(inputAudioDeviceId != null && { inputAudioDeviceId }),
+        ...(outputAudioDeviceId != null && { outputAudioDeviceId })
       }
     }
 

@@ -18,8 +18,6 @@ export const changeDevices = async (
   dispatch({
     type: ConferenceActionType.ChangeDevices,
     body: {
-      inputVideoDeviceId,
-      inputAudioDeviceId,
       outputAudioDeviceId
     }
   })
@@ -72,6 +70,13 @@ export const changeDevices = async (
         type: ConferenceActionType.UpdateLocalStream,
         body: {
           localStream: newStream
+        }
+      })
+      dispatch({
+        type: ConferenceActionType.ChangeDevices,
+        body: {
+          inputAudioDeviceId,
+          inputVideoDeviceId
         }
       })
     }
