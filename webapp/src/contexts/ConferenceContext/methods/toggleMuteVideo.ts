@@ -24,7 +24,7 @@ export const toggleMuteVideo = async (
     client?.setStream(newStream)
 
     dispatch({
-      type: ConferenceActionType.ChangeDevices,
+      type: ConferenceActionType.UpdateLocalStream,
       body: {
         localStream: newStream
       }
