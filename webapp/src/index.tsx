@@ -13,7 +13,7 @@ import { ConferenceContextProvider } from './contexts/ConferenceContext/Conferen
 import { DisplayNameType } from './types/DisplayNameType'
 import { type PluginSettings } from './types/PluginSettings'
 import { getMattermostStore, setMattermostStore } from './utils/mattermost-store'
-import { type UserSettings, triggerUserSettingsEvent } from './utils/user-settings'
+import { type UserSettings, settingsEventEmitter } from './utils/user-settings'
 
 import '@pexip/components/dist/style.css'
 
@@ -39,7 +39,7 @@ class Plugin {
     setMattermostStore(store)
     registry.registerChannelHeaderButtonAction(icon, this.action.bind(this), dropDownText)
     registry.registerWebSocketEventHandler('custom_' + manifest.id + '_change_user_settings', (message) => {
-      triggerUserSettingsEvent(message.data as UserSettings)
+      settingsEventEmitter.emit('settingschange', message.data as UserSettings)
     })
 
     this.rhsPlugin = registry.registerRightHandSidebarComponent(RightHandSidebarComponent, 'Pexip Video Connect')

@@ -6,7 +6,7 @@ import { Toolbar } from './Toolbar/Toolbar'
 import { ParticipantList } from './ParticipantList/ParticipantList'
 import { Tooltip } from '../Tooltip/Tooltip'
 import { Selfview } from '@pexip/media-components'
-import { type UserSettings, setUserSettingsCallback } from 'src/utils/user-settings'
+import { type UserSettings, settingsEventEmitter } from 'src/utils/user-settings'
 
 import './Conference.scss'
 
@@ -47,15 +47,18 @@ export const Conference = (): JSX.Element => {
   }, [videoTrackId])
 
   const handleUserSettings = (userSettings: UserSettings): void => {
+    console.log('Change devices from settings change event')
     changeDevices(userSettings).catch((e) => {
       console.error(e)
     })
   }
 
   useEffect(() => {
-    // Subscribe to changes after each rendering
-    setUserSettingsCallback(handleUserSettings)
-  })
+    settingsEventEmitter.addListener('settingschange', handleUserSettings)
+    return (): void => {
+      settingsEventEmitter.removeListener('settingschange', handleUserSettings)
+    }
+  }, [])
 
   return (
     <div className='Conference' data-testid='Conference'>

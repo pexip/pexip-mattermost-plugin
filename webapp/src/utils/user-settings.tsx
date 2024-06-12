@@ -1,5 +1,6 @@
 import React from 'react'
 import { getPluginServerRoute } from './http-requests'
+import { EventEmitter } from 'events'
 
 export interface UserSettings {
   inputVideoDeviceId: string
@@ -15,7 +16,7 @@ interface InteractiveDialog {
   notify_on_cancel: boolean
 }
 
-let userSettingsCallback: (userSettings: UserSettings) => void
+export const settingsEventEmitter = new EventEmitter()
 
 export const openUserSettingsDialog = async (currentSettings: UserSettings): Promise<void> => {
   const title = <span style={{ marginLeft: '0.5em' }}>Pexip Settings</span>
@@ -27,14 +28,6 @@ export const openUserSettingsDialog = async (currentSettings: UserSettings): Pro
     dialog,
     url: getPluginServerRoute() + '/api/change_user_settings'
   })
-}
-
-export const triggerUserSettingsEvent = (userSettings: UserSettings): void => {
-  userSettingsCallback(userSettings)
-}
-
-export const setUserSettingsCallback = (callback: (userSettings: UserSettings) => void): void => {
-  userSettingsCallback = callback
 }
 
 const createUserSettingsDialog = (
