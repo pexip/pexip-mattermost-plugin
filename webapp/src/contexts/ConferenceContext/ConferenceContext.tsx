@@ -59,17 +59,26 @@ const ConferenceContextProvider = (props: any): JSX.Element => {
     })
   }
 
+  const handleDeviceChange = (): void => {
+    console.log('Device change detected')
+    filterMediaDevices({
+      inputVideoDeviceId: state.inputVideoDeviceId,
+      inputAudioDeviceId: state.inputAudioDeviceId,
+      outputAudioDeviceId: state.outputAudioDeviceId
+    })
+      .then((devicesIds) => {
+        const { inputAudioDeviceId, inputVideoDeviceId, outputAudioDeviceId } = devicesIds
+        changeDevices({ inputAudioDeviceId, inputVideoDeviceId, outputAudioDeviceId }, state, dispatch).catch((e) => {
+          console.error(e)
+        })
+      })
+      .catch(console.error)
+  }
+
   useEffect(() => {
-    navigator.mediaDevices.ondevicechange = async () => {
-      const devicesIds = await filterMediaDevices({
-        inputVideoDeviceId: state.inputVideoDeviceId,
-        inputAudioDeviceId: state.inputAudioDeviceId,
-        outputAudioDeviceId: state.outputAudioDeviceId
-      })
-      const { inputAudioDeviceId, inputVideoDeviceId, outputAudioDeviceId } = devicesIds
-      changeDevices({ inputAudioDeviceId, inputVideoDeviceId, outputAudioDeviceId }, state, dispatch).catch((e) => {
-        console.error(e)
-      })
+    navigator.mediaDevices.addEventListener('devicechange', handleDeviceChange)
+    return () => {
+      navigator.mediaDevices.removeEventListener('devicechange', handleDeviceChange)
     }
   }, [])
 

@@ -29,13 +29,15 @@ window.MediaStream = MediaStream
 const mockGetUserMedia = jest.fn()
 const mockGetDisplayMedia = jest.fn()
 const mockEnumerateDevices = jest.fn()
+const mockMediaDevicesAddEventListener = jest.fn()
 
 Object.defineProperty(global.navigator, 'mediaDevices', {
   value: {
     getUserMedia: mockGetUserMedia,
     getDisplayMedia: mockGetDisplayMedia,
     enumerateDevices: mockEnumerateDevices,
-    ondevicechange: jest.fn()
+    addEventListener: mockMediaDevicesAddEventListener,
+    removeEventListener: jest.fn()
   }
 })
 
@@ -853,7 +855,7 @@ describe('ConferenceContext', () => {
       expect(mockGetUserMedia).not.toHaveBeenCalled()
     })
 
-    it('should be triggered when "onDeviceChange" received', async () => {
+    it('should be triggered when "devicechange" event received', async () => {
       const audioDeviceId = '1234'
       const videoDeviceId = '5678'
       navigator.mediaDevices.enumerateDevices = jest.fn().mockResolvedValue([
@@ -866,8 +868,17 @@ describe('ConferenceContext', () => {
           kind: 'videoinput'
         }
       ])
+      let callback = jest.fn()
+      mockMediaDevicesAddEventListener.mockImplementation((event, cb) => {
+        callback = cb
+      })
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
       await act(async () => {
-        ;(navigator as any).mediaDevices.ondevicechange()
+        callback()
       })
       expect(mockGetUserMedia).toHaveBeenCalledTimes(1)
       expect(mockGetUserMedia).toHaveBeenCalledWith({

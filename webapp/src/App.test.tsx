@@ -13,7 +13,8 @@ const mockConfig: ConferenceConfig = {
 
 Object.defineProperty(global.navigator, 'mediaDevices', {
   value: {
-    ondevicechange: jest.fn()
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn()
   }
 })
 
