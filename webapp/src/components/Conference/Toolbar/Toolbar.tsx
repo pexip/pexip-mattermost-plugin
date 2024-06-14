@@ -15,9 +15,7 @@ export const Toolbar = (): JSX.Element => {
       <Tooltip text={audioMuted ? 'Unmute audio' : 'Mute audio'}>
         <button
           onClick={() => {
-            toggleMuteAudio().catch((e) => {
-              console.error(e)
-            })
+            toggleMuteAudio().catch(console.error)
           }}
         >
           <Icon source={audioMuted ? IconTypes.IconMicrophoneOff : IconTypes.IconMicrophoneOn} />
@@ -26,9 +24,7 @@ export const Toolbar = (): JSX.Element => {
       <Tooltip text={videoMuted ? 'Unmute video' : 'Mute video'}>
         <button
           onClick={() => {
-            toggleMuteVideo().catch((e) => {
-              console.error(e)
-            })
+            toggleMuteVideo().catch(console.error)
           }}
         >
           <Icon source={videoMuted ? IconTypes.IconVideoOff : IconTypes.IconVideoOn} />
@@ -37,9 +33,7 @@ export const Toolbar = (): JSX.Element => {
       <Tooltip text={(presenting ? 'Stop' : 'Start') + ' sharing screen'}>
         <button
           onClick={() => {
-            togglePresenting().catch((e) => {
-              console.error(e)
-            })
+            togglePresenting().catch(console.error)
           }}
           className={presenting ? 'selected' : ''}
         >
@@ -53,9 +47,7 @@ export const Toolbar = (): JSX.Element => {
               inputAudioDeviceId: state.inputAudioDeviceId,
               inputVideoDeviceId: state.inputVideoDeviceId,
               outputAudioDeviceId: state.outputAudioDeviceId
-            }).catch((e) => {
-              console.error(e)
-            })
+            }).catch(console.error)
           }}
         >
           <Icon source={IconTypes.IconSettings} />
@@ -65,9 +57,7 @@ export const Toolbar = (): JSX.Element => {
         <button
           className='disconnect'
           onClick={() => {
-            disconnect().catch((e) => {
-              console.error(e)
-            })
+            disconnect().catch(console.error)
           }}
         >
           <Icon source={IconTypes.IconLeave} />

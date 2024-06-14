@@ -29,7 +29,8 @@ jest.mock('@pexip/components', () => ({
   }
 }))
 
-let mockLocalStream: any
+let mockLocalVideoStream: any
+let mockLocalAudioStream: any
 let mockVideoMuted: boolean
 let mockRemoteStream: any
 let mockPresentationStream: any
@@ -38,7 +39,8 @@ jest.mock('@contexts/ConferenceContext/ConferenceContext', () => ({
   useConferenceContext: () => ({
     state: {
       participants: [],
-      localStream: mockLocalStream,
+      localVideoStream: mockLocalVideoStream,
+      localAudioStream: mockLocalAudioStream,
       videoMuted: mockVideoMuted,
       remoteStream: mockRemoteStream,
       presentationStream: mockPresentationStream,
@@ -56,7 +58,8 @@ jest.mock('@pexip/media-components', () => ({
 }))
 
 beforeEach(() => {
-  mockLocalStream = new MediaStream()
+  mockLocalVideoStream = new MediaStream()
+  mockLocalAudioStream = new MediaStream()
   mockVideoMuted = false
   mockRemoteStream = null
   mockPresentationStream = null
@@ -71,15 +74,15 @@ describe('Conference', () => {
   })
 
   describe('SelfView', () => {
-    it('should be rendered if localStream != null and !videoMuted', () => {
-      mockLocalStream = new MediaStream()
+    it('should be rendered if localVideoStream != null and !videoMuted', () => {
+      mockLocalVideoStream = new MediaStream()
       render(<Conference />)
       const selfView = screen.queryByTestId('SelfView')
       expect(selfView).toBeInTheDocument()
     })
 
-    it("shouldn't be rendered if localStream == null", () => {
-      mockLocalStream = null
+    it("shouldn't be rendered if localVideoStream == null", () => {
+      mockLocalVideoStream = null
       render(<Conference />)
       const selfView = screen.queryByTestId('SelfView')
       expect(selfView).not.toBeInTheDocument()
@@ -126,28 +129,28 @@ describe('Conference', () => {
   })
 
   describe('PIP hide/show button', () => {
-    it('should be displayed if localStream != null and videoMuted == false', () => {
+    it('should be displayed if localVideoStream != null and videoMuted == false', () => {
       render(<Conference />)
       const pipButton = screen.queryByTestId('TogglePipButton')
       expect(pipButton).toBeInTheDocument()
     })
 
     it('should be displayed if presentationStream != null', () => {
-      mockLocalStream = null
+      mockLocalVideoStream = null
       mockPresentationStream = 'presentation'
       render(<Conference />)
       const pipButton = screen.queryByTestId('TogglePipButton')
       expect(pipButton).toBeInTheDocument()
     })
 
-    it("shouldn't be displayed if localStream == null and presentationStream == null", () => {
-      mockLocalStream = null
+    it("shouldn't be displayed if localVideoStream == null and presentationStream == null", () => {
+      mockLocalVideoStream = null
       render(<Conference />)
       const pipButton = screen.queryByTestId('TogglePipButton')
       expect(pipButton).not.toBeInTheDocument()
     })
 
-    it("shouldn't be displayed if localStream != null and videoMuted == true", () => {
+    it("shouldn't be displayed if localVideoStream != null and videoMuted == true", () => {
       mockVideoMuted = true
       render(<Conference />)
       const pipButton = screen.queryByTestId('TogglePipButton')

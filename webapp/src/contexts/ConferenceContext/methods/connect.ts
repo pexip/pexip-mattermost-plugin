@@ -51,12 +51,16 @@ export const connect = async (params: ConnectParams, dispatch: React.Dispatch<Co
     })
   })
 
-  let localStream: MediaStream
+  let localVideoStream: MediaStream
+  let localAudioStream: MediaStream
   let response
   try {
-    localStream = await navigator.mediaDevices.getUserMedia({
-      audio: { deviceId: params.inputAudioDeviceId },
+    localVideoStream = await navigator.mediaDevices.getUserMedia({
       video: { deviceId: params.inputVideoDeviceId }
+    })
+
+    localAudioStream = await navigator.mediaDevices.getUserMedia({
+      audio: { deviceId: params.inputAudioDeviceId }
     })
 
     response = await client.call({
@@ -66,7 +70,7 @@ export const connect = async (params: ConnectParams, dispatch: React.Dispatch<Co
       displayName,
       bandwidth: 0,
       callType: ClientCallType.AudioVideo,
-      mediaStream: localStream
+      mediaStream: new MediaStream([...localVideoStream.getTracks(), ...localAudioStream.getTracks()])
     })
   } catch (e) {
     dispatch({
@@ -83,15 +87,17 @@ export const connect = async (params: ConnectParams, dispatch: React.Dispatch<Co
       type: ConferenceActionType.Connected,
       body: {
         client,
-        localStream
+        localVideoStream,
+        localAudioStream
       }
     })
 
     // Get the deviceId from the localStream, because in Firefox the user can choose a different device
-    const newInputAudioDeviceId =
-      localStream.getAudioTracks().length > 0 ? localStream.getAudioTracks()[0].getSettings().deviceId : ''
+
     const newInputVideoDeviceId =
-      localStream.getVideoTracks().length > 0 ? localStream.getVideoTracks()[0].getSettings().deviceId : ''
+      localVideoStream.getVideoTracks().length > 0 ? localVideoStream.getVideoTracks()[0].getSettings().deviceId : ''
+    const newInputAudioDeviceId =
+      localAudioStream.getAudioTracks().length > 0 ? localAudioStream.getAudioTracks()[0].getSettings().deviceId : ''
 
     dispatch({
       type: ConferenceActionType.ChangeDevices,

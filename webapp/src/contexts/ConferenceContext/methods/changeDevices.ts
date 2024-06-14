@@ -7,13 +7,22 @@ export interface DevicesIds {
   outputAudioDeviceId: string
 }
 
+const hasDeviceIdChanged = (mediaStream: MediaStream | undefined, deviceId: string): boolean => {
+  if (mediaStream != null && mediaStream.getTracks().length > 0) {
+    const track = mediaStream.getTracks()[0]
+    const deviceIdChanged = track.getSettings().deviceId !== deviceId
+    return deviceIdChanged
+  }
+  return false
+}
+
 export const changeDevices = async (
   devicesIds: DevicesIds,
   state: ConferenceState,
   dispatch: React.Dispatch<ConferenceAction>
 ): Promise<void> => {
   const { inputAudioDeviceId, inputVideoDeviceId, outputAudioDeviceId } = devicesIds
-  const { audioMuted, videoMuted, localStream, client } = state
+  const { audioMuted, videoMuted, localVideoStream, localAudioStream, client } = state
 
   dispatch({
     type: ConferenceActionType.ChangeDevices,
@@ -22,70 +31,59 @@ export const changeDevices = async (
     }
   })
 
-  if (!(audioMuted && videoMuted)) {
-    let audioDeviceIdChanged = true
-    let videoDeviceIdChanged = true
-    let audioTrack
-    let videoTrack
+  let newLocalVideoStream: MediaStream | null = null
+  if (!videoMuted && hasDeviceIdChanged(localVideoStream, inputVideoDeviceId)) {
+    newLocalVideoStream = await navigator.mediaDevices.getUserMedia({
+      video: { deviceId: inputVideoDeviceId }
+    })
 
-    if (localStream != null) {
-      if (localStream.getAudioTracks().length > 0) {
-        audioTrack = localStream.getAudioTracks()[0]
-        audioDeviceIdChanged = audioTrack.getSettings().deviceId !== inputAudioDeviceId
+    localVideoStream?.getTracks().forEach((track) => {
+      track.stop()
+    })
+
+    dispatch({
+      type: ConferenceActionType.UpdateLocalStream,
+      body: {
+        localVideoStream: newLocalVideoStream
       }
-      if (localStream.getVideoTracks().length > 0) {
-        videoTrack = localStream.getVideoTracks()[0]
-        videoDeviceIdChanged = videoTrack.getSettings().deviceId !== inputVideoDeviceId
+    })
+
+    dispatch({
+      type: ConferenceActionType.ChangeDevices,
+      body: {
+        inputVideoDeviceId
       }
-    }
+    })
+  }
 
-    const shouldRequestNewAudio = !audioMuted && audioDeviceIdChanged
-    const shouldRequestNewVideo = !videoMuted && videoDeviceIdChanged
+  let newLocalAudioStream: MediaStream | null = null
+  if (!audioMuted && hasDeviceIdChanged(localAudioStream, inputAudioDeviceId)) {
+    newLocalAudioStream = await navigator.mediaDevices.getUserMedia({
+      audio: { deviceId: inputAudioDeviceId }
+    })
 
-    if (shouldRequestNewAudio || shouldRequestNewVideo) {
-      const newStream = await navigator.mediaDevices.getUserMedia({
-        audio: shouldRequestNewAudio ? { deviceId: inputAudioDeviceId } : false,
-        video: shouldRequestNewVideo ? { deviceId: inputVideoDeviceId } : false
-      })
+    localAudioStream?.getTracks().forEach((track) => {
+      track.stop()
+    })
 
-      if (!audioMuted && audioTrack != null) {
-        if (shouldRequestNewAudio) {
-          audioTrack.stop()
-        } else {
-          newStream.addTrack(audioTrack)
-        }
+    dispatch({
+      type: ConferenceActionType.UpdateLocalStream,
+      body: {
+        localAudioStream: newLocalAudioStream
       }
+    })
 
-      if (!audioMuted && videoTrack != null) {
-        if (shouldRequestNewVideo) {
-          videoTrack.stop()
-        } else {
-          newStream.addTrack(videoTrack)
-        }
+    dispatch({
+      type: ConferenceActionType.ChangeDevices,
+      body: {
+        inputAudioDeviceId
       }
+    })
+  }
 
-      client?.setStream(newStream)
-
-      dispatch({
-        type: ConferenceActionType.UpdateLocalStream,
-        body: {
-          localStream: newStream
-        }
-      })
-
-      // Get the deviceId from the localStream
-      const newInputAudioDeviceId =
-        newStream.getAudioTracks().length > 0 ? newStream.getAudioTracks()[0].getSettings().deviceId : ''
-      const newInputVideoDeviceId =
-        newStream.getVideoTracks().length > 0 ? newStream.getVideoTracks()[0].getSettings().deviceId : ''
-
-      dispatch({
-        type: ConferenceActionType.ChangeDevices,
-        body: {
-          inputVideoDeviceId: newInputVideoDeviceId,
-          inputAudioDeviceId: newInputAudioDeviceId
-        }
-      })
-    }
+  if (newLocalVideoStream != null || newLocalAudioStream != null) {
+    const videoTracks: MediaStreamTrack[] = newLocalVideoStream?.getVideoTracks() ?? []
+    const audioTracks: MediaStreamTrack[] = newLocalAudioStream?.getAudioTracks() ?? []
+    client?.setStream(new MediaStream([...videoTracks, ...audioTracks]))
   }
 }

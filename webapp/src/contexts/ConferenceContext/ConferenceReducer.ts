@@ -23,7 +23,8 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
         ...prevState,
         connectionState: ConnectionState.Connected,
         client: action.body.client,
-        localStream: action.body.localStream,
+        localVideoStream: action.body.localVideoStream,
+        localAudioStream: action.body.localAudioStream,
         audioMuted: false,
         videoMuted: false,
         presenting: false
@@ -43,14 +44,21 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
     }
 
     case ConferenceActionType.UpdateLocalStream: {
+      const localVideoStream: MediaStream = action.body.localVideoStream
+      const localAudioStream: MediaStream = action.body.localAudioStream
+
       return {
         ...prevState,
-        localStream: action.body.localStream !== undefined ? action.body.localStream : prevState.localStream
+        ...(localVideoStream != null && { localVideoStream }),
+        ...(localAudioStream != null && { localAudioStream })
       }
     }
 
     case ConferenceActionType.Disconnected: {
-      prevState.localStream?.getTracks().forEach((track) => {
+      prevState.localVideoStream?.getTracks().forEach((track) => {
+        track.stop()
+      })
+      prevState.localAudioStream?.getTracks().forEach((track) => {
         track.stop()
       })
       prevState.presentationStream?.getTracks().forEach((track) => {
@@ -59,7 +67,8 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
 
       return {
         ...prevState,
-        localStream: undefined,
+        localVideoStream: undefined,
+        localAudioStream: undefined,
         presentationStream: undefined,
         connectionState: ConnectionState.Disconnected,
         errorMessage: ''

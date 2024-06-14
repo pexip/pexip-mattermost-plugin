@@ -7,7 +7,8 @@ interface ConferenceState {
   config: ConferenceConfig | null
   channel: Channel | null
   client: Client | null
-  localStream: MediaStream | undefined
+  localVideoStream: MediaStream | undefined
+  localAudioStream: MediaStream | undefined
   remoteStream: MediaStream | undefined
   inputVideoDeviceId: string
   inputAudioDeviceId: string

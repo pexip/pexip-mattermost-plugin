@@ -34,7 +34,8 @@ const initialState: ConferenceState = {
   config: null,
   channel: null,
   client: null,
-  localStream: undefined,
+  localVideoStream: undefined,
+  localAudioStream: undefined,
   remoteStream: undefined,
   inputVideoDeviceId: localStorage.getItem(LocalStorageKey.inputVideoDeviceIdKey) ?? '',
   inputAudioDeviceId: localStorage.getItem(LocalStorageKey.inputAudioDeviceIdKey) ?? '',
@@ -54,9 +55,7 @@ const ConferenceContextProvider = (props: any): JSX.Element => {
 
   const beforeUnloadHandler = (): void => {
     const disconnectReason: DisconnectReason = 'Browser closed'
-    disconnect(state, dispatch, disconnectReason).catch((e) => {
-      console.error(e)
-    })
+    disconnect(state, dispatch, disconnectReason).catch(console.error)
   }
 
   const handleDeviceChange = (): void => {
@@ -68,9 +67,9 @@ const ConferenceContextProvider = (props: any): JSX.Element => {
     })
       .then((devicesIds) => {
         const { inputAudioDeviceId, inputVideoDeviceId, outputAudioDeviceId } = devicesIds
-        changeDevices({ inputAudioDeviceId, inputVideoDeviceId, outputAudioDeviceId }, state, dispatch).catch((e) => {
-          console.error(e)
-        })
+        changeDevices({ inputAudioDeviceId, inputVideoDeviceId, outputAudioDeviceId }, state, dispatch).catch(
+          console.error
+        )
       })
       .catch(console.error)
   }
@@ -80,7 +79,7 @@ const ConferenceContextProvider = (props: any): JSX.Element => {
     return () => {
       navigator.mediaDevices.removeEventListener('devicechange', handleDeviceChange)
     }
-  }, [])
+  }, [state])
 
   const value = useMemo(
     () => ({
@@ -117,25 +116,17 @@ const ConferenceContextProvider = (props: any): JSX.Element => {
       },
       disconnect: async () => {
         const disconnectReason: DisconnectReason = 'User initiated disconnect'
-        disconnect(state, dispatch, disconnectReason).catch((e) => {
-          console.error(e)
-        })
+        disconnect(state, dispatch, disconnectReason).catch(console.error)
         removeEventListener('beforeunload', beforeUnloadHandler)
       },
       toggleMuteAudio: async () => {
-        toggleMuteAudio(state, dispatch).catch((e) => {
-          console.error(e)
-        })
+        toggleMuteAudio(state, dispatch).catch(console.error)
       },
       toggleMuteVideo: async () => {
-        toggleMuteVideo(state, dispatch).catch((e) => {
-          console.error(e)
-        })
+        toggleMuteVideo(state, dispatch).catch(console.error)
       },
       togglePresenting: async () => {
-        toggleMutePresenting(state, dispatch).catch((e) => {
-          console.error(e)
-        })
+        toggleMutePresenting(state, dispatch).catch(console.error)
       },
       swapVideos: async () => {
         dispatch({ type: ConferenceActionType.SwapVideos })
@@ -147,9 +138,7 @@ const ConferenceContextProvider = (props: any): JSX.Element => {
         localStorage.setItem(LocalStorageKey.inputAudioDeviceIdKey, inputAudioDeviceId)
         localStorage.setItem(LocalStorageKey.outputAudioDeviceKey, outputAudioDeviceId)
 
-        changeDevices(devicesIds, state, dispatch).catch((e) => {
-          console.error(e)
-        })
+        changeDevices(devicesIds, state, dispatch).catch(console.error)
       },
       state
     }),

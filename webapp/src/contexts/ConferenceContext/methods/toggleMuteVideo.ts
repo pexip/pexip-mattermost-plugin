@@ -5,30 +5,32 @@ export const toggleMuteVideo = async (
   state: ConferenceState,
   dispatch: React.Dispatch<ConferenceAction>
 ): Promise<void> => {
-  const { client, videoMuted, localStream } = state
+  const { client, videoMuted, localVideoStream, localAudioStream } = state
 
   if (!videoMuted) {
-    localStream?.getVideoTracks().forEach((track) => {
+    localVideoStream?.getVideoTracks().forEach((track) => {
       track.stop()
     })
   } else {
-    const newStream = await navigator.mediaDevices.getUserMedia({
-      audio: false,
+    const newVideoStream = await navigator.mediaDevices.getUserMedia({
       video: { deviceId: state.inputVideoDeviceId }
     })
-
-    localStream?.getAudioTracks().forEach((track) => {
-      newStream.addTrack(track)
-    })
-
-    client?.setStream(newStream)
 
     dispatch({
       type: ConferenceActionType.UpdateLocalStream,
       body: {
-        localStream: newStream
+        localStream: newVideoStream
       }
     })
+
+    let newStream: MediaStream
+
+    if (localAudioStream != null) {
+      newStream = new MediaStream([...newVideoStream.getTracks(), ...localAudioStream.getTracks()])
+    } else {
+      newStream = newVideoStream
+    }
+    client?.setStream(newStream)
   }
 
   dispatch({

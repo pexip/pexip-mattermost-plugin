@@ -1,5 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
-
+import React, { useEffect, useState } from 'react'
 import { Icon, IconTypes, Video } from '@pexip/components'
 import { useConferenceContext } from '@contexts/ConferenceContext/ConferenceContext'
 import { Toolbar } from './Toolbar/Toolbar'
@@ -14,7 +13,7 @@ export const Conference = (): JSX.Element => {
   const { state, swapVideos, changeDevices } = useConferenceContext()
   const {
     channel,
-    localStream,
+    localVideoStream,
     remoteStream,
     outputAudioDeviceId,
     videoMuted,
@@ -30,27 +29,8 @@ export const Conference = (): JSX.Element => {
     setPipHidden(!pipHidden)
   }
 
-  const videoTracks = localStream?.getVideoTracks()
-  const videoTrackId = videoTracks != null && videoTracks.length !== 0 ? videoTracks[0].id : ''
-
-  // Only re-render the selfie if the videoTrack id changes
-  const selfie = useMemo((): JSX.Element => {
-    return (
-      <Selfview
-        localMediaStream={localStream}
-        isVideoInputMuted={false}
-        shouldShowUserAvatar={false}
-        username={''}
-        data-testid='SelfView'
-      />
-    )
-  }, [videoTrackId])
-
   const handleUserSettings = (userSettings: UserSettings): void => {
-    console.log('Change devices from settings change event')
-    changeDevices(userSettings).catch((e) => {
-      console.error(e)
-    })
+    changeDevices(userSettings).catch(console.error)
   }
 
   useEffect(() => {
@@ -58,7 +38,7 @@ export const Conference = (): JSX.Element => {
     return (): void => {
       settingsEventEmitter.removeListener('settingschange', handleUserSettings)
     }
-  }, [])
+  }, [state])
 
   return (
     <div className='Conference' data-testid='Conference'>
@@ -73,7 +53,17 @@ export const Conference = (): JSX.Element => {
         </div>
 
         <div className='pip' ref={pipRef}>
-          {localStream != null && !videoMuted && <div className='video-container local'>{selfie}</div>}
+          {localVideoStream != null && !videoMuted && (
+            <div className='video-container local'>
+              <Selfview
+                localMediaStream={localVideoStream}
+                isVideoInputMuted={false}
+                shouldShowUserAvatar={false}
+                username={''}
+                data-testid='SelfView'
+              />
+            </div>
+          )}
 
           {presentationStream != null && (
             <div className='video-container secondary'>
@@ -87,7 +77,7 @@ export const Conference = (): JSX.Element => {
             </div>
           )}
 
-          {((localStream != null && !videoMuted) || presentationStream != null) && (
+          {((localVideoStream != null && !videoMuted) || presentationStream != null) && (
             <Tooltip
               text={pipHidden ? 'Show videos' : 'Hide videos'}
               position='bottomLeft'
