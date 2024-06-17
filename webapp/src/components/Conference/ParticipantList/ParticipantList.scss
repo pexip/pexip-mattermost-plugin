@@ -20,14 +20,35 @@
     margin: 0;
     padding: 8px;
     overflow: auto;
+    flex-grow: 1;
   
     li {
       list-style: none;
       color: #0a2136;
-      padding-left: 8px;
+      padding: 0 8px;
       height: 32px;
       line-height: 32px;
       cursor: default;
+      display: flex;
+      border-radius: 8px;
+
+      .ParticipantName {
+        flex-grow: 1;
+      }
+
+      .ParticipantStatus {
+        display: flex;
+        align-items: center;
+        gap: 1em;
+
+        /* Center the icon */
+        > div {
+          display: flex;
+        }
+        > div > div > div {
+          display: flex;
+        }
+      }
 
       &:hover {
         background-color: #f4f7fb;

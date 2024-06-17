@@ -15,7 +15,9 @@ export const Tooltip = (props: TooltipProps): JSX.Element => {
   const position = props.position ?? 'topCenter'
   return (
     <div className={props.className}>
-      <CustomTooltip className='Tooltip' content={props.text} isArrowShown position={position}>{props.children}</CustomTooltip>
+      <CustomTooltip className='Tooltip' content={props.text} isArrowShown position={position}>
+        {props.children}
+      </CustomTooltip>
     </div>
   )
 }
