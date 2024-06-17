@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 
 import { useConferenceContext } from '@contexts/ConferenceContext/ConferenceContext'
 import type { Channel } from 'mattermost-redux/types/channels'
-import { getMattermostStore } from 'src/utils'
+import { getMattermostStore } from 'src/utils/mattermost-store'
 
 import './JoinPanel.scss'
 

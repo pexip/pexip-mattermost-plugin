@@ -2,8 +2,12 @@ import { type DisconnectReason } from '@pexip/infinity'
 import { ConferenceActionType, type ConferenceAction } from '../ConferenceAction'
 import { type ConferenceState } from '../ConferenceState'
 
-export const disconnect = async (state: ConferenceState, dispatch: React.Dispatch<ConferenceAction>, reason: DisconnectReason): Promise<void> => {
-  state.client?.disconnect({ reason }).catch((e) => { console.error(e) })
+export const disconnect = async (
+  state: ConferenceState,
+  dispatch: React.Dispatch<ConferenceAction>,
+  reason: DisconnectReason
+): Promise<void> => {
+  state.client?.disconnect({ reason }).catch(console.error)
 
   dispatch({
     type: ConferenceActionType.Disconnected,

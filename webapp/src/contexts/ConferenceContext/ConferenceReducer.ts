@@ -23,19 +23,52 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
         ...prevState,
         connectionState: ConnectionState.Connected,
         client: action.body.client,
-        localStream: action.body.localStream,
+        localVideoStream: action.body.localVideoStream,
+        localAudioStream: action.body.localAudioStream,
         audioMuted: false,
         videoMuted: false,
         presenting: false
       }
     }
-    case ConferenceActionType.Disconnected: {
-      prevState.localStream?.getTracks().forEach((track) => { track.stop() })
-      prevState.presentationStream?.getTracks().forEach((track) => { track.stop() })
+    case ConferenceActionType.ChangeDevices: {
+      const inputVideoDeviceId: string = action.body.inputVideoDeviceId
+      const inputAudioDeviceId: string = action.body.inputAudioDeviceId
+      const outputAudioDeviceId: string = action.body.outputAudioDeviceId
 
       return {
         ...prevState,
-        localStream: undefined,
+        ...(inputVideoDeviceId != null && { inputVideoDeviceId }),
+        ...(inputAudioDeviceId != null && { inputAudioDeviceId }),
+        ...(outputAudioDeviceId != null && { outputAudioDeviceId })
+      }
+    }
+
+    case ConferenceActionType.UpdateLocalStream: {
+      const localVideoStream: MediaStream = action.body.localVideoStream
+      const localAudioStream: MediaStream = action.body.localAudioStream
+
+      return {
+        ...prevState,
+        ...(localVideoStream != null && { localVideoStream }),
+        ...(localAudioStream != null && { localAudioStream })
+      }
+    }
+
+    case ConferenceActionType.Disconnected: {
+      prevState.localVideoStream?.getTracks().forEach((track) => {
+        track.stop()
+      })
+      prevState.localAudioStream?.getTracks().forEach((track) => {
+        track.stop()
+      })
+      prevState.presentationStream?.getTracks().forEach((track) => {
+        track.stop()
+      })
+
+      return {
+        ...prevState,
+        localVideoStream: undefined,
+        localAudioStream: undefined,
         presentationStream: undefined,
         connectionState: ConnectionState.Disconnected,
         errorMessage: ''

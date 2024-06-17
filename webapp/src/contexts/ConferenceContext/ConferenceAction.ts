@@ -10,7 +10,9 @@ export enum ConferenceActionType {
   ToggleMuteVideo,
   TogglePresenting,
   RemotePresentationStream,
-  SwapVideos
+  SwapVideos,
+  ChangeDevices,
+  UpdateLocalStream
 }
 
 export interface ConferenceAction {

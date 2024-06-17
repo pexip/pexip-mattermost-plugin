@@ -4,18 +4,52 @@ import { render, screen, fireEvent, act, waitFor } from '@testing-library/react'
 import { type ConferenceConfig } from 'src/types/ConferenceConfig'
 import { ConnectionState } from '../../types/ConnectionState'
 import { type Channel } from 'mattermost-redux/types/channels'
+import { type DevicesIds } from './methods/changeDevices'
 
+const mockDevicesIds: DevicesIds = {
+  inputAudioDeviceId: 'input-audio-device-id-mock',
+  inputVideoDeviceId: 'input-video-device-id-mock',
+  outputAudioDeviceId: 'output-audio-device-id-mock'
+}
+
+const mockAudioTrackStop = jest.fn()
+const mockVideoTrackStop = jest.fn()
 class MediaStream {
   id: string = '1234'
   active: boolean = true
   addTrack: any = jest.fn()
-  getTracks: any = jest.fn(() => [])
   onaddtrack: any = jest.fn()
   onremovetrack: any = jest.fn()
   clone: any = jest.fn()
-  getAudioTracks: any = jest.fn()
   getTrackById: any = jest.fn()
-  getVideoTracks: any = jest.fn()
+
+  getTracks: any = jest.fn(() => [
+    {
+      stop: mockVideoTrackStop,
+      getSettings: () => ({
+        deviceId: ''
+      })
+    }
+  ])
+
+  getVideoTracks: any = jest.fn(() => [
+    {
+      stop: mockVideoTrackStop,
+      getSettings: () => ({
+        deviceId: ''
+      })
+    }
+  ])
+
+  getAudioTracks: any = jest.fn(() => [
+    {
+      stop: mockAudioTrackStop,
+      getSettings: () => ({
+        deviceId: ''
+      })
+    }
+  ])
+
   removeTrack: any = jest.fn()
   addEventListener: any = jest.fn()
   removeEventListener: any = jest.fn()
@@ -25,11 +59,16 @@ window.MediaStream = MediaStream
 
 const mockGetUserMedia = jest.fn()
 const mockGetDisplayMedia = jest.fn()
+const mockEnumerateDevices = jest.fn()
+const mockMediaDevicesAddEventListener = jest.fn()
 
 Object.defineProperty(global.navigator, 'mediaDevices', {
   value: {
     getUserMedia: mockGetUserMedia,
-    getDisplayMedia: mockGetDisplayMedia
+    getDisplayMedia: mockGetDisplayMedia,
+    enumerateDevices: mockEnumerateDevices,
+    addEventListener: mockMediaDevicesAddEventListener,
+    removeEventListener: jest.fn()
   }
 })
 
@@ -37,25 +76,31 @@ const mockCall = jest.fn()
 const mockDisconnect = jest.fn().mockResolvedValue(undefined)
 const mockMuteAudio = jest.fn()
 const mockMuteVideo = jest.fn()
-jest.mock('@pexip/infinity', () => ({
-  createInfinityClientSignals: () => ({
-    onParticipants: { add: jest.fn() },
-    onDisconnected: { add: jest.fn() }
+const mockSetStream = jest.fn()
+jest.mock(
+  '@pexip/infinity',
+  () => ({
+    createInfinityClientSignals: () => ({
+      onParticipants: { add: jest.fn() },
+      onDisconnected: { add: jest.fn() }
+    }),
+    createCallSignals: () => ({
+      onRemoteStream: { add: jest.fn() },
+      onRemotePresentationStream: { add: jest.fn() }
+    }),
+    createInfinityClient: () => ({
+      call: mockCall,
+      disconnect: mockDisconnect,
+      mute: mockMuteAudio,
+      muteVideo: mockMuteVideo,
+      setStream: mockSetStream
+    }),
+    ClientCallType: {
+      AudioVideo: 0
+    }
   }),
-  createCallSignals: () => ({
-    onRemoteStream: { add: jest.fn() },
-    onRemotePresentationStream: { add: jest.fn() }
-  }),
-  createInfinityClient: () => ({
-    call: mockCall,
-    disconnect: mockDisconnect,
-    mute: mockMuteAudio,
-    muteVideo: mockMuteVideo
-  }),
-  ClientCallType: {
-    AudioVideo: 0
-  }
-}), { virtual: true })
+  { virtual: true }
+)
 
 const mockConfig: ConferenceConfig = {
   node: 'node-mock',
@@ -92,7 +137,8 @@ const ConferenceContextTester = (): JSX.Element => {
     toggleMuteAudio,
     toggleMuteVideo,
     togglePresenting,
-    swapVideos
+    swapVideos,
+    changeDevices
   } = useConferenceContext()
 
   const handleSetConfig = (): void => {
@@ -100,27 +146,43 @@ const ConferenceContextTester = (): JSX.Element => {
   }
 
   const handleConnect = (): void => {
-    connect(mockChannel).catch((e) => { console.error(e) })
+    connect(mockChannel).catch((e) => {
+      console.error(e)
+    })
   }
 
   const handleDisconnect = (): void => {
-    disconnect().catch((e) => { console.error(e) })
+    disconnect().catch((e) => {
+      console.error(e)
+    })
   }
 
   const handleMuteAudio = (): void => {
-    toggleMuteAudio().catch((e) => { console.error(e) })
+    toggleMuteAudio().catch((e) => {
+      console.error(e)
+    })
   }
 
   const handleMuteVideo = (): void => {
-    toggleMuteVideo().catch((e) => { console.error(e) })
+    toggleMuteVideo().catch((e) => {
+      console.error(e)
+    })
   }
 
   const handlePresenting = (): void => {
-    togglePresenting().catch((e) => { console.error(e) })
+    togglePresenting().catch((e) => {
+      console.error(e)
+    })
   }
 
   const handleSwapVideos = (): void => {
     swapVideos()
+  }
+
+  const handleChangeDevices = (): void => {
+    changeDevices(mockDevicesIds).catch((e) => {
+      console.error(e)
+    })
   }
 
   return (
@@ -129,6 +191,7 @@ const ConferenceContextTester = (): JSX.Element => {
       <span data-testid='connectionState'>{state.connectionState}</span>
       <span data-testid='channel'>{JSON.stringify(state.channel)}</span>
       <span data-testid='errorMessage'>{state.errorMessage}</span>
+      <span data-testid='outputAudioDeviceId'>{state.outputAudioDeviceId}</span>
       <span data-testid='audioMuted'>{state.audioMuted ? 'true' : 'false'}</span>
       <span data-testid='videoMuted'>{state.videoMuted ? 'true' : 'false'}</span>
       <span data-testid='presenting'>{state.presenting ? 'true' : 'false'}</span>
@@ -140,16 +203,16 @@ const ConferenceContextTester = (): JSX.Element => {
       <button data-testid='buttonToggleMuteVideo' onClick={handleMuteVideo} />
       <button data-testid='buttonTogglePresenting' onClick={handlePresenting} />
       <button data-testid='buttonSwapVideos' onClick={handleSwapVideos} />
+      <button data-testid='buttonChangeDevices' onClick={handleChangeDevices} />
     </div>
   )
 }
 
 beforeEach(() => {
+  jest.clearAllMocks()
   mockGetUserMedia.mockReturnValue(new MediaStream())
-  mockGetDisplayMedia.mockClear()
   mockCall.mockReturnValue({ status: 200 })
-  mockMuteAudio.mockClear()
-  mockMuteVideo.mockClear()
+  mockEnumerateDevices.mockResolvedValue([])
 })
 
 describe('ConferenceContext', () => {
@@ -166,9 +229,7 @@ describe('ConferenceContext', () => {
   it('should trigger an exception if not inside the ConferenceContextProvider', () => {
     expect.assertions(1)
     try {
-      render(
-        <ConferenceContextTester />
-      )
+      render(<ConferenceContextTester />)
     } catch (e) {
       expect(e.message).toBe('useConferenceContext has to be used within <ConferenceContextProvider>')
     }
@@ -421,6 +482,46 @@ describe('ConferenceContext', () => {
       expect(mockMuteAudio).toHaveBeenCalledTimes(2)
       expect(mockMuteAudio).toHaveBeenCalledWith({ mute: false })
     })
+
+    it('should stop the audio track when trying to mute', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonConnect')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonToggleMuteAudio')
+        fireEvent.click(button)
+      })
+      expect(mockGetUserMedia).toHaveBeenCalledTimes(2)
+      expect(mockAudioTrackStop).toHaveBeenCalledTimes(1)
+    })
+
+    it('should call getUserMedia when trying to unmute', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonConnect')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonToggleMuteAudio')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonToggleMuteAudio')
+        fireEvent.click(button)
+      })
+      expect(mockGetUserMedia).toHaveBeenCalledTimes(3)
+      expect(mockAudioTrackStop).toHaveBeenCalledTimes(1)
+    })
   })
 
   describe('toggleMuteVideo', () => {
@@ -504,6 +605,46 @@ describe('ConferenceContext', () => {
       })
       expect(mockMuteVideo).toHaveBeenCalledTimes(2)
       expect(mockMuteVideo).toHaveBeenCalledWith({ muteVideo: false })
+    })
+
+    it('should stop the video track when trying to mute', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonConnect')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonToggleMuteVideo')
+        fireEvent.click(button)
+      })
+      expect(mockGetUserMedia).toHaveBeenCalledTimes(2)
+      expect(mockVideoTrackStop).toHaveBeenCalledTimes(1)
+    })
+
+    it('should call getUserMedia when trying to unmute', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonConnect')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonToggleMuteVideo')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonToggleMuteVideo')
+        fireEvent.click(button)
+      })
+      expect(mockGetUserMedia).toHaveBeenCalledTimes(3)
+      expect(mockVideoTrackStop).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -643,6 +784,214 @@ describe('ConferenceContext', () => {
         fireEvent.click(button)
       })
       expect(presentationInMain.innerHTML).toBe('false')
+    })
+  })
+
+  describe('changeDevices', () => {
+    it('should change the outputAudioDeviceId in the state', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonChangeDevices')
+        fireEvent.click(button)
+      })
+      const outputAudioDeviceId = screen.getByTestId('outputAudioDeviceId')
+      expect(outputAudioDeviceId.innerHTML).toBe(mockDevicesIds.outputAudioDeviceId)
+    })
+
+    it('should call getUserMedia with the proper deviceId for audio and video', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonConnect')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonChangeDevices')
+        fireEvent.click(button)
+      })
+      expect(mockGetUserMedia).toHaveBeenCalledTimes(4)
+      expect(mockGetUserMedia.mock.calls).toEqual([
+        [
+          {
+            video: { deviceId: '' }
+          }
+        ],
+        [
+          {
+            audio: { deviceId: '' }
+          }
+        ],
+        [
+          {
+            video: { deviceId: mockDevicesIds.inputVideoDeviceId }
+          }
+        ],
+        [
+          {
+            audio: { deviceId: mockDevicesIds.inputAudioDeviceId }
+          }
+        ]
+      ])
+    })
+
+    it('should call getUserMedia with only deviceId for audio when videoMuted', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonConnect')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonToggleMuteVideo')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonChangeDevices')
+        fireEvent.click(button)
+      })
+      expect(mockGetUserMedia).toHaveBeenCalledTimes(3)
+      expect(mockGetUserMedia.mock.calls).toEqual([
+        [
+          {
+            video: { deviceId: '' }
+          }
+        ],
+        [
+          {
+            audio: { deviceId: '' }
+          }
+        ],
+        [
+          {
+            audio: { deviceId: mockDevicesIds.inputAudioDeviceId }
+          }
+        ]
+      ])
+    })
+
+    it('should call getUserMedia with only deviceId for video when audioMuted', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonConnect')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonToggleMuteAudio')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonChangeDevices')
+        fireEvent.click(button)
+      })
+      expect(mockGetUserMedia).toHaveBeenCalledTimes(3)
+      expect(mockGetUserMedia.mock.calls).toEqual([
+        [
+          {
+            video: { deviceId: '' }
+          }
+        ],
+        [
+          {
+            audio: { deviceId: '' }
+          }
+        ],
+        [
+          {
+            video: { deviceId: mockDevicesIds.inputVideoDeviceId }
+          }
+        ]
+      ])
+    })
+
+    it("shouldn't call getUserMedia if audioMuted and videoMuted are true", async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonConnect')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        let button = screen.getByTestId('buttonToggleMuteAudio')
+        fireEvent.click(button)
+        button = screen.getByTestId('buttonToggleMuteVideo')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonChangeDevices')
+        fireEvent.click(button)
+      })
+      expect(mockGetUserMedia).toHaveBeenCalledTimes(2)
+    })
+
+    it('should be triggered when "devicechange" event received', async () => {
+      const newAudioDeviceId = '1234'
+      const newVideoDeviceId = '5678'
+      let callback = jest.fn()
+      mockMediaDevicesAddEventListener.mockImplementation((event, cb) => {
+        callback = cb
+      })
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonConnect')
+        fireEvent.click(button)
+      })
+      navigator.mediaDevices.enumerateDevices = jest.fn().mockResolvedValue([
+        {
+          deviceId: newAudioDeviceId,
+          kind: 'audioinput'
+        },
+        {
+          deviceId: newVideoDeviceId,
+          kind: 'videoinput'
+        }
+      ])
+      await act(async () => {
+        callback()
+      })
+      expect(mockGetUserMedia).toHaveBeenCalledTimes(4)
+      expect(mockGetUserMedia.mock.calls).toEqual([
+        [
+          {
+            video: { deviceId: '' }
+          }
+        ],
+        [
+          {
+            audio: { deviceId: '' }
+          }
+        ],
+        [
+          {
+            video: { deviceId: newVideoDeviceId }
+          }
+        ],
+        [
+          {
+            audio: { deviceId: newAudioDeviceId }
+          }
+        ]
+      ])
     })
   })
 })

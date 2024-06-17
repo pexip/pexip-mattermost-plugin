@@ -5,7 +5,7 @@
     "homepage_url": "https://github.com/pexip/pexip-mattermost-plugin",
     "support_url": "https://github.com/pexip/pexip-mattermost-plugin/issues",
     "release_notes_url": "https://github.com/pexip/pexip-mattermost-plugin/releases/tag/v1.0.0",
-    "icon_path": "assets/starter-template-icon.svg",
+    "icon_path": "public/icon.svg",
     "version": "1.0.0",
     "min_server_version": "6.2.1",
     "server": {
@@ -67,8 +67,7 @@
                 "key": "Embedded",
                 "display_name": "Embedded Experience",
                 "type": "bool",
-                "help_text": "Indicates if the conference should be displayed inside Mattermost or in another tab with only the conference.",
-                "default": true
+                "help_text": "Indicates if the conference should be displayed inside Mattermost or in another tab with only the conference."
             }
         ]
     }

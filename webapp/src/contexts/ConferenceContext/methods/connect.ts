@@ -6,6 +6,9 @@ interface ConnectParams {
   conferenceAlias: string
   hostPin: string
   displayName: string
+  inputVideoDeviceId: string
+  inputAudioDeviceId: string
+  outputAudioDeviceId: string
 }
 
 export const connect = async (params: ConnectParams, dispatch: React.Dispatch<ConferenceAction>): Promise<void> => {
@@ -48,12 +51,16 @@ export const connect = async (params: ConnectParams, dispatch: React.Dispatch<Co
     })
   })
 
-  let localStream
+  let localVideoStream: MediaStream
+  let localAudioStream: MediaStream
   let response
   try {
-    localStream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: true
+    localVideoStream = await navigator.mediaDevices.getUserMedia({
+      video: { deviceId: params.inputVideoDeviceId }
+    })
+
+    localAudioStream = await navigator.mediaDevices.getUserMedia({
+      audio: { deviceId: params.inputAudioDeviceId }
     })
 
     response = await client.call({
@@ -63,7 +70,7 @@ export const connect = async (params: ConnectParams, dispatch: React.Dispatch<Co
       displayName,
       bandwidth: 0,
       callType: ClientCallType.AudioVideo,
-      mediaStream: localStream
+      mediaStream: new MediaStream([...localVideoStream.getTracks(), ...localAudioStream.getTracks()])
     })
   } catch (e) {
     dispatch({
@@ -80,7 +87,24 @@ export const connect = async (params: ConnectParams, dispatch: React.Dispatch<Co
       type: ConferenceActionType.Connected,
       body: {
         client,
-        localStream
+        localVideoStream,
+        localAudioStream
+      }
+    })
+
+    // Get the deviceId from the localStream, because in Firefox the user can choose a different device
+
+    const newInputVideoDeviceId =
+      localVideoStream.getVideoTracks().length > 0 ? localVideoStream.getVideoTracks()[0].getSettings().deviceId : ''
+    const newInputAudioDeviceId =
+      localAudioStream.getAudioTracks().length > 0 ? localAudioStream.getAudioTracks()[0].getSettings().deviceId : ''
+
+    dispatch({
+      type: ConferenceActionType.ChangeDevices,
+      body: {
+        inputVideoDeviceId: newInputVideoDeviceId,
+        inputAudioDeviceId: newInputAudioDeviceId,
+        outputAudioDeviceId: params.outputAudioDeviceId
       }
     })
   } else {
