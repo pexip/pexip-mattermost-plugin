@@ -36,6 +36,11 @@
         flex-grow: 1;
       }
 
+      .AdmitButton {
+        min-height: 2em;
+        padding:  0 0.8em;
+      }
+
       .ParticipantStatus {
         display: flex;
         align-items: center;

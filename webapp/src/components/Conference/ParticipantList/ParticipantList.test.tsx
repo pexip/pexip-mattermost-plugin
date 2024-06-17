@@ -3,11 +3,12 @@ import { render, screen } from '@testing-library/react'
 import { ParticipantList } from './ParticipantList'
 
 jest.mock('@pexip/components', () => ({
+  Button: (props: any) => <button {...props}>{props.children}</button>,
   Icon: (props: any) => <div {...props} />,
   IconTypes: {
-    IconMicrophoneOff: '',
-    IconVideoOff: '',
-    IconPresentationOn: ''
+    IconMicrophoneOff: 'icon-microphone-off',
+    IconVideoOff: 'icon-video-off',
+    IconPresentationOn: 'icon-presentation-on'
   }
 }))
 
@@ -40,7 +41,8 @@ beforeEach(() => {
           displayName: 'Test User',
           isMuted: false,
           isCameraMuted: false,
-          isPresenting: false
+          isPresenting: false,
+          isWaiting: false
         }
       ]
     }
@@ -56,9 +58,36 @@ describe('ParticipantList', () => {
 
   it("shouldn't display any state by default", () => {
     render(<ParticipantList />)
+    const admitButton = screen.queryByTestId('AdmitButton')
     const microphoneMutedIcon = screen.queryByTestId('MicrophoneMutedIcon')
     const cameraMutedIcon = screen.queryByTestId('CameraMutedIcon')
     const presentingIcon = screen.queryByTestId('PresentingIcon')
+    expect(admitButton).not.toBeInTheDocument()
+    expect(microphoneMutedIcon).not.toBeInTheDocument()
+    expect(cameraMutedIcon).not.toBeInTheDocument()
+    expect(presentingIcon).not.toBeInTheDocument()
+  })
+
+  it('should display the admit button icon when a participant is waiting', () => {
+    mockUseConferenceContext.mockReturnValue({
+      state: {
+        participants: [
+          {
+            displayName: 'Test User',
+            isWaiting: true,
+            isMuted: false,
+            isCameraMuted: false,
+            isPresenting: false
+          }
+        ]
+      }
+    })
+    render(<ParticipantList />)
+    const admitButton = screen.queryByTestId('AdmitButton')
+    const microphoneMutedIcon = screen.queryByTestId('MicrophoneMutedIcon')
+    const cameraMutedIcon = screen.queryByTestId('CameraMutedIcon')
+    const presentingIcon = screen.queryByTestId('PresentingIcon')
+    expect(admitButton).toBeInTheDocument()
     expect(microphoneMutedIcon).not.toBeInTheDocument()
     expect(cameraMutedIcon).not.toBeInTheDocument()
     expect(presentingIcon).not.toBeInTheDocument()
@@ -70,6 +99,7 @@ describe('ParticipantList', () => {
         participants: [
           {
             displayName: 'Test User',
+            isWaiting: false,
             isMuted: true,
             isCameraMuted: false,
             isPresenting: false
@@ -78,9 +108,11 @@ describe('ParticipantList', () => {
       }
     })
     render(<ParticipantList />)
+    const admitButton = screen.queryByTestId('AdmitButton')
     const microphoneMutedIcon = screen.queryByTestId('MicrophoneMutedIcon')
     const cameraMutedIcon = screen.queryByTestId('CameraMutedIcon')
     const presentingIcon = screen.queryByTestId('PresentingIcon')
+    expect(admitButton).not.toBeInTheDocument()
     expect(microphoneMutedIcon).toBeInTheDocument()
     expect(cameraMutedIcon).not.toBeInTheDocument()
     expect(presentingIcon).not.toBeInTheDocument()
@@ -92,6 +124,7 @@ describe('ParticipantList', () => {
         participants: [
           {
             displayName: 'Test User',
+            isWaiting: false,
             isMuted: false,
             isCameraMuted: true,
             isPresenting: false
@@ -100,9 +133,11 @@ describe('ParticipantList', () => {
       }
     })
     render(<ParticipantList />)
+    const admitButton = screen.queryByTestId('AdmitButton')
     const microphoneMutedIcon = screen.queryByTestId('MicrophoneMutedIcon')
     const cameraMutedIcon = screen.queryByTestId('CameraMutedIcon')
     const presentingIcon = screen.queryByTestId('PresentingIcon')
+    expect(admitButton).not.toBeInTheDocument()
     expect(microphoneMutedIcon).not.toBeInTheDocument()
     expect(cameraMutedIcon).toBeInTheDocument()
     expect(presentingIcon).not.toBeInTheDocument()
@@ -114,6 +149,7 @@ describe('ParticipantList', () => {
         participants: [
           {
             displayName: 'Test User',
+            isWaiting: false,
             isMuted: false,
             isCameraMuted: false,
             isPresenting: true
@@ -122,9 +158,11 @@ describe('ParticipantList', () => {
       }
     })
     render(<ParticipantList />)
+    const admitButton = screen.queryByTestId('AdmitButton')
     const microphoneMutedIcon = screen.queryByTestId('MicrophoneMutedIcon')
     const cameraMutedIcon = screen.queryByTestId('CameraMutedIcon')
     const presentingIcon = screen.queryByTestId('PresentingIcon')
+    expect(admitButton).not.toBeInTheDocument()
     expect(microphoneMutedIcon).not.toBeInTheDocument()
     expect(cameraMutedIcon).not.toBeInTheDocument()
     expect(presentingIcon).toBeInTheDocument()
@@ -136,12 +174,14 @@ describe('ParticipantList', () => {
         participants: [
           {
             displayName: 'Test User',
+            isWaiting: false,
             isMuted: true,
             isCameraMuted: false,
             isPresenting: false
           },
           {
             displayName: 'Test User 2',
+            isWaiting: false,
             isMuted: true,
             isCameraMuted: false,
             isPresenting: false
@@ -150,9 +190,11 @@ describe('ParticipantList', () => {
       }
     })
     render(<ParticipantList />)
+    const admitButton = screen.queryByTestId('AdmitButton')
     const microphoneMutedIcon = screen.queryAllByTestId('MicrophoneMutedIcon')
     const cameraMutedIcon = screen.queryByTestId('CameraMutedIcon')
     const presentingIcon = screen.queryByTestId('PresentingIcon')
+    expect(admitButton).not.toBeInTheDocument()
     expect(microphoneMutedIcon.length).toBe(2)
     expect(cameraMutedIcon).not.toBeInTheDocument()
     expect(presentingIcon).not.toBeInTheDocument()
