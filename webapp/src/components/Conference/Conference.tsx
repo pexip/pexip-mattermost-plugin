@@ -10,7 +10,7 @@ import { type UserSettings, settingsEventEmitter } from 'src/utils/user-settings
 import './Conference.scss'
 
 export const Conference = (): JSX.Element => {
-  const { state, swapVideos, changeDevices } = useConferenceContext()
+  const { state, swapVideos, changeDevices, changeEffect } = useConferenceContext()
   const {
     channel,
     localVideoStream,
@@ -30,7 +30,21 @@ export const Conference = (): JSX.Element => {
   }
 
   const handleUserSettings = (userSettings: UserSettings): void => {
-    changeDevices(userSettings).catch(console.error)
+    const { inputVideoDeviceId, inputAudioDeviceId, outputAudioDeviceId, effect } = state
+    if (
+      inputVideoDeviceId !== userSettings.inputVideoDeviceId ||
+      inputAudioDeviceId !== userSettings.inputAudioDeviceId ||
+      outputAudioDeviceId !== userSettings.outputAudioDeviceId
+    ) {
+      changeDevices({
+        inputVideoDeviceId: userSettings.inputVideoDeviceId,
+        inputAudioDeviceId: userSettings.inputAudioDeviceId,
+        outputAudioDeviceId: userSettings.outputAudioDeviceId
+      }).catch(console.error)
+    }
+    if (effect !== userSettings.effect) {
+      changeEffect(userSettings.effect).catch(console.error)
+    }
   }
 
   useEffect(() => {

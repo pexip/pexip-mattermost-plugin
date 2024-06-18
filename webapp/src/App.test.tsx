@@ -19,6 +19,7 @@ Object.defineProperty(global.navigator, 'mediaDevices', {
 })
 
 jest.mock('@pexip/infinity', () => {}, { virtual: true })
+jest.mock('@pexip/media-processor', () => ({}), { virtual: true })
 
 jest.mock('./components/Conference/Conference', () => {
   const mock = (): JSX.Element => <div></div>

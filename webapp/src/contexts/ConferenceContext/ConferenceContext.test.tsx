@@ -109,6 +109,8 @@ jest.mock(
   { virtual: true }
 )
 
+jest.mock('@pexip/media-processor', () => ({}), { virtual: true })
+
 const mockConfig: ConferenceConfig = {
   node: 'node-mock',
   displayName: 'display-name-mock',
@@ -193,24 +195,24 @@ const ConferenceContextTester = (): JSX.Element => {
   }
 
   return (
-    <div data-testid='ConferenceContextTester'>
-      <span data-testid='config'>{JSON.stringify(state.config)}</span>
-      <span data-testid='connectionState'>{state.connectionState}</span>
-      <span data-testid='channel'>{JSON.stringify(state.channel)}</span>
-      <span data-testid='errorMessage'>{state.errorMessage}</span>
-      <span data-testid='outputAudioDeviceId'>{state.outputAudioDeviceId}</span>
-      <span data-testid='audioMuted'>{state.audioMuted ? 'true' : 'false'}</span>
-      <span data-testid='videoMuted'>{state.videoMuted ? 'true' : 'false'}</span>
-      <span data-testid='presenting'>{state.presenting ? 'true' : 'false'}</span>
-      <span data-testid='presentationInMain'>{state.presentationInMain ? 'true' : 'false'}</span>
-      <button data-testid='buttonSetConfig' onClick={handleSetConfig} />
-      <button data-testid='buttonConnect' onClick={handleConnect} />
-      <button data-testid='buttonDisconnect' onClick={handleDisconnect} />
-      <button data-testid='buttonToggleMuteAudio' onClick={handleMuteAudio} />
-      <button data-testid='buttonToggleMuteVideo' onClick={handleMuteVideo} />
-      <button data-testid='buttonTogglePresenting' onClick={handlePresenting} />
-      <button data-testid='buttonSwapVideos' onClick={handleSwapVideos} />
-      <button data-testid='buttonChangeDevices' onClick={handleChangeDevices} />
+    <div data-testid="ConferenceContextTester">
+      <span data-testid="config">{JSON.stringify(state.config)}</span>
+      <span data-testid="connectionState">{state.connectionState}</span>
+      <span data-testid="channel">{JSON.stringify(state.channel)}</span>
+      <span data-testid="errorMessage">{state.errorMessage}</span>
+      <span data-testid="outputAudioDeviceId">{state.outputAudioDeviceId}</span>
+      <span data-testid="audioMuted">{state.audioMuted ? 'true' : 'false'}</span>
+      <span data-testid="videoMuted">{state.videoMuted ? 'true' : 'false'}</span>
+      <span data-testid="presenting">{state.presenting ? 'true' : 'false'}</span>
+      <span data-testid="presentationInMain">{state.presentationInMain ? 'true' : 'false'}</span>
+      <button data-testid="buttonSetConfig" onClick={handleSetConfig} />
+      <button data-testid="buttonConnect" onClick={handleConnect} />
+      <button data-testid="buttonDisconnect" onClick={handleDisconnect} />
+      <button data-testid="buttonToggleMuteAudio" onClick={handleMuteAudio} />
+      <button data-testid="buttonToggleMuteVideo" onClick={handleMuteVideo} />
+      <button data-testid="buttonTogglePresenting" onClick={handlePresenting} />
+      <button data-testid="buttonSwapVideos" onClick={handleSwapVideos} />
+      <button data-testid="buttonChangeDevices" onClick={handleChangeDevices} />
     </div>
   )
 }

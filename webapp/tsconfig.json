@@ -19,5 +19,6 @@
       "@components/*": ["./src/components/*"],
       "@contexts/*": ["./src/contexts/*"]
     }
-  }
+  },
+  "exclude": ["node_modules", "dist", "public", "update-segmenter-files.js"]
 }
