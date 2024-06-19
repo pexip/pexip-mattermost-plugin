@@ -9,6 +9,7 @@ import {
 } from '@pexip/media-processor'
 import { ConferenceActionType, type ConferenceAction } from '../ConferenceAction'
 import { type ConferenceState } from '../ConferenceState'
+import { type Effect } from 'src/types/Effect'
 
 interface NavigatorUABrandVersion {
   brand: string
@@ -24,7 +25,7 @@ interface NavigatorUAData {
 let processor: VideoProcessor | null = null
 
 export const changeEffect = async (
-  effect: 'none' | 'blur' | 'overlay',
+  effect: Effect,
   state: ConferenceState,
   dispatch: React.Dispatch<ConferenceAction>
 ): Promise<void> => {
@@ -51,19 +52,29 @@ export const changeEffect = async (
   })
 }
 
+let baseUrl = document.currentScript?.getAttribute('src')
+
+if (baseUrl != null) {
+  baseUrl = baseUrl.substring(0, baseUrl.lastIndexOf('/')) + '/public/'
+  baseUrl = baseUrl.replace('/static/', '/')
+} else {
+  baseUrl = window.location.origin + '/static/plugins/com.pexip.pexip-video-connect/public/'
+}
+
 const getVideoProcessor = async (effect: 'none' | 'blur' | 'overlay'): Promise<VideoProcessor> => {
   const delegate = isChromium() ? 'GPU' : 'CPU'
   // Setting the path to that `@mediapipe/tasks-vision` assets
   // It will be passed direct to
   // [FilesetResolver.forVisionTasks()](https://ai.google.dev/edge/api/mediapipe/js/tasks-vision.filesetresolver#filesetresolverforvisiontasks)
-  const tasksVisionBasePath = '/wasm'
+  const tasksVisionBasePath = baseUrl + 'wasm'
 
   const segmenter = createSegmenter(tasksVisionBasePath, {
     modelAsset: {
-      path: '/models/selfie_segmenter.tflite',
+      path: baseUrl + '/models/selfie_segmenter.tflite',
       modelName: 'selfie'
     },
-    delegate
+    delegate,
+    workerScriptUrl: new URL(`${baseUrl}workers/mediaWorker.js`)
   })
 
   const transformer = createCanvasTransform(segmenter, {
