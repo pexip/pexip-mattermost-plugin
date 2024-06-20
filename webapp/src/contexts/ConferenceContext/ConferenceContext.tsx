@@ -38,6 +38,7 @@ const initialState: ConferenceState = {
   client: null,
   localVideoStream: undefined,
   localAudioStream: undefined,
+  processedVideoStream: undefined,
   remoteStream: undefined,
   inputVideoDeviceId: localStorage.getItem(LocalStorageKey.inputVideoDeviceIdKey) ?? '',
   inputAudioDeviceId: localStorage.getItem(LocalStorageKey.inputAudioDeviceIdKey) ?? '',
@@ -95,21 +96,14 @@ const ConferenceContextProvider = (props: any): JSX.Element => {
           body: { channel }
         })
         try {
-          const filteredDevicesIds = await filterMediaDevices({
-            inputVideoDeviceId: state.inputVideoDeviceId,
-            inputAudioDeviceId: state.inputAudioDeviceId,
-            outputAudioDeviceId: state.outputAudioDeviceId
-          })
           await connect(
             {
               host: 'https://' + state.config?.node,
               conferenceAlias: state.config?.vmrPrefix + channel.name,
               hostPin: state.config?.hostPin ?? '',
-              displayName: state.config?.displayName ?? 'User',
-              inputVideoDeviceId: filteredDevicesIds.inputVideoDeviceId,
-              inputAudioDeviceId: filteredDevicesIds.inputAudioDeviceId,
-              outputAudioDeviceId: filteredDevicesIds.outputAudioDeviceId
+              displayName: state.config?.displayName ?? 'User'
             },
+            state,
             dispatch
           )
         } catch (e) {
@@ -144,7 +138,10 @@ const ConferenceContextProvider = (props: any): JSX.Element => {
         changeDevices(devicesIds, state, dispatch).catch(console.error)
       },
       changeEffect: async (effect: Effect) => {
-        changeEffect(effect, state, dispatch).catch(console.error)
+        localStorage.setItem(LocalStorageKey.effectKey, effect)
+        if (state.localVideoStream != null) {
+          changeEffect(state.localVideoStream, effect, state, dispatch).catch(console.error)
+        }
       },
       state
     }),

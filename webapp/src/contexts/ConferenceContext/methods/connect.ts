@@ -1,17 +1,21 @@
 import { ClientCallType, createCallSignals, createInfinityClient, createInfinityClientSignals } from '@pexip/infinity'
 import { ConferenceActionType, type ConferenceAction } from '../ConferenceAction'
+import { changeEffect } from './changeEffect'
+import { type ConferenceState } from '../ConferenceState'
+import { filterMediaDevices } from './filterMediaDevices'
 
 interface ConnectParams {
   host: string
   conferenceAlias: string
   hostPin: string
   displayName: string
-  inputVideoDeviceId: string
-  inputAudioDeviceId: string
-  outputAudioDeviceId: string
 }
 
-export const connect = async (params: ConnectParams, dispatch: React.Dispatch<ConferenceAction>): Promise<void> => {
+export const connect = async (
+  params: ConnectParams,
+  state: ConferenceState,
+  dispatch: React.Dispatch<ConferenceAction>
+): Promise<void> => {
   const { host, conferenceAlias, hostPin, displayName } = params
 
   const clientSignals = createInfinityClientSignals([])
@@ -51,17 +55,35 @@ export const connect = async (params: ConnectParams, dispatch: React.Dispatch<Co
     })
   })
 
+  const filteredDevicesIds = await filterMediaDevices({
+    inputVideoDeviceId: state.inputVideoDeviceId,
+    inputAudioDeviceId: state.inputAudioDeviceId,
+    outputAudioDeviceId: state.outputAudioDeviceId
+  })
+
   let localVideoStream: MediaStream
   let localAudioStream: MediaStream
   let response
   try {
     localVideoStream = await navigator.mediaDevices.getUserMedia({
-      video: { deviceId: params.inputVideoDeviceId }
+      video: { deviceId: filteredDevicesIds.inputVideoDeviceId }
     })
 
     localAudioStream = await navigator.mediaDevices.getUserMedia({
-      audio: { deviceId: params.inputAudioDeviceId }
+      audio: { deviceId: filteredDevicesIds.inputAudioDeviceId }
     })
+
+    dispatch({
+      type: ConferenceActionType.UpdateLocalStream,
+      body: {
+        localVideoStream,
+        localAudioStream
+      }
+    })
+
+    const processedVideoStream = await changeEffect(localVideoStream, state.effect, state, dispatch)
+
+    const newVideoStream = processedVideoStream ?? localVideoStream
 
     response = await client.call({
       host,
@@ -70,7 +92,7 @@ export const connect = async (params: ConnectParams, dispatch: React.Dispatch<Co
       displayName,
       bandwidth: 0,
       callType: ClientCallType.AudioVideo,
-      mediaStream: new MediaStream([...localVideoStream.getTracks(), ...localAudioStream.getTracks()])
+      mediaStream: new MediaStream([...newVideoStream.getTracks(), ...localAudioStream.getTracks()])
     })
   } catch (e) {
     dispatch({
@@ -104,7 +126,7 @@ export const connect = async (params: ConnectParams, dispatch: React.Dispatch<Co
       body: {
         inputVideoDeviceId: newInputVideoDeviceId,
         inputAudioDeviceId: newInputAudioDeviceId,
-        outputAudioDeviceId: params.outputAudioDeviceId
+        outputAudioDeviceId: state.outputAudioDeviceId
       }
     })
   } else {

@@ -8,8 +8,8 @@ import {
   type ProcessVideoTrack
 } from '@pexip/media-processor'
 import { ConferenceActionType, type ConferenceAction } from '../ConferenceAction'
-import { type ConferenceState } from '../ConferenceState'
 import { type Effect } from 'src/types/Effect'
+import { type ConferenceState } from '../ConferenceState'
 
 interface NavigatorUABrandVersion {
   brand: string
@@ -25,31 +25,45 @@ interface NavigatorUAData {
 let processor: VideoProcessor | null = null
 
 export const changeEffect = async (
+  localVideoStream: MediaStream,
   effect: Effect,
   state: ConferenceState,
   dispatch: React.Dispatch<ConferenceAction>
-): Promise<void> => {
-  const { localVideoStream } = state
-
-  if (localVideoStream == null) {
-    console.error('Local stream is not available')
-    return
-  }
-
+): Promise<MediaStream> => {
   processor?.close()
-  await processor?.destroy()
+
+  // await processor?.destroy()
 
   processor = await getVideoProcessor(effect)
+
   await processor.open()
 
-  const processedStream = await processor.process(localVideoStream)
+  const processedVideoStream = await processor.process(localVideoStream)
+
+  let newStream: MediaStream
+  if (state.localAudioStream != null) {
+    newStream = new MediaStream([...processedVideoStream.getTracks(), ...state.localAudioStream.getTracks()])
+  } else {
+    newStream = processedVideoStream
+  }
+
+  state.client?.setStream(newStream)
 
   dispatch({
-    type: ConferenceActionType.Connected,
+    type: ConferenceActionType.UpdateLocalStream,
     body: {
-      localStream: processedStream
+      processedVideoStream
     }
   })
+
+  dispatch({
+    type: ConferenceActionType.ChangeEffect,
+    body: {
+      effect
+    }
+  })
+
+  return processedVideoStream
 }
 
 let baseUrl = document.currentScript?.getAttribute('src')
@@ -79,7 +93,7 @@ const getVideoProcessor = async (effect: 'none' | 'blur' | 'overlay'): Promise<V
 
   const transformer = createCanvasTransform(segmenter, {
     effects: effect,
-    backgroundImageUrl: '/backgrounds/background.webp'
+    backgroundImageUrl: baseUrl + '/backgrounds/background.webp'
   })
 
   const processor = createVideoProcessor([transformer], getTrackProcessor())

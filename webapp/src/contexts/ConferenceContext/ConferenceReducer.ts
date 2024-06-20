@@ -23,8 +23,6 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
         ...prevState,
         connectionState: ConnectionState.Connected,
         client: action.body.client,
-        localVideoStream: action.body.localVideoStream,
-        localAudioStream: action.body.localAudioStream,
         audioMuted: false,
         videoMuted: false,
         presenting: false
@@ -46,11 +44,20 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
     case ConferenceActionType.UpdateLocalStream: {
       const localVideoStream: MediaStream = action.body.localVideoStream
       const localAudioStream: MediaStream = action.body.localAudioStream
+      const processedVideoStream: MediaStream = action.body.processedVideoStream
 
       return {
         ...prevState,
         ...(localVideoStream != null && { localVideoStream }),
-        ...(localAudioStream != null && { localAudioStream })
+        ...(localAudioStream != null && { localAudioStream }),
+        ...(processedVideoStream != null && { processedVideoStream })
+      }
+    }
+
+    case ConferenceActionType.ChangeEffect: {
+      return {
+        ...prevState,
+        effect: action.body.effect
       }
     }
 

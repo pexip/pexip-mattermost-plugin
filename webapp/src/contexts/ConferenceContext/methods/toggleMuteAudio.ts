@@ -23,10 +23,10 @@ export const toggleMuteAudio = async (
       }
     })
 
+    const newLocalVideoStream = state.processedVideoStream ?? localVideoStream
     let newStream: MediaStream
-
-    if (localVideoStream != null) {
-      newStream = new MediaStream([...newAudioStream.getTracks(), ...localVideoStream.getTracks()])
+    if (newLocalVideoStream != null) {
+      newStream = new MediaStream([...newAudioStream.getTracks(), ...newLocalVideoStream.getTracks()])
     } else {
       newStream = newAudioStream
     }

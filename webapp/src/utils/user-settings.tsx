@@ -84,7 +84,7 @@ const createUserSettingsDialog = (
     display_name: 'Effect',
     name: 'effect',
     type: 'select',
-    default: 'none',
+    default: currentSettings.effect,
     options: [
       {
         text: 'No Effect',

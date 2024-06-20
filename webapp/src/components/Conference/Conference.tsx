@@ -14,6 +14,7 @@ export const Conference = (): JSX.Element => {
   const {
     channel,
     localVideoStream,
+    processedVideoStream,
     remoteStream,
     outputAudioDeviceId,
     videoMuted,
@@ -70,7 +71,7 @@ export const Conference = (): JSX.Element => {
           {localVideoStream != null && !videoMuted && (
             <div className='video-container local'>
               <Selfview
-                localMediaStream={localVideoStream}
+                localMediaStream={processedVideoStream ?? localVideoStream}
                 isVideoInputMuted={false}
                 shouldShowUserAvatar={false}
                 username={''}

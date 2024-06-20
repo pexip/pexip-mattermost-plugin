@@ -10,6 +10,7 @@ interface ConferenceState {
   client: Client | null
   localVideoStream: MediaStream | undefined
   localAudioStream: MediaStream | undefined
+  processedVideoStream: MediaStream | undefined
   remoteStream: MediaStream | undefined
   inputVideoDeviceId: string
   inputAudioDeviceId: string
