@@ -109,7 +109,21 @@ jest.mock(
   { virtual: true }
 )
 
-jest.mock('@pexip/media-processor', () => ({}), { virtual: true })
+jest.mock(
+  '@pexip/media-processor',
+  () => ({
+    createSegmenter: jest.fn(),
+    createCanvasTransform: jest.fn(),
+    createVideoTrackProcessor: jest.fn(),
+    createVideoTrackProcessorWithFallback: jest.fn(),
+    createVideoProcessor: jest.fn(() => ({
+      open: jest.fn(),
+      process: jest.fn(() => new MediaStream()),
+      close: jest.fn()
+    }))
+  }),
+  { virtual: true }
+)
 
 const mockConfig: ConferenceConfig = {
   node: 'node-mock',
