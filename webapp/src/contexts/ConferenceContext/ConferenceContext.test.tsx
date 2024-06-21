@@ -1,10 +1,31 @@
 import React from 'react'
-import { ConferenceContextProvider, useConferenceContext } from './ConferenceContext'
+
 import { render, screen, fireEvent, act, waitFor } from '@testing-library/react'
 import { type ConferenceConfig } from 'src/types/ConferenceConfig'
 import { ConnectionState } from '../../types/ConnectionState'
 import { type Channel } from 'mattermost-redux/types/channels'
 import { type DevicesIds } from './methods/changeDevices'
+import { type Effect } from 'src/types/Effect'
+import { LocalStorageKey } from 'src/utils/local-storage-key'
+
+const mockInitialEffect: Effect = 'blur'
+const mockEffect: Effect = 'overlay'
+
+const mockSetItem = jest.fn()
+const mockGetItem = jest.fn((key: string) => {
+  if (key === LocalStorageKey.effectKey) {
+    return mockInitialEffect
+  }
+})
+Object.defineProperty(window, 'localStorage', {
+  value: {
+    setItem: mockSetItem,
+    getItem: mockGetItem
+  }
+})
+
+// eslint-disable-next-line import/first
+import { ConferenceContextProvider, useConferenceContext } from './ConferenceContext'
 
 const mockDevicesIds: DevicesIds = {
   inputAudioDeviceId: 'input-audio-device-id-mock',
@@ -109,11 +130,14 @@ jest.mock(
   { virtual: true }
 )
 
+const mockCreateCanvasTransform = jest.fn()
 jest.mock(
   '@pexip/media-processor',
   () => ({
     createSegmenter: jest.fn(),
-    createCanvasTransform: jest.fn(),
+    createCanvasTransform: (param1: any, param2: any) => {
+      return mockCreateCanvasTransform(param1, param2)
+    },
     createVideoTrackProcessor: jest.fn(),
     createVideoTrackProcessorWithFallback: jest.fn(),
     createVideoProcessor: jest.fn(() => ({
@@ -161,7 +185,8 @@ const ConferenceContextTester = (): JSX.Element => {
     toggleMuteVideo,
     togglePresenting,
     swapVideos,
-    changeDevices
+    changeDevices,
+    changeEffect
   } = useConferenceContext()
 
   const handleSetConfig = (): void => {
@@ -169,33 +194,23 @@ const ConferenceContextTester = (): JSX.Element => {
   }
 
   const handleConnect = (): void => {
-    connect(mockChannel).catch((e) => {
-      console.error(e)
-    })
+    connect(mockChannel).catch(console.error)
   }
 
   const handleDisconnect = (): void => {
-    disconnect().catch((e) => {
-      console.error(e)
-    })
+    disconnect().catch(console.error)
   }
 
   const handleMuteAudio = (): void => {
-    toggleMuteAudio().catch((e) => {
-      console.error(e)
-    })
+    toggleMuteAudio().catch(console.error)
   }
 
   const handleMuteVideo = (): void => {
-    toggleMuteVideo().catch((e) => {
-      console.error(e)
-    })
+    toggleMuteVideo().catch(console.error)
   }
 
   const handlePresenting = (): void => {
-    togglePresenting().catch((e) => {
-      console.error(e)
-    })
+    togglePresenting().catch(console.error)
   }
 
   const handleSwapVideos = (): void => {
@@ -203,9 +218,11 @@ const ConferenceContextTester = (): JSX.Element => {
   }
 
   const handleChangeDevices = (): void => {
-    changeDevices(mockDevicesIds).catch((e) => {
-      console.error(e)
-    })
+    changeDevices(mockDevicesIds).catch(console.error)
+  }
+
+  const handleChangeEffect = (): void => {
+    changeEffect(mockEffect).catch(console.error)
   }
 
   return (
@@ -215,6 +232,7 @@ const ConferenceContextTester = (): JSX.Element => {
       <span data-testid='channel'>{JSON.stringify(state.channel)}</span>
       <span data-testid='errorMessage'>{state.errorMessage}</span>
       <span data-testid='outputAudioDeviceId'>{state.outputAudioDeviceId}</span>
+      <span data-testid='effect'>{state.effect}</span>
       <span data-testid='audioMuted'>{state.audioMuted ? 'true' : 'false'}</span>
       <span data-testid='videoMuted'>{state.videoMuted ? 'true' : 'false'}</span>
       <span data-testid='presenting'>{state.presenting ? 'true' : 'false'}</span>
@@ -227,6 +245,7 @@ const ConferenceContextTester = (): JSX.Element => {
       <button data-testid='buttonTogglePresenting' onClick={handlePresenting} />
       <button data-testid='buttonSwapVideos' onClick={handleSwapVideos} />
       <button data-testid='buttonChangeDevices' onClick={handleChangeDevices} />
+      <button data-testid='buttonChangeEffect' onClick={handleChangeEffect} />
     </div>
   )
 }
@@ -1072,6 +1091,100 @@ describe('ConferenceContext', () => {
           }
         ]
       ])
+    })
+  })
+
+  describe('changeEffect', () => {
+    it('should set the effect from localStorage on connect', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonConnect')
+        fireEvent.click(button)
+      })
+      expect(mockCreateCanvasTransform).toHaveBeenCalledTimes(1)
+      expect(mockCreateCanvasTransform.mock.calls[0][1].effects).toEqual(mockInitialEffect)
+    })
+
+    it('should call changeEffect on toggleVideoMute', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonConnect')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonToggleMuteVideo')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonToggleMuteVideo')
+        fireEvent.click(button)
+      })
+      expect(mockCreateCanvasTransform).toHaveBeenCalledTimes(2)
+      expect(mockCreateCanvasTransform.mock.calls[0][1].effects).toEqual(mockInitialEffect)
+      expect(mockCreateCanvasTransform.mock.calls[1][1].effects).toEqual(mockInitialEffect)
+    })
+
+    it('should change the effect in the state', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonConnect')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonChangeEffect')
+        fireEvent.click(button)
+      })
+      const effect = screen.getByTestId('effect')
+      expect(effect.innerHTML).toBe(mockEffect)
+    })
+
+    it('should call createCanvasTransform with the proper effect', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonConnect')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonChangeEffect')
+        fireEvent.click(button)
+      })
+      expect(mockCreateCanvasTransform).toHaveBeenCalledTimes(2)
+      expect(mockCreateCanvasTransform.mock.calls[0][1].effects).toEqual(mockInitialEffect)
+      expect(mockCreateCanvasTransform.mock.calls[1][1].effects).toEqual(mockEffect)
+    })
+
+    it('should save the new effect in localStorage', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonConnect')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonChangeEffect')
+        fireEvent.click(button)
+      })
+      expect(mockSetItem).toHaveBeenCalledTimes(1)
+      expect(mockSetItem).toHaveBeenCalledWith(LocalStorageKey.effectKey, mockEffect)
     })
   })
 })
