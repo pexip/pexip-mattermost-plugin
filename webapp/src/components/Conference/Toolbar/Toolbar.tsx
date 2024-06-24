@@ -7,8 +7,9 @@ import { openUserSettingsDialog } from 'src/utils/user-settings'
 import './Toolbar.scss'
 
 export const Toolbar = (): JSX.Element => {
-  const { toggleMuteAudio, toggleMuteVideo, togglePresenting, disconnect, state } = useConferenceContext()
-  const { audioMuted, videoMuted, presenting } = state
+  const { toggleMuteAudio, toggleMuteVideo, togglePresenting, togglePresentationInPopUp, disconnect, state } =
+    useConferenceContext()
+  const { audioMuted, videoMuted, presenting, presentationInPopUp } = state
 
   return (
     <div className='Toolbar'>
@@ -40,6 +41,18 @@ export const Toolbar = (): JSX.Element => {
           <Icon source={IconTypes.IconPresentationOn} />
         </button>
       </Tooltip>
+      {state.presentationStream != null && (
+        <Tooltip text='Pop-out presentation'>
+          <button
+            onClick={() => {
+              togglePresentationInPopUp().catch(console.error)
+            }}
+            className={presentationInPopUp ? 'selected' : ''}
+          >
+            <Icon source={IconTypes.IconOpenInNew} />
+          </button>
+        </Tooltip>
+      )}
       <Tooltip text='Settings'>
         <button
           onClick={() => {

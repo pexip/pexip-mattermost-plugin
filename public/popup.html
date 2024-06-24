@@ -1,0 +1,16 @@
+<html>
+  <head>
+    <title>Presentation</title>
+  </head>
+  <body>
+    <h1>Pop Out Presentation</h1>
+    <p>Pop out presentation content goes here.</p>
+    <video autoplay playsInline id="presentation"></video>
+    <script>
+      // window.opener.postMessage('popout', '*');
+      addEventListener('message', function(event) {
+        console.log(event)
+      });
+    </script>
+  </body>
+</html>

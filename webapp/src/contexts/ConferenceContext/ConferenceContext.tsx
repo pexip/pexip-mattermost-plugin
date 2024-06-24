@@ -9,13 +9,14 @@ import { ConferenceActionType } from './ConferenceAction'
 import type { Channel } from 'mattermost-redux/types/channels'
 import { toggleMuteAudio } from './methods/toggleMuteAudio'
 import { toggleMuteVideo } from './methods/toggleMuteVideo'
-import { toggleMutePresenting } from './methods/togglePresenting'
 import { changeEffect } from './methods/changeEffect'
+import { togglePresenting } from './methods/togglePresenting'
 import { type DisconnectReason } from '@pexip/infinity'
 import { type DevicesIds, changeDevices } from './methods/changeDevices'
 import { LocalStorageKey } from 'src/utils/local-storage-key'
 import { filterMediaDevices } from './methods/filterMediaDevices'
 import { type Effect } from 'src/types/Effect'
+import { togglePresentationInPopUp } from './methods/togglePresentationInPopUp'
 
 interface ContextType {
   setConfig: (config: ConferenceConfig) => void
@@ -27,6 +28,7 @@ interface ContextType {
   changeDevices: (devicesIds: DevicesIds) => Promise<void>
   changeEffect: (effect: Effect) => Promise<void>
   swapVideos: () => void
+  togglePresentationInPopUp: () => Promise<void>
   state: ConferenceState
 }
 
@@ -50,6 +52,7 @@ const initialState: ConferenceState = {
   videoMuted: false,
   presenting: false,
   presentationInMain: false,
+  presentationInPopUp: false,
   participants: [],
   errorMessage: ''
 }
@@ -123,10 +126,13 @@ const ConferenceContextProvider = (props: any): JSX.Element => {
         toggleMuteVideo(state, dispatch).catch(console.error)
       },
       togglePresenting: async () => {
-        toggleMutePresenting(state, dispatch).catch(console.error)
+        togglePresenting(state, dispatch).catch(console.error)
       },
       swapVideos: async () => {
         dispatch({ type: ConferenceActionType.SwapVideos })
+      },
+      togglePresentationInPopUp: async () => {
+        togglePresentationInPopUp(state, dispatch).catch(console.error)
       },
       changeDevices: async (devicesIds: DevicesIds) => {
         const { inputAudioDeviceId, inputVideoDeviceId, outputAudioDeviceId } = devicesIds
