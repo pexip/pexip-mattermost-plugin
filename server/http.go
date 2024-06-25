@@ -48,7 +48,7 @@ func (p *Plugin) initializeRouter() {
 	apiRouter.HandleFunc(routeAPILeaveJoinConference, p.checkAuth(p.handleResponse(p.httpNotifyLeaveConference))).Methods(http.MethodPost)
 }
 
-func (p *Plugin) httpGetSettings(w http.ResponseWriter, _r *http.Request) (int, error) {
+func (p *Plugin) httpGetSettings(w http.ResponseWriter, _ *http.Request) (int, error) {
 	conf := p.getConfiguration()
 	return respondJSON(w, struct {
 		Node            string `json:"node"`
