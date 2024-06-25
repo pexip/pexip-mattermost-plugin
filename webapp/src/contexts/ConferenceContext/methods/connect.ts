@@ -3,6 +3,9 @@ import { ConferenceActionType, type ConferenceAction } from '../ConferenceAction
 import { changeEffect } from './changeEffect'
 import { type ConferenceState } from '../ConferenceState'
 import { filterMediaDevices } from './filterMediaDevices'
+import { notifyJoinConference } from 'src/utils/http-requests'
+import { getMattermostStore } from 'src/utils/mattermost-store'
+
 
 interface ConnectParams {
   host: string
@@ -40,6 +43,13 @@ export const connect = async (
         }
       })
     }
+  })
+
+  clientSignals.onConnected.add(() => {
+    const state = getMattermostStore().getState()
+    notifyJoinConference(state.entities.channels.currentChannelId).catch((error) => {
+      console.error(error)
+    })
   })
 
   clientSignals.onDisconnected.add(() => {
