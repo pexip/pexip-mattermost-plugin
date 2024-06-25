@@ -46,8 +46,7 @@ export const connect = async (
   })
 
   clientSignals.onConnected.add(() => {
-    const state = getMattermostStore().getState()
-    notifyJoinConference(state.entities.channels.currentChannelId).catch((error) => {
+    notifyJoinConference(getMattermostStore().getState().entities.channels.currentChannelId).catch((error) => {
       console.error(error)
     })
   })

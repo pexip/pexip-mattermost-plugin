@@ -10,9 +10,8 @@ export const disconnect = async (
   reason: DisconnectReason
 ): Promise<void> => {
   state.client?.disconnect({ reason }).catch(console.error)
-
-  const globalState = getMattermostStore().getState()
-  notifyLeaveConference(globalState.entities.channels.currentChannelId).catch((error) => {
+  
+  notifyLeaveConference(getMattermostStore().getState().entities.channels.currentChannelId).catch((error) => {
     console.error(error)
   })
 
