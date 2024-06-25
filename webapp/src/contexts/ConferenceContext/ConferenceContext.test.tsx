@@ -108,6 +108,7 @@ jest.mock(
   () => ({
     createInfinityClientSignals: () => ({
       onParticipants: { add: jest.fn() },
+      onConnected: { add: jest.fn() },
       onDisconnected: { add: jest.fn() }
     }),
     createCallSignals: () => ({
@@ -149,6 +150,13 @@ jest.mock(
   }),
   { virtual: true }
 )
+jest.mock('src/utils/mattermost-store', () => ({
+  getMattermostStore: jest.fn(() => ({
+    getState: jest.fn(() => ({
+      entities: { channels: { currentChannelId: 'current-channel-id-mock' } }
+    }))
+  }))
+}))
 
 const mockConfig: ConferenceConfig = {
   node: 'node-mock',
