@@ -45,14 +45,7 @@
         display: flex;
         align-items: center;
         gap: 1em;
-
-        /* Center the icon */
-        > div {
-          display: flex;
-        }
-        > div > div > div {
-          display: flex;
-        }
+        line-height: 0;
       }
 
       &:hover {
