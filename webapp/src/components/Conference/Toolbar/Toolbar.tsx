@@ -9,12 +9,22 @@ import './Toolbar.scss'
 export const Toolbar = (): JSX.Element => {
   const { toggleMuteAudio, toggleMuteVideo, togglePresenting, togglePresentationInPopUp, disconnect, state } =
     useConferenceContext()
-  const { audioMuted, videoMuted, presenting, presentationInPopUp } = state
+  const {
+    audioMuted,
+    videoMuted,
+    presenting,
+    presentationStream,
+    presentationInPopUp,
+    inputVideoDeviceId,
+    inputAudioDeviceId,
+    outputAudioDeviceId
+  } = state
 
   return (
     <div className='Toolbar'>
-      <Tooltip text={audioMuted ? 'Unmute audio' : 'Mute audio'}>
+      <Tooltip data-testid='AudioMuteTooltip' text={audioMuted ? 'Unmute audio' : 'Mute audio'}>
         <button
+          data-testid='AudioMuteButton'
           onClick={() => {
             toggleMuteAudio().catch(console.error)
           }}
@@ -22,8 +32,9 @@ export const Toolbar = (): JSX.Element => {
           <Icon source={audioMuted ? IconTypes.IconMicrophoneOff : IconTypes.IconMicrophoneOn} />
         </button>
       </Tooltip>
-      <Tooltip text={videoMuted ? 'Unmute video' : 'Mute video'}>
+      <Tooltip data-testid='VideoMuteTooltip' text={videoMuted ? 'Unmute video' : 'Mute video'}>
         <button
+          data-testid='VideoMuteButton'
           onClick={() => {
             toggleMuteVideo().catch(console.error)
           }}
@@ -31,8 +42,9 @@ export const Toolbar = (): JSX.Element => {
           <Icon source={videoMuted ? IconTypes.IconVideoOff : IconTypes.IconVideoOn} />
         </button>
       </Tooltip>
-      <Tooltip text={(presenting ? 'Stop' : 'Start') + ' sharing screen'}>
+      <Tooltip data-testid='PresentingTooltip' text={(presenting ? 'Stop' : 'Start') + ' sharing screen'}>
         <button
+          data-testid='PresentingButton'
           onClick={() => {
             togglePresenting().catch(console.error)
           }}
@@ -41,9 +53,10 @@ export const Toolbar = (): JSX.Element => {
           <Icon source={IconTypes.IconPresentationOn} />
         </button>
       </Tooltip>
-      {state.presentationStream != null && (
+      {presentationStream != null && (
         <Tooltip text='Pop-out presentation'>
           <button
+            data-testid='PresentationPopOutButton'
             onClick={() => {
               togglePresentationInPopUp().catch(console.error)
             }}
@@ -55,11 +68,12 @@ export const Toolbar = (): JSX.Element => {
       )}
       <Tooltip text='Settings'>
         <button
+          data-testid='SettingsButton'
           onClick={() => {
             openUserSettingsDialog({
-              inputAudioDeviceId: state.inputAudioDeviceId,
-              inputVideoDeviceId: state.inputVideoDeviceId,
-              outputAudioDeviceId: state.outputAudioDeviceId,
+              inputAudioDeviceId,
+              inputVideoDeviceId,
+              outputAudioDeviceId,
               effect: state.effect
             }).catch(console.error)
           }}
@@ -69,6 +83,7 @@ export const Toolbar = (): JSX.Element => {
       </Tooltip>
       <Tooltip text='Disconnect'>
         <button
+          data-testid='DisconnectButton'
           className='disconnect'
           onClick={() => {
             disconnect().catch(console.error)

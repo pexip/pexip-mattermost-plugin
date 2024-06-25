@@ -82,7 +82,7 @@ export const Conference = (): JSX.Element => {
           )}
 
           {presentationStream != null && !presentationInPopUp && (
-            <div className='video-container secondary'>
+            <div className='video-container secondary' data-testid='SecondaryVideo'>
               <Video srcObject={!presentationInMain ? presentationStream : remoteStream} sinkId={outputAudioDeviceId} />
               <Tooltip text='Swap videos' position='bottomCenter' className='SwapVideosTooltipContainer'>
                 <div className='exchange-panel' onClick={swapVideos}>
