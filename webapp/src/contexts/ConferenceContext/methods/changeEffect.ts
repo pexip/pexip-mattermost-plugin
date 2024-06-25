@@ -32,7 +32,7 @@ export const changeEffect = async (
 ): Promise<MediaStream> => {
   processor?.close()
 
-  // await processor?.destroy()
+  await processor?.destroy()
 
   processor = await getVideoProcessor(effect)
 
@@ -72,7 +72,7 @@ if (baseUrl != null) {
   baseUrl = baseUrl.substring(0, baseUrl.lastIndexOf('/')) + '/public/'
   baseUrl = baseUrl.replace('/static/', '/')
 } else {
-  baseUrl = window.location.origin + '/static/plugins/com.pexip.pexip-video-connect/public/'
+  baseUrl = window.location.origin + '/plugins/com.pexip.pexip-video-connect/public/'
 }
 
 const getVideoProcessor = async (effect: 'none' | 'blur' | 'overlay'): Promise<VideoProcessor> => {
@@ -84,7 +84,7 @@ const getVideoProcessor = async (effect: 'none' | 'blur' | 'overlay'): Promise<V
 
   const segmenter = createSegmenter(tasksVisionBasePath, {
     modelAsset: {
-      path: baseUrl + '/models/selfie_segmenter.tflite',
+      path: `${baseUrl}models/selfie_segmenter.tflite`,
       modelName: 'selfie'
     },
     delegate,
@@ -93,7 +93,7 @@ const getVideoProcessor = async (effect: 'none' | 'blur' | 'overlay'): Promise<V
 
   const transformer = createCanvasTransform(segmenter, {
     effects: effect,
-    backgroundImageUrl: baseUrl + '/backgrounds/background.webp'
+    backgroundImageUrl: `${baseUrl}backgrounds/background.webp`
   })
 
   const processor = createVideoProcessor([transformer], getTrackProcessor())

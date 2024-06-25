@@ -143,7 +143,8 @@ jest.mock(
     createVideoProcessor: jest.fn(() => ({
       open: jest.fn(),
       process: jest.fn(() => new MediaStream()),
-      close: jest.fn()
+      close: jest.fn(),
+      destroy: jest.fn()
     }))
   }),
   { virtual: true }
