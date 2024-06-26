@@ -10,11 +10,12 @@ import type { Channel } from 'mattermost-redux/types/channels'
 import { toggleMuteAudio } from './methods/toggleMuteAudio'
 import { toggleMuteVideo } from './methods/toggleMuteVideo'
 import { toggleMutePresenting } from './methods/togglePresenting'
+import { changeEffect } from './methods/changeEffect'
 import { type DisconnectReason } from '@pexip/infinity'
 import { type DevicesIds, changeDevices } from './methods/changeDevices'
-import { type UserSettings } from 'src/utils/user-settings'
 import { LocalStorageKey } from 'src/utils/local-storage-key'
 import { filterMediaDevices } from './methods/filterMediaDevices'
+import { type Effect } from 'src/types/Effect'
 
 interface ContextType {
   setConfig: (config: ConferenceConfig) => void
@@ -23,7 +24,8 @@ interface ContextType {
   toggleMuteAudio: () => Promise<void>
   toggleMuteVideo: () => Promise<void>
   togglePresenting: () => Promise<void>
-  changeDevices: (userSettings: UserSettings) => Promise<void>
+  changeDevices: (devicesIds: DevicesIds) => Promise<void>
+  changeEffect: (effect: Effect) => Promise<void>
   swapVideos: () => void
   state: ConferenceState
 }
@@ -36,10 +38,12 @@ const initialState: ConferenceState = {
   client: null,
   localVideoStream: undefined,
   localAudioStream: undefined,
+  processedVideoStream: undefined,
   remoteStream: undefined,
   inputVideoDeviceId: localStorage.getItem(LocalStorageKey.inputVideoDeviceIdKey) ?? '',
   inputAudioDeviceId: localStorage.getItem(LocalStorageKey.inputAudioDeviceIdKey) ?? '',
   outputAudioDeviceId: localStorage.getItem(LocalStorageKey.outputAudioDeviceKey) ?? '',
+  effect: (localStorage.getItem(LocalStorageKey.effectKey) ?? 'none') as Effect,
   presentationStream: undefined,
   connectionState: ConnectionState.Disconnected,
   audioMuted: false,
@@ -92,21 +96,14 @@ const ConferenceContextProvider = (props: any): JSX.Element => {
           body: { channel }
         })
         try {
-          const filteredDevicesIds = await filterMediaDevices({
-            inputVideoDeviceId: state.inputVideoDeviceId,
-            inputAudioDeviceId: state.inputAudioDeviceId,
-            outputAudioDeviceId: state.outputAudioDeviceId
-          })
           await connect(
             {
               host: 'https://' + state.config?.node,
               conferenceAlias: state.config?.vmrPrefix + channel.name,
               hostPin: state.config?.hostPin ?? '',
-              displayName: state.config?.displayName ?? 'User',
-              inputVideoDeviceId: filteredDevicesIds.inputVideoDeviceId,
-              inputAudioDeviceId: filteredDevicesIds.inputAudioDeviceId,
-              outputAudioDeviceId: filteredDevicesIds.outputAudioDeviceId
+              displayName: state.config?.displayName ?? 'User'
             },
+            state,
             dispatch
           )
         } catch (e) {
@@ -139,6 +136,12 @@ const ConferenceContextProvider = (props: any): JSX.Element => {
         localStorage.setItem(LocalStorageKey.outputAudioDeviceKey, outputAudioDeviceId)
 
         changeDevices(devicesIds, state, dispatch).catch(console.error)
+      },
+      changeEffect: async (effect: Effect) => {
+        localStorage.setItem(LocalStorageKey.effectKey, effect)
+        if (state.localVideoStream != null) {
+          changeEffect(state.localVideoStream, effect, state, dispatch).catch(console.error)
+        }
       },
       state
     }),

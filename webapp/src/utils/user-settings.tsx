@@ -1,11 +1,13 @@
 import React from 'react'
 import { getPluginServerRoute } from './http-requests'
 import { EventEmitter } from 'events'
+import { type Effect } from 'src/types/Effect'
 
 export interface UserSettings {
   inputVideoDeviceId: string
   inputAudioDeviceId: string
   outputAudioDeviceId: string
+  effect: Effect
 }
 
 interface InteractiveDialog {
@@ -77,6 +79,27 @@ const createUserSettingsDialog = (
         }))
     })
   }
+
+  elements.push({
+    display_name: 'Effect',
+    name: 'effect',
+    type: 'select',
+    default: currentSettings.effect,
+    options: [
+      {
+        text: 'No Effect',
+        value: 'none'
+      },
+      {
+        text: 'Blur Effect',
+        value: 'blur'
+      },
+      {
+        text: 'Background Replacement Effect',
+        value: 'overlay'
+      }
+    ]
+  })
 
   const dialog: InteractiveDialog = {
     title,

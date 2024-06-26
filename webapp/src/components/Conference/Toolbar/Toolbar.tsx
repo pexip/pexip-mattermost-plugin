@@ -46,7 +46,8 @@ export const Toolbar = (): JSX.Element => {
             openUserSettingsDialog({
               inputAudioDeviceId: state.inputAudioDeviceId,
               inputVideoDeviceId: state.inputVideoDeviceId,
-              outputAudioDeviceId: state.outputAudioDeviceId
+              outputAudioDeviceId: state.outputAudioDeviceId,
+              effect: state.effect
             }).catch(console.error)
           }}
         >

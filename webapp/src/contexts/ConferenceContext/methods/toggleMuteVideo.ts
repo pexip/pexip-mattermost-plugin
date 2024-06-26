@@ -1,5 +1,6 @@
 import { ConferenceActionType, type ConferenceAction } from '../ConferenceAction'
 import { type ConferenceState } from '../ConferenceState'
+import { changeEffect } from './changeEffect'
 
 export const toggleMuteVideo = async (
   state: ConferenceState,
@@ -12,16 +13,19 @@ export const toggleMuteVideo = async (
       track.stop()
     })
   } else {
-    const newVideoStream = await navigator.mediaDevices.getUserMedia({
+    let newVideoStream = await navigator.mediaDevices.getUserMedia({
       video: { deviceId: state.inputVideoDeviceId }
     })
 
     dispatch({
       type: ConferenceActionType.UpdateLocalStream,
       body: {
-        localStream: newVideoStream
+        localVideoStream: newVideoStream
       }
     })
+
+    const processedVideoStream = await changeEffect(newVideoStream, state.effect, state, dispatch)
+    newVideoStream = processedVideoStream ?? newVideoStream
 
     let newStream: MediaStream
 

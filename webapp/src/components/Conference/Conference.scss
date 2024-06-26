@@ -93,6 +93,7 @@
 
       .local {
         height: 100%;
+        transform: scaleX(-1); // Mirrored video
 
         > div {
           height: 100%;

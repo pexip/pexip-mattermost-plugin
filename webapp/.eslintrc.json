@@ -8,8 +8,7 @@
         "love",
         "prettier"
     ],
-    "overrides": [
-    ],
+    "overrides": [],
     "parserOptions": {
         "ecmaVersion": "latest",
         "sourceType": "module",
@@ -25,5 +24,5 @@
             "version": "detect"
         }
     },
-    "ignorePatterns": ["**/node_modules"]
+    "ignorePatterns": ["**/node_modules", "/public",  "/update-segmenter-files.js"]
 }

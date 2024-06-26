@@ -33,6 +33,7 @@ type InChangeUserSettings struct {
 		InputVideoDeviceID  string `json:"inputVideoDeviceId"`
 		InputAudioDeviceID  string `json:"inputAudioDeviceId"`
 		OutputAudioDeviceID string `json:"outputAudioDeviceId"`
+		Effect              string `json:"effect"`
 	} `json:"submission"`
 }
 
@@ -106,6 +107,7 @@ func (p *Plugin) httpChangeUserSettings(w http.ResponseWriter, r *http.Request) 
 		"inputVideoDeviceId":  in.Submission.InputVideoDeviceID,
 		"inputAudioDeviceId":  in.Submission.InputAudioDeviceID,
 		"outputAudioDeviceId": in.Submission.OutputAudioDeviceID,
+		"effect":              in.Submission.Effect,
 	}, &model.WebsocketBroadcast{UserId: r.Header.Get("Mattermost-User-Id")})
 
 	return 200, err
