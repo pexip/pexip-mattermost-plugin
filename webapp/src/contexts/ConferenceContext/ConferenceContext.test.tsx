@@ -28,7 +28,8 @@ class MediaStream {
       stop: mockVideoTrackStop,
       getSettings: () => ({
         deviceId: ''
-      })
+      }),
+      addEventListener: jest.fn()
     }
   ])
 
@@ -37,7 +38,8 @@ class MediaStream {
       stop: mockVideoTrackStop,
       getSettings: () => ({
         deviceId: ''
-      })
+      }),
+      addEventListener: jest.fn()
     }
   ])
 
@@ -46,7 +48,8 @@ class MediaStream {
       stop: mockAudioTrackStop,
       getSettings: () => ({
         deviceId: ''
-      })
+      }),
+      addEventListener: jest.fn()
     }
   ])
 
@@ -77,6 +80,8 @@ const mockDisconnect = jest.fn().mockResolvedValue(undefined)
 const mockMuteAudio = jest.fn()
 const mockMuteVideo = jest.fn()
 const mockSetStream = jest.fn()
+const mockPresent = jest.fn()
+const mockStopPresenting = jest.fn()
 jest.mock(
   '@pexip/infinity',
   () => ({
@@ -93,7 +98,9 @@ jest.mock(
       disconnect: mockDisconnect,
       mute: mockMuteAudio,
       muteVideo: mockMuteVideo,
-      setStream: mockSetStream
+      setStream: mockSetStream,
+      present: mockPresent,
+      stopPresenting: mockStopPresenting
     }),
     ClientCallType: {
       AudioVideo: 0
@@ -210,9 +217,10 @@ const ConferenceContextTester = (): JSX.Element => {
 
 beforeEach(() => {
   jest.clearAllMocks()
-  mockGetUserMedia.mockReturnValue(new MediaStream())
   mockCall.mockReturnValue({ status: 200 })
   mockEnumerateDevices.mockResolvedValue([])
+  mockGetUserMedia.mockReturnValue(new MediaStream())
+  mockGetDisplayMedia.mockReturnValue(new MediaStream())
 })
 
 describe('ConferenceContext', () => {
@@ -649,12 +657,16 @@ describe('ConferenceContext', () => {
   })
 
   describe('togglePresenting', () => {
-    it('should have the value "presenting" to "false" at the beginning', () => {
+    it('should have the value "presenting" to "false" at the beginning', async () => {
       render(
         <ConferenceContextProvider>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
+      await act(async () => {
+        const button = screen.getByTestId('buttonConnect')
+        fireEvent.click(button)
+      })
       const presenting = screen.getByTestId('presenting')
       expect(presenting.innerHTML).toBe('false')
     })
@@ -665,6 +677,10 @@ describe('ConferenceContext', () => {
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
+      await act(async () => {
+        const button = screen.getByTestId('buttonConnect')
+        fireEvent.click(button)
+      })
       await act(async () => {
         const button = screen.getByTestId('buttonTogglePresenting')
         fireEvent.click(button)
@@ -679,6 +695,10 @@ describe('ConferenceContext', () => {
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
+      await act(async () => {
+        const button = screen.getByTestId('buttonConnect')
+        fireEvent.click(button)
+      })
       await act(async () => {
         const button = screen.getByTestId('buttonTogglePresenting')
         fireEvent.click(button)
@@ -698,10 +718,54 @@ describe('ConferenceContext', () => {
         </ConferenceContextProvider>
       )
       await act(async () => {
+        const button = screen.getByTestId('buttonConnect')
+        fireEvent.click(button)
+      })
+      await act(async () => {
         const button = screen.getByTestId('buttonTogglePresenting')
         fireEvent.click(button)
       })
       expect(mockGetDisplayMedia).toHaveBeenCalledTimes(1)
+    })
+
+    it('should call "client.present" when called', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonConnect')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonTogglePresenting')
+        fireEvent.click(button)
+      })
+      expect(mockPresent).toHaveBeenCalledTimes(1)
+      expect(mockStopPresenting).not.toHaveBeenCalled()
+    })
+
+    it('should call "client.stopPresenting" when called twice', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonConnect')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonTogglePresenting')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonTogglePresenting')
+        fireEvent.click(button)
+      })
+      expect(mockPresent).toHaveBeenCalledTimes(1)
+      expect(mockStopPresenting).toHaveBeenCalledTimes(1)
     })
   })
 

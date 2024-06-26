@@ -1,14 +1,29 @@
 import { ConferenceActionType, type ConferenceAction } from '../ConferenceAction'
 import { type ConferenceState } from '../ConferenceState'
 
-export const toggleMutePresenting = async (state: ConferenceState, dispatch: React.Dispatch<ConferenceAction>): Promise<void> => {
+export const toggleMutePresenting = async (
+  state: ConferenceState,
+  dispatch: React.Dispatch<ConferenceAction>
+): Promise<void> => {
   const { client, presenting } = state
 
   let presentationStream
   if (presenting) {
-    console.log('Stopping presentation')
+    state.presentationStream?.getTracks().forEach((track) => {
+      track.stop()
+    })
+    client?.stopPresenting()
   } else {
     presentationStream = await navigator.mediaDevices.getDisplayMedia()
+    presentationStream.getVideoTracks()[0].addEventListener('ended', () => {
+      client?.stopPresenting()
+      dispatch({
+        type: ConferenceActionType.TogglePresenting,
+        body: {
+          presenting: false
+        }
+      })
+    })
     client?.present(presentationStream)
   }
 
