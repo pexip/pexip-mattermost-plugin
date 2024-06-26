@@ -194,6 +194,7 @@ const ConferenceContextTester = (): JSX.Element => {
     toggleMuteVideo,
     togglePresenting,
     swapVideos,
+    togglePresentationInPopUp,
     changeDevices,
     changeEffect
   } = useConferenceContext()
@@ -226,6 +227,10 @@ const ConferenceContextTester = (): JSX.Element => {
     swapVideos()
   }
 
+  const handleTogglePresentationInPopUp = (): void => {
+    togglePresentationInPopUp().catch(console.error)
+  }
+
   const handleChangeDevices = (): void => {
     changeDevices(mockDevicesIds).catch(console.error)
   }
@@ -246,6 +251,7 @@ const ConferenceContextTester = (): JSX.Element => {
       <span data-testid='videoMuted'>{state.videoMuted ? 'true' : 'false'}</span>
       <span data-testid='presenting'>{state.presenting ? 'true' : 'false'}</span>
       <span data-testid='presentationInMain'>{state.presentationInMain ? 'true' : 'false'}</span>
+      <span data-testid='presentationInPopUp'>{state.presentationInPopUp ? 'true' : 'false'}</span>
       <button data-testid='buttonSetConfig' onClick={handleSetConfig} />
       <button data-testid='buttonConnect' onClick={handleConnect} />
       <button data-testid='buttonDisconnect' onClick={handleDisconnect} />
@@ -253,6 +259,7 @@ const ConferenceContextTester = (): JSX.Element => {
       <button data-testid='buttonToggleMuteVideo' onClick={handleMuteVideo} />
       <button data-testid='buttonTogglePresenting' onClick={handlePresenting} />
       <button data-testid='buttonSwapVideos' onClick={handleSwapVideos} />
+      <button data-testid='buttonTogglePresentationInPopUp' onClick={handleTogglePresentationInPopUp} />
       <button data-testid='buttonChangeDevices' onClick={handleChangeDevices} />
       <button data-testid='buttonChangeEffect' onClick={handleChangeEffect} />
     </div>
@@ -811,6 +818,25 @@ describe('ConferenceContext', () => {
       expect(mockPresent).toHaveBeenCalledTimes(1)
       expect(mockStopPresenting).toHaveBeenCalledTimes(1)
     })
+
+    it('should set "presentationInPopUp" to "false" when called', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      // Change presentationInPopUp to true
+      await act(async () => {
+        const button = screen.getByTestId('buttonTogglePresentationInPopUp')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonTogglePresenting')
+        fireEvent.click(button)
+      })
+      const presentationInPopUp = screen.getByTestId('presentationInPopUp')
+      expect(presentationInPopUp.innerHTML).toBe('false')
+    })
   })
 
   describe('swapVideos', () => {
@@ -892,6 +918,47 @@ describe('ConferenceContext', () => {
         fireEvent.click(button)
       })
       expect(presentationInMain.innerHTML).toBe('false')
+    })
+  })
+
+  describe('togglePresentationInPopUp', () => {
+    it('should have "presentationInPopUp" to "false" by default', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      const presentationInPopUp = screen.getByTestId('presentationInPopUp')
+      expect(presentationInPopUp.innerHTML).toBe('false')
+    })
+
+    it('should change "presentationInPopUp" to "true" when called', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonTogglePresentationInPopUp')
+        fireEvent.click(button)
+      })
+      const presentationInPopUp = screen.getByTestId('presentationInPopUp')
+      expect(presentationInPopUp.innerHTML).toBe('true')
+    })
+
+    it('should change "presentationInPopUp" to "false" when called twice', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonTogglePresentationInPopUp')
+        fireEvent.click(button)
+        fireEvent.click(button)
+      })
+      const presentationInPopUp = screen.getByTestId('presentationInPopUp')
+      expect(presentationInPopUp.innerHTML).toBe('false')
     })
   })
 
