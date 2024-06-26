@@ -24,3 +24,11 @@ export const getPluginServerRoute = (): string => {
   const config = getConfig(state)
   return (config.SiteURL ?? '') + '/plugins/' + manifest.id
 }
+
+export const notifyLeaveConference = async (channelId: string): Promise<void> => {
+  const baseUrl = getPluginServerRoute()
+  await fetch(`${baseUrl}/api/notify_leave_conference`, Client4.getOptions({
+    method: 'POST',
+    body: JSON.stringify({ channelId })
+  }))
+}

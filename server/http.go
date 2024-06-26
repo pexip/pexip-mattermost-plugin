@@ -18,6 +18,7 @@ const (
 	routeAPISettings             = "/settings"
 	routeAPINotifyJoinConference = "/notify_join_conference"
 	routeAPIChangeUserSettings   = "/change_user_settings"
+	routeAPILeaveJoinConference  = "/notify_leave_conference"
 )
 
 const (
@@ -44,6 +45,7 @@ func (p *Plugin) initializeRouter() {
 	apiRouter.HandleFunc(routeAPISettings, p.checkAuth(p.handleResponse(p.httpGetSettings))).Methods(http.MethodGet)
 	apiRouter.HandleFunc(routeAPINotifyJoinConference, p.checkAuth(p.handleResponse(p.httpNotifyJoinConference))).Methods(http.MethodPost)
 	apiRouter.HandleFunc(routeAPIChangeUserSettings, p.checkAuth(p.handleResponse(p.httpChangeUserSettings))).Methods(http.MethodPost)
+	apiRouter.HandleFunc(routeAPILeaveJoinConference, p.checkAuth(p.handleResponse(p.httpNotifyLeaveConference))).Methods(http.MethodPost)
 }
 
 func (p *Plugin) httpGetSettings(w http.ResponseWriter, _ *http.Request) (int, error) {
@@ -84,6 +86,12 @@ func (p *Plugin) httpNotifyJoinConference(w http.ResponseWriter, r *http.Request
 			errors.WithMessage(err, "cannot retrieve channel info"))
 	}
 
+	updateErr := p.API.UpdateUserCustomStatus(userID, &model.CustomStatus{Text: "In a video conference", Emoji: "calendar"})
+
+	if updateErr != nil {
+		p.API.LogWarn("Failed to update user status", "error", updateErr.Error())
+	}
+
 	fmt.Printf("%v has joined the video conference for the channel \"%v\"", user.Username, channel.DisplayName)
 	err = p.postMessage(in.ChannelID, "@"+user.Username+" has joined the channel video conference.")
 	if err != nil {
@@ -109,6 +117,43 @@ func (p *Plugin) httpChangeUserSettings(w http.ResponseWriter, r *http.Request) 
 		"outputAudioDeviceId": in.Submission.OutputAudioDeviceID,
 		"effect":              in.Submission.Effect,
 	}, &model.WebsocketBroadcast{UserId: r.Header.Get("Mattermost-User-Id")})
+
+	return 200, err
+}
+
+func (p *Plugin) httpNotifyLeaveConference(w http.ResponseWriter, r *http.Request) (int, error) {
+	in := InNotifyJoinConference{}
+	err := json.NewDecoder(r.Body).Decode(&in)
+	if err != nil {
+		return respondErr(w, http.StatusBadRequest,
+			errors.WithMessage(err, "failed to decode incoming request"))
+	}
+
+	userID := r.Header.Get("Mattermost-User-Id")
+
+	user, appErr := p.API.GetUser(userID)
+	if appErr != nil {
+		return respondErr(w, http.StatusInternalServerError,
+			errors.WithMessage(err, "cannot retrieve user info"))
+	}
+
+	channel, appErr := p.API.GetChannel(in.ChannelID)
+	if appErr != nil {
+		return respondErr(w, http.StatusInternalServerError,
+			errors.WithMessage(err, "cannot retrieve channel info"))
+	}
+
+	updateErr := p.API.RemoveUserCustomStatus(userID)
+	if updateErr != nil {
+		p.API.LogWarn("Failed to update user status", "error", updateErr.Error())
+	}
+
+	fmt.Printf("%v has left the video conference for the channel \"%v\"", user.Username, channel.DisplayName)
+	err = p.postMessage(in.ChannelID, "@"+user.Username+" has left the channel video conference.")
+	if err != nil {
+		return respondErr(w, http.StatusInternalServerError,
+			errors.WithMessage(err, "cannot post message in the channel"))
+	}
 
 	return 200, err
 }
