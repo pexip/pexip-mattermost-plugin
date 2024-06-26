@@ -116,7 +116,6 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
       }
     }
     case ConferenceActionType.TogglePresenting: {
-      // closePopUp()
       return {
         ...prevState,
         presenting: action.body.presenting,
