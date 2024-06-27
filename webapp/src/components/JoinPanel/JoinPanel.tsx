@@ -39,25 +39,13 @@ export const JoinPanel = (): JSX.Element => {
     return unsubscribe
   }, [])
 
-  const isChannel = channel?.team_id !== ''
 
-  let component
-  if (isChannel) {
-    component = <>
-      <p>Connect to {'"' + channel?.display_name + '"'} room? </p>
+  return (
+    <div className='JoinPanel'>
+      <p>Connect to {channel?.display_name !== '' ? '"' + channel?.display_name + '"' : 'Direct'} room? </p>
       <button onClick={ () => { handleConnect().catch((e) => { console.error(e) }) }}>
         Join conference
       </button>
-    </>
-  } else {
-    component = <>
-      <p>Video conferences are only available for Channels.</p>
-      <p>Select a channel to start!</p>
-    </>
-  }
-  return (
-    <div className='JoinPanel'>
-      {component}
     </div>
   )
 }
