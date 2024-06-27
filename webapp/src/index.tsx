@@ -53,7 +53,7 @@ class Plugin {
     if (settings.embedded) {
       this.store.dispatch(this.rhsPlugin.toggleRHSPlugin)
     } else {
-      const vmr = settings.prefix + channel.name
+      const vmr = settings.prefix + channel.id
       const channelId: string = channel.id
       notifyJoinConference(channelId).catch((error) => {
         console.error(error)
