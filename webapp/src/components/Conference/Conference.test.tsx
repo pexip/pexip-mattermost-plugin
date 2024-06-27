@@ -35,6 +35,7 @@ let mockVideoMuted: boolean
 let mockRemoteStream: any
 let mockPresentationStream: any
 let mockPresentationInMain: boolean
+let mockPresentationInPopUp: boolean
 jest.mock('@contexts/ConferenceContext/ConferenceContext', () => ({
   useConferenceContext: () => ({
     state: {
@@ -44,7 +45,8 @@ jest.mock('@contexts/ConferenceContext/ConferenceContext', () => ({
       videoMuted: mockVideoMuted,
       remoteStream: mockRemoteStream,
       presentationStream: mockPresentationStream,
-      presentationInMain: mockPresentationInMain
+      presentationInMain: mockPresentationInMain,
+      presentationInPopUp: mockPresentationInPopUp
     }
   })
 }))
@@ -64,6 +66,7 @@ beforeEach(() => {
   mockRemoteStream = null
   mockPresentationStream = null
   mockPresentationInMain = false
+  mockPresentationInPopUp = false
 })
 
 describe('Conference', () => {
@@ -155,6 +158,32 @@ describe('Conference', () => {
       render(<Conference />)
       const pipButton = screen.queryByTestId('TogglePipButton')
       expect(pipButton).not.toBeInTheDocument()
+    })
+  })
+
+  describe('Secondary video', () => {
+    it('should display remote video if presentationStream != null and presentationInPopUp', () => {
+      mockPresentationStream = 'presentation'
+      mockPresentationInPopUp = false
+      render(<Conference />)
+      const secondaryVideo = screen.getByTestId('SecondaryVideo')
+      expect(secondaryVideo).toBeInTheDocument()
+    })
+
+    it("shouldn't be displayed if presentationStream == null", () => {
+      mockPresentationStream = null
+      mockPresentationInPopUp = false
+      render(<Conference />)
+      const secondaryVideo = screen.queryByTestId('SecondaryVideo')
+      expect(secondaryVideo).not.toBeInTheDocument()
+    })
+
+    it("shouldn't be displayed if presentationInPopUp", () => {
+      mockPresentationStream = 'presentation'
+      mockPresentationInPopUp = true
+      render(<Conference />)
+      const secondaryVideo = screen.queryByTestId('SecondaryVideo')
+      expect(secondaryVideo).not.toBeInTheDocument()
     })
   })
 })

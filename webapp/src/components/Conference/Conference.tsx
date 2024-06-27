@@ -19,7 +19,8 @@ export const Conference = (): JSX.Element => {
     outputAudioDeviceId,
     videoMuted,
     presentationStream,
-    presentationInMain
+    presentationInMain,
+    presentationInPopUp
   } = state
 
   const pipRef = React.createRef<HTMLDivElement>()
@@ -80,8 +81,8 @@ export const Conference = (): JSX.Element => {
             </div>
           )}
 
-          {presentationStream != null && (
-            <div className='video-container secondary'>
+          {presentationStream != null && !presentationInPopUp && (
+            <div className='video-container secondary' data-testid='SecondaryVideo'>
               <Video srcObject={!presentationInMain ? presentationStream : remoteStream} sinkId={outputAudioDeviceId} />
               <Tooltip text='Swap videos' position='bottomCenter' className='SwapVideosTooltipContainer'>
                 <div className='exchange-panel' onClick={swapVideos}>

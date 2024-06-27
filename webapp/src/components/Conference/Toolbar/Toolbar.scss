@@ -13,6 +13,7 @@
     background-color: transparent;
     cursor: pointer;
     color: rgba(255, 255, 255, 0.56);
+    line-height: 0;
 
     &:hover {
       background: rgba(255, 255, 255, 0.08);
@@ -29,6 +30,11 @@
 
     svg {
       font-size: 18px;
+    }
+
+    // Scale down IconOpen Icon
+    svg[data-token-name=IconOpenInNew_24] {
+      padding: 0.1em;
     }
   }
 }

@@ -1,7 +1,7 @@
 import { ConferenceActionType, type ConferenceAction } from '../ConferenceAction'
 import { type ConferenceState } from '../ConferenceState'
 
-export const toggleMutePresenting = async (
+export const togglePresenting = async (
   state: ConferenceState,
   dispatch: React.Dispatch<ConferenceAction>
 ): Promise<void> => {

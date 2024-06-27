@@ -22,6 +22,7 @@ interface ConferenceState {
   videoMuted: boolean
   presenting: boolean
   presentationInMain: boolean
+  presentationInPopUp: boolean
   participants: Participant[]
   errorMessage: string
 }

@@ -1,6 +1,7 @@
 import { ConnectionState } from '../../types/ConnectionState'
 import { ConferenceActionType, type ConferenceAction } from './ConferenceAction'
 import type { ConferenceState } from './ConferenceState'
+import { closePopUp } from './methods/togglePresentationInPopUp'
 
 export const ConferenceReducer = (prevState: ConferenceState, action: ConferenceAction): ConferenceState => {
   switch (action.type) {
@@ -19,6 +20,7 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
       }
     }
     case ConferenceActionType.Connected: {
+      closePopUp()
       return {
         ...prevState,
         connectionState: ConnectionState.Connected,
@@ -62,6 +64,7 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
     }
 
     case ConferenceActionType.Disconnected: {
+      closePopUp()
       prevState.localVideoStream?.getTracks().forEach((track) => {
         track.stop()
       })
@@ -117,7 +120,8 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
         ...prevState,
         presenting: action.body.presenting,
         presentationStream: action.body.presentationStream,
-        presentationInMain: false
+        presentationInMain: false,
+        presentationInPopUp: false
       }
     }
     case ConferenceActionType.RemotePresentationStream: {
@@ -125,7 +129,14 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
         ...prevState,
         presenting: false,
         presentationStream: action.body.presentationStream,
-        presentationInMain: true
+        presentationInMain: true,
+        presentationInPopUp: false
+      }
+    }
+    case ConferenceActionType.TogglePresentationInPopUp: {
+      return {
+        ...prevState,
+        presentationInPopUp: !prevState.presentationInPopUp
       }
     }
     case ConferenceActionType.SwapVideos: {
