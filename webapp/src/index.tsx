@@ -19,7 +19,7 @@ import '@pexip/components/dist/style.css'
 
 const pluginId = manifest.id
 const icon = <i id='pexip-vmr-plugin-button' className='icon fa fa-video-camera' />
-const dropDownText = 'Pexip Video Connect'
+const title = 'Pexip'
 
 let conferenceConfig: ConferenceConfig
 const RightHandSidebarComponent = (): JSX.Element => {
@@ -37,12 +37,12 @@ class Plugin {
   initialize(registry: PluginRegistry, store: Store<GlobalState, Action>): void {
     this.store = store
     setMattermostStore(store)
-    registry.registerChannelHeaderButtonAction(icon, this.action.bind(this), dropDownText)
+    registry.registerChannelHeaderButtonAction(icon, this.action.bind(this), title)
     registry.registerWebSocketEventHandler('custom_' + manifest.id + '_change_user_settings', (message) => {
       settingsEventEmitter.emit('settingschange', message.data as UserSettings)
     })
 
-    this.rhsPlugin = registry.registerRightHandSidebarComponent(RightHandSidebarComponent, 'Pexip Video Connect')
+    this.rhsPlugin = registry.registerRightHandSidebarComponent(RightHandSidebarComponent, title)
   }
 
   private async action(channel: Channel, channelMembership: ChannelMembership): Promise<void> {

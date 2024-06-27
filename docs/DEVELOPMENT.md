@@ -5,7 +5,7 @@
 Start by cloning the repository:
 
 ```
-git clone --depth 1 https://github.com/pexip/pexip-matermost-plugin com.pexip.pexip-video-connect
+git clone --depth 1 https://github.com/pexip/pexip-matermost-plugin com.pexip.pexip-app
 ```
 
 To compile the project you will need at least the following versions:
@@ -46,7 +46,7 @@ make
 This will produce a single plugin file (with support for amd64 architecture) for upload to your Mattermost server:
 
 ```bash
-dist/com.pexip.pexip-video-connect-<version>.tar.gz
+dist/com.pexip.pexip-app-<version>.tar.gz
 ```
 
 This plugin was developed using the template provided by Mattermost:
@@ -76,7 +76,7 @@ https://localhost:8065:
 - In the left menu go to the **Plugins** section and there select **Plugin Management**.
 
 - In the section **Upload Plugin** click on **Choose File** and select the file
-  `dist/com.pexip.pexip-video-connect-<version>.tar.gz`.
+  `dist/com.pexip.pexip-app-<version>.tar.gz`.
 
 - Click on **Upload**.
 

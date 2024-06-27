@@ -72,7 +72,7 @@ if (baseUrl != null) {
   baseUrl = baseUrl.substring(0, baseUrl.lastIndexOf('/')) + '/public/'
   baseUrl = baseUrl.replace('/static/', '/')
 } else {
-  baseUrl = window.location.origin + '/plugins/com.pexip.pexip-video-connect/public/'
+  baseUrl = window.location.origin + '/plugins/com.pexip.pexip-app/public/'
 }
 
 const getVideoProcessor = async (effect: 'none' | 'blur' | 'overlay'): Promise<VideoProcessor> => {

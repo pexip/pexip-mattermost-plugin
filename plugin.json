@@ -1,6 +1,6 @@
 {
-    "id": "com.pexip.pexip-video-connect",
-    "name": "Pexip Video Connect",
+    "id": "com.pexip.pexip-app",
+    "name": "Pexip",
     "description": "Start video conferences with several participants inside Mattermost.",
     "homepage_url": "https://github.com/pexip/pexip-mattermost-plugin",
     "support_url": "https://github.com/pexip/pexip-mattermost-plugin/issues",
