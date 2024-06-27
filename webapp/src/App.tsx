@@ -18,7 +18,7 @@ export const App = (props: AppProps): JSX.Element => {
   const { setConfig, state } = useConferenceContext()
 
   useEffect(() => {
-    console.log('Pexip Video Connect launched')
+    console.log('Pexip launched')
     setConfig(props.config)
   }, [])
 
