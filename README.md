@@ -2,7 +2,8 @@
 
 [![Release](https://img.shields.io/github/v/release/pexip/pexip-mattermost-plugin)](https://github.com/pexip/pexip-mattermost-plugin/releases/latest)
 
-**Maintainer:** [@marcos-cereijo-pexip](https://github.com/marcos-cereijo-pexip)
+**Maintainers:** [@marcos-cereijo-pexip](https://github.com/marcos-cereijo-pexip)
+[@lzgrzebski](https://github.com/lzgrzebski)
 
 Start a video conference from any channel with several participants without leaving Mattermost. You will be able to
 share your screen and even join through SIP devices.
@@ -14,8 +15,7 @@ For more information and get all the possibilities, visit https://pexip.com.
 For using this plugin you need to comply with the following requirements:
 
 - Mattermost server v6.2.1 or higher.
-- Pexip Infinity Management node v31 or higher.
-- At least one Pexip Infinity Conferencing node v32 or higher.
+- Pexip Infinity v32 or higher.
 - A valid Pexip License.
 
 ## Configuration
@@ -98,7 +98,7 @@ Now we will enable the plugin and set the configuration:
 
   - **Enable Plugin:** `true`
 
-  - **Pexip Infinity Server:** Domain or IP of your Conferencing Node (e.g. `pexipdemo.com` or `192.168.1.100`).
+  - **Pexip Infinity Server:** Domain or IP of your Conferencing Node (e.g. `pexipdemo.com` or `192.168.1.101`).
 
   - **VMR prefix:** It will attach a prefix to the Mattermost Channel name. For example, if the channel name is
     `Town Square` and the prefix `matt-`, the system will use the VMR `matt-town-square`. You will need to use the same
@@ -109,6 +109,14 @@ Now we will enable the plugin and set the configuration:
   - **Host PIN:** This PIN is used for all the VMR for connecting as an host.
 
     > **Warning** You will need to use the same host pin that you used for the **Pexip Infinity configuration**.
+
+  - **Display name:** With this parameter we can configure what to use as display name for the conferences. The display
+    name is used in the participant list during a conference and can also be displayed over the video if the overlay
+    text is enabled. These are the possible options:
+
+    - Username
+    - Nickname
+    - First and last name
 
   - **Embedded Experience:** Set it to `true` if you want the integrated experience and the video conference will be
     displayed inside the Mattermost interface. If you set it to `false` a new window with the **Pexip Web App 3** will
@@ -131,15 +139,14 @@ is `true`, you will see a panel for starting the conference.
   <img src="./docs/images/join-panel.png" alt="Join panel"/>
 </p>
 
-> **Info** The plugin only works for conferences inside channels. This means that it won't be available for one-to-one
-> calls or for bots. Also, take into account that in this section we will only discuss the **Embedded Experience**. If
-> you want more information about the Web App 3, consult the
+> **Info** Take into account that in this section we will only discuss the **Embedded Experience**. If you want more
+> information about the Web App 3, consult the
 > [Web App 3 Documentation](https://docs.pexip.com/clients/using_webapp3.htm).
 
 For starting the conference, you only have to click on the **Join conference** button. Once You have done that, you will
 see the conference itself.
 
-<p style="width: 512px; margin: auto">
+<p align="center">
   <img src="./docs/images/conference.png" alt="Conference"/>
 </p>
 
@@ -151,13 +158,20 @@ During the conference you will be able to perform the following actions:
   performing any additional action.
 - **Send presentation:** In case you want to share your screen, you only have to click on the third button. This will
   open a pop-up to choose what you want to share (whole screen, window or tab).
-- **Disconnect:** The last button is for disconnecting for the conference.
+- **Pop-Up presentation:** You can also choose to display the presentation in another window instead of be embedded in
+  Mattermost.
+- **Change devices:** You can also change the microphone or camera during the conference. You will be also able to
+  change the speaker if the browser supports it.
+- **Effects:** You can also hide the background through the application of two effects:
+  - _Blur:_ Soften the background to hide it lightly.
+  - _Background replacement:_ Use an image to change the background to hide it completely.
+- **Disconnect:** The last button is for disconnecting the conference.
 
 If a user is sharing the screen, you will be able to choose what to see in the main area (screensharing or video with
 the remote participants). To toggle between these two options, you have to click on the video thumbnail located on the
 top-right corner.
 
-<p style="width: 512px; margin: auto">
+<p align="center">
   <img src="./docs/images/screenshare.png" alt="Screenshare"/>
 </p>
 
