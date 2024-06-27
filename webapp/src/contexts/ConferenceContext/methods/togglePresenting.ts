@@ -14,7 +14,14 @@ export const togglePresenting = async (
     })
     client?.stopPresenting()
   } else {
-    presentationStream = await navigator.mediaDevices.getDisplayMedia()
+    const desktop = await window.desktopAPI?.getAppInfo();
+
+    if(desktop != null) {
+      presentationStream = await navigator.mediaDevices.getUserMedia({video: {mandatory: {chromeMediaSource: 'desktop'}}} as unknown as MediaStreamConstraints);
+    } else {
+      presentationStream = await navigator.mediaDevices.getDisplayMedia()
+    }
+    
     presentationStream.getVideoTracks()[0].addEventListener('ended', () => {
       client?.stopPresenting()
       dispatch({
@@ -34,4 +41,9 @@ export const togglePresenting = async (
       presentationStream
     }
   })
+}
+declare global {
+  interface Window {
+      desktopAPI?: {getAppInfo: () => Promise<{name: string; version: string}>;};
+  }
 }
