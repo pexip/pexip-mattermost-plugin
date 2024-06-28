@@ -148,14 +148,14 @@ const ConferenceContextProvider = (props: any): JSX.Element => {
 
         if (!state.videoMuted && state.localVideoStream != null) {
           changeEffect(state.localVideoStream, effect, state, dispatch).catch(console.error)
-        } else {
-          dispatch({
-            type: ConferenceActionType.ChangeEffect,
-            body: {
-              effect
-            }
-          })
         }
+
+        dispatch({
+          type: ConferenceActionType.ChangeEffect,
+          body: {
+            effect
+          }
+        })
       },
       state
     }),
