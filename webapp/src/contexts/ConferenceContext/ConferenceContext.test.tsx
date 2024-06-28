@@ -245,6 +245,8 @@ const ConferenceContextTester = (): JSX.Element => {
       <span data-testid='connectionState'>{state.connectionState}</span>
       <span data-testid='channel'>{JSON.stringify(state.channel)}</span>
       <span data-testid='errorMessage'>{state.errorMessage}</span>
+      <span data-testid='inputVideoDeviceId'>{state.inputVideoDeviceId}</span>
+      <span data-testid='inputAudioDeviceId'>{state.inputAudioDeviceId}</span>
       <span data-testid='outputAudioDeviceId'>{state.outputAudioDeviceId}</span>
       <span data-testid='effect'>{state.effect}</span>
       <span data-testid='audioMuted'>{state.audioMuted ? 'true' : 'false'}</span>
@@ -1168,6 +1170,50 @@ describe('ConferenceContext', () => {
         ]
       ])
     })
+
+    it('should change the inputVideoDeviceId in the state even when the video is muted', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonConnect')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonToggleMuteVideo')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonChangeDevices')
+        fireEvent.click(button)
+      })
+      const effect = screen.getByTestId('inputVideoDeviceId')
+      expect(effect.innerHTML).toBe(mockDevicesIds.inputVideoDeviceId)
+    })
+
+    it('should change the inputAudioDeviceId in the state even when the audio is muted', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonConnect')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonToggleMuteAudio')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonChangeDevices')
+        fireEvent.click(button)
+      })
+      const effect = screen.getByTestId('inputAudioDeviceId')
+      expect(effect.innerHTML).toBe(mockDevicesIds.inputAudioDeviceId)
+    })
   })
 
   describe('changeEffect', () => {
@@ -1261,6 +1307,28 @@ describe('ConferenceContext', () => {
       })
       expect(mockSetItem).toHaveBeenCalledTimes(1)
       expect(mockSetItem).toHaveBeenCalledWith(LocalStorageKey.effectKey, mockEffect)
+    })
+
+    it('should change the effect in the state even when the video is muted', async () => {
+      render(
+        <ConferenceContextProvider>
+          <ConferenceContextTester />
+        </ConferenceContextProvider>
+      )
+      await act(async () => {
+        const button = screen.getByTestId('buttonConnect')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonToggleMuteVideo')
+        fireEvent.click(button)
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonChangeEffect')
+        fireEvent.click(button)
+      })
+      const effect = screen.getByTestId('effect')
+      expect(effect.innerHTML).toBe(mockEffect)
     })
   })
 })

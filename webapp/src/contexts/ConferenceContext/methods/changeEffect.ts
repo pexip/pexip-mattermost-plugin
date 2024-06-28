@@ -56,13 +56,6 @@ export const changeEffect = async (
     }
   })
 
-  dispatch({
-    type: ConferenceActionType.ChangeEffect,
-    body: {
-      effect
-    }
-  })
-
   return processedVideoStream
 }
 

@@ -17,7 +17,8 @@ export const Toolbar = (): JSX.Element => {
     presentationInPopUp,
     inputVideoDeviceId,
     inputAudioDeviceId,
-    outputAudioDeviceId
+    outputAudioDeviceId,
+    effect
   } = state
 
   return (
@@ -74,7 +75,7 @@ export const Toolbar = (): JSX.Element => {
               inputAudioDeviceId,
               inputVideoDeviceId,
               outputAudioDeviceId,
-              effect: state.effect
+              effect
             }).catch(console.error)
           }}
         >

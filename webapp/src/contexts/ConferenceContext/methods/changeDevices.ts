@@ -32,21 +32,23 @@ export const changeDevices = async (
   })
 
   let newLocalVideoStream: MediaStream | null = null
-  if (!videoMuted && hasDeviceIdChanged(localVideoStream, inputVideoDeviceId)) {
-    newLocalVideoStream = await navigator.mediaDevices.getUserMedia({
-      video: { deviceId: inputVideoDeviceId }
-    })
+  if (hasDeviceIdChanged(localVideoStream, inputVideoDeviceId)) {
+    if (!videoMuted) {
+      newLocalVideoStream = await navigator.mediaDevices.getUserMedia({
+        video: { deviceId: inputVideoDeviceId }
+      })
 
-    localVideoStream?.getTracks().forEach((track) => {
-      track.stop()
-    })
+      localVideoStream?.getTracks().forEach((track) => {
+        track.stop()
+      })
 
-    dispatch({
-      type: ConferenceActionType.UpdateLocalStream,
-      body: {
-        localVideoStream: newLocalVideoStream
-      }
-    })
+      dispatch({
+        type: ConferenceActionType.UpdateLocalStream,
+        body: {
+          localVideoStream: newLocalVideoStream
+        }
+      })
+    }
 
     dispatch({
       type: ConferenceActionType.ChangeDevices,
@@ -57,21 +59,23 @@ export const changeDevices = async (
   }
 
   let newLocalAudioStream: MediaStream | null = null
-  if (!audioMuted && hasDeviceIdChanged(localAudioStream, inputAudioDeviceId)) {
-    newLocalAudioStream = await navigator.mediaDevices.getUserMedia({
-      audio: { deviceId: inputAudioDeviceId }
-    })
+  if (hasDeviceIdChanged(localAudioStream, inputAudioDeviceId)) {
+    if (!audioMuted) {
+      newLocalAudioStream = await navigator.mediaDevices.getUserMedia({
+        audio: { deviceId: inputAudioDeviceId }
+      })
 
-    localAudioStream?.getTracks().forEach((track) => {
-      track.stop()
-    })
+      localAudioStream?.getTracks().forEach((track) => {
+        track.stop()
+      })
 
-    dispatch({
-      type: ConferenceActionType.UpdateLocalStream,
-      body: {
-        localAudioStream: newLocalAudioStream
-      }
-    })
+      dispatch({
+        type: ConferenceActionType.UpdateLocalStream,
+        body: {
+          localAudioStream: newLocalAudioStream
+        }
+      })
+    }
 
     dispatch({
       type: ConferenceActionType.ChangeDevices,
