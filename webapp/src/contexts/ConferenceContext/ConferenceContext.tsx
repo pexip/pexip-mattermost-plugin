@@ -145,8 +145,16 @@ const ConferenceContextProvider = (props: any): JSX.Element => {
       },
       changeEffect: async (effect: Effect) => {
         localStorage.setItem(LocalStorageKey.effectKey, effect)
-        if (state.localVideoStream != null) {
+
+        if (!state.videoMuted && state.localVideoStream != null) {
           changeEffect(state.localVideoStream, effect, state, dispatch).catch(console.error)
+        } else {
+          dispatch({
+            type: ConferenceActionType.ChangeEffect,
+            body: {
+              effect
+            }
+          })
         }
       },
       state
