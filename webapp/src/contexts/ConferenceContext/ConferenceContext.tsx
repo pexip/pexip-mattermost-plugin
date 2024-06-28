@@ -102,7 +102,7 @@ const ConferenceContextProvider = (props: any): JSX.Element => {
           await connect(
             {
               host: 'https://' + state.config?.node,
-              conferenceAlias: state.config?.vmrPrefix + channel.name,
+              conferenceAlias: state.config?.vmrPrefix + channel.id,
               hostPin: state.config?.hostPin ?? '',
               displayName: state.config?.displayName ?? 'User'
             },
