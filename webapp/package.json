@@ -1,7 +1,7 @@
 {
-  "name": "pexip-video-connect",
+  "name": "pexip",
   "author": "Marcos Cereijo",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "scripts": {
     "build": "webpack --mode=production",
