@@ -125,11 +125,13 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
       }
     }
     case ConferenceActionType.RemotePresentationStream: {
+      const presentationStream: MediaStream = action.body.presentationStream
+      const presentationInMain: boolean = presentationStream != null
       return {
         ...prevState,
         presenting: false,
-        presentationStream: action.body.presentationStream,
-        presentationInMain: true,
+        presentationStream,
+        presentationInMain,
         presentationInPopUp: false
       }
     }

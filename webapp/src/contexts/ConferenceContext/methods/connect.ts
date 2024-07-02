@@ -6,7 +6,6 @@ import { filterMediaDevices } from './filterMediaDevices'
 import { notifyJoinConference, notifyLeaveConference } from 'src/utils/http-requests'
 import { getMattermostStore } from 'src/utils/mattermost-store'
 
-
 interface ConnectParams {
   host: string
   conferenceAlias: string
@@ -46,15 +45,11 @@ export const connect = async (
   })
 
   clientSignals.onConnected.add(() => {
-    notifyJoinConference(getMattermostStore().getState().entities.channels.currentChannelId).catch((error) => {
-      console.error(error)
-    })
+    notifyJoinConference(getMattermostStore().getState().entities.channels.currentChannelId).catch(console.error)
   })
 
   clientSignals.onDisconnected.add(() => {
-    notifyLeaveConference(getMattermostStore().getState().entities.channels.currentChannelId).catch((error) => {  
-      console.error(error)
-    })
+    notifyLeaveConference(getMattermostStore().getState().entities.channels.currentChannelId).catch(console.error)
     dispatch({ type: ConferenceActionType.Disconnected })
   })
 
@@ -65,6 +60,17 @@ export const connect = async (
         presentationStream
       }
     })
+  })
+
+  callSignals.onPresentationConnectionChange.add((event) => {
+    if (event.recv === 'disconnected' && event.send !== 'connected' && event.send !== 'connecting') {
+      dispatch({
+        type: ConferenceActionType.RemotePresentationStream,
+        body: {
+          presentationStream: null
+        }
+      })
+    }
   })
 
   const filteredDevicesIds = await filterMediaDevices({

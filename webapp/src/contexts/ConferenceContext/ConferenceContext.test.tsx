@@ -113,7 +113,8 @@ jest.mock(
     }),
     createCallSignals: () => ({
       onRemoteStream: { add: jest.fn() },
-      onRemotePresentationStream: { add: jest.fn() }
+      onRemotePresentationStream: { add: jest.fn() },
+      onPresentationConnectionChange: { add: jest.fn() }
     }),
     createInfinityClient: () => ({
       call: mockCall,
