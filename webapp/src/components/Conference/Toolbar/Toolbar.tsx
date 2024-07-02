@@ -21,6 +21,8 @@ export const Toolbar = (): JSX.Element => {
     effect
   } = state
 
+  const runningInElectron = navigator.userAgent.toLowerCase().includes('electron')
+
   return (
     <div className='Toolbar'>
       <Tooltip data-testid='AudioMuteTooltip' text={audioMuted ? 'Unmute audio' : 'Mute audio'}>
@@ -54,7 +56,7 @@ export const Toolbar = (): JSX.Element => {
           <Icon source={IconTypes.IconPresentationOn} />
         </button>
       </Tooltip>
-      {presentationStream != null && (
+      {!runningInElectron && presentationStream != null && (
         <Tooltip text='Pop-out presentation'>
           <button
             data-testid='PresentationPopOutButton'
