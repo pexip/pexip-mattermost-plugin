@@ -47,7 +47,8 @@ jest.mock('@contexts/ConferenceContext/ConferenceContext', () => ({
       presentationStream: mockPresentationStream,
       presentationInMain: mockPresentationInMain,
       presentationInPopUp: mockPresentationInPopUp
-    }
+    },
+    disconnect: jest.fn().mockResolvedValue(undefined)
   })
 }))
 
