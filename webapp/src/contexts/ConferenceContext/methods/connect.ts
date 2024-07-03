@@ -73,8 +73,8 @@ export const connect = async (
     outputAudioDeviceId: state.outputAudioDeviceId
   })
 
-  let localVideoStream: MediaStream
-  let localAudioStream: MediaStream
+  let localVideoStream: MediaStream | null = null
+  let localAudioStream: MediaStream | null = null
   let response
   try {
     localVideoStream = await navigator.mediaDevices.getUserMedia({
@@ -107,6 +107,14 @@ export const connect = async (
       mediaStream: new MediaStream([...newVideoStream.getTracks(), ...localAudioStream.getTracks()])
     })
   } catch (e) {
+    localVideoStream?.getTracks().forEach((track) => {
+      track.stop()
+    })
+
+    localAudioStream?.getTracks().forEach((track) => {
+      track.stop()
+    })
+
     dispatch({
       type: ConferenceActionType.Error,
       body: {
@@ -142,6 +150,14 @@ export const connect = async (
       }
     })
   } else {
+    localVideoStream?.getTracks().forEach((track) => {
+      track.stop()
+    })
+
+    localAudioStream?.getTracks().forEach((track) => {
+      track.stop()
+    })
+
     dispatch({
       type: ConferenceActionType.Error,
       body: {
