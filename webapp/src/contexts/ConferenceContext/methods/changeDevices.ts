@@ -1,5 +1,6 @@
 import { ConferenceActionType, type ConferenceAction } from '../ConferenceAction'
 import { type ConferenceState } from '../ConferenceState'
+import { changeEffect } from './changeEffect'
 
 export interface DevicesIds {
   inputAudioDeviceId: string
@@ -42,10 +43,13 @@ export const changeDevices = async (
         track.stop()
       })
 
+      const newProcessedStream = await changeEffect(newLocalVideoStream, state.effect, state, dispatch)
+
       dispatch({
         type: ConferenceActionType.UpdateLocalStream,
         body: {
-          localVideoStream: newLocalVideoStream
+          localVideoStream: newLocalVideoStream,
+          processedVideoStream: newProcessedStream
         }
       })
     }
