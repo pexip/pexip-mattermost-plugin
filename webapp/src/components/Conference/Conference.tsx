@@ -10,7 +10,7 @@ import { type UserSettings, settingsEventEmitter } from 'src/utils/user-settings
 import './Conference.scss'
 
 export const Conference = (): JSX.Element => {
-  const { state, swapVideos, changeDevices, changeEffect } = useConferenceContext()
+  const { state, swapVideos, changeDevices, changeEffect, disconnect } = useConferenceContext()
   const {
     channel,
     localVideoStream,
@@ -55,6 +55,12 @@ export const Conference = (): JSX.Element => {
       settingsEventEmitter.removeListener('settingschange', handleUserSettings)
     }
   }, [state])
+
+  useEffect(() => {
+    return () => {
+      disconnect().catch(console.error)
+    }
+  }, [])
 
   return (
     <div className='Conference' data-testid='Conference'>
