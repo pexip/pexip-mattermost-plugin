@@ -152,7 +152,7 @@ export const connect = async (
       body: {
         inputVideoDeviceId: newInputVideoDeviceId,
         inputAudioDeviceId: newInputAudioDeviceId,
-        outputAudioDeviceId: state.outputAudioDeviceId
+        outputAudioDeviceId: filteredDevicesIds.outputAudioDeviceId
       }
     })
   } else {

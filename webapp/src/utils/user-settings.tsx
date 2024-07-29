@@ -2,6 +2,7 @@ import React from 'react'
 import { getPluginServerRoute } from './http-requests'
 import { EventEmitter } from 'events'
 import { type Effect } from 'src/types/Effect'
+import manifest from '../../../plugin.json'
 
 export interface UserSettings {
   inputVideoDeviceId: string
@@ -28,7 +29,7 @@ export const openUserSettingsDialog = async (currentSettings: UserSettings): Pro
   // https://mattermost.atlassian.net/browse/MM-15340
   ;(window as any).openInteractiveDialog({
     dialog,
-    url: getPluginServerRoute() + '/api/change_user_settings'
+    url: '/plugins/' + manifest.id + '/api/change_user_settings'
   })
 }
 

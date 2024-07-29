@@ -7,3 +7,10 @@
   // Prevent that any item is displayed outside the app
   overflow: hidden;
 }
+
+/**
+ * The following styles is used to fix the issue with the modal when clicking on select
+ */
+.modal .about-modal .modal-body {
+  overflow: unset;
+}
