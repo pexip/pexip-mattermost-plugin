@@ -5,7 +5,7 @@ export const togglePresenting = async (
   state: ConferenceState,
   dispatch: React.Dispatch<ConferenceAction>
 ): Promise<void> => {
-  const { client, presenting } = state
+  const { client, presenting, isDesktopApp } = state
 
   let presentationStream
   if (presenting) {
@@ -14,9 +14,7 @@ export const togglePresenting = async (
     })
     client?.stopPresenting()
   } else {
-    const desktop = await window.desktopAPI?.getAppInfo()
-
-    if (desktop != null) {
+    if (isDesktopApp) {
       presentationStream = await navigator.mediaDevices.getUserMedia({
         video: { mandatory: { chromeMediaSource: 'desktop' } }
       } as unknown as MediaStreamConstraints)
@@ -43,9 +41,4 @@ export const togglePresenting = async (
       presentationStream
     }
   })
-}
-declare global {
-  interface Window {
-    desktopAPI?: { getAppInfo: () => Promise<{ name: string; version: string }> }
-  }
 }

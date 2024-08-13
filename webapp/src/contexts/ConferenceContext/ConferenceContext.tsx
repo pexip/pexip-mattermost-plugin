@@ -83,9 +83,9 @@ const ConferenceContextProvider = (props: any): JSX.Element => {
   }
 
   useEffect(() => {
-    window.desktopAPI
+    ;(window as any).desktopAPI
       ?.getAppInfo()
-      .then((appInfo) => {
+      .then(() => {
         dispatch({
           type: ConferenceActionType.SetIsDesktopApp,
           body: { isDesktopApp: true }
