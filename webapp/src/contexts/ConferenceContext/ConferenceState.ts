@@ -25,6 +25,7 @@ interface ConferenceState {
   presentationInPopUp: boolean
   participants: Participant[]
   errorMessage: string
+  isDesktopApp: boolean
 }
 
 export type { ConferenceState }

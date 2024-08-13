@@ -18,10 +18,9 @@ export const Toolbar = (): JSX.Element => {
     inputVideoDeviceId,
     inputAudioDeviceId,
     outputAudioDeviceId,
-    effect
+    effect,
+    isDesktopApp
   } = state
-
-  const runningInElectron = navigator.userAgent.toLowerCase().includes('electron')
 
   return (
     <div className='Toolbar'>
@@ -56,7 +55,7 @@ export const Toolbar = (): JSX.Element => {
           <Icon source={IconTypes.IconPresentationOn} />
         </button>
       </Tooltip>
-      {!runningInElectron && presentationStream != null && (
+      {!isDesktopApp && presentationStream != null && (
         <Tooltip text='Pop-out presentation'>
           <button
             data-testid='PresentationPopOutButton'

@@ -145,6 +145,12 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
         presentationInMain: !prevState.presentationInMain
       }
     }
+    case ConferenceActionType.SetIsDesktopApp: {
+      return {
+        ...prevState,
+        isDesktopApp: action.body.isDesktopApp
+      }
+    }
     default:
       return prevState
   }
