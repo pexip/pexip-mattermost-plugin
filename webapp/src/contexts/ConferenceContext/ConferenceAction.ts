@@ -14,7 +14,8 @@ export enum ConferenceActionType {
   SwapVideos,
   ChangeDevices,
   UpdateLocalStream,
-  ChangeEffect
+  ChangeEffect,
+  SetIsDesktopApp
 }
 
 export interface ConferenceAction {

@@ -54,7 +54,8 @@ const initialState: ConferenceState = {
   presentationInMain: false,
   presentationInPopUp: false,
   participants: [],
-  errorMessage: ''
+  errorMessage: '',
+  isDesktopApp: false
 }
 
 const ConferenceContextProvider = (props: any): JSX.Element => {
@@ -80,6 +81,18 @@ const ConferenceContextProvider = (props: any): JSX.Element => {
       })
       .catch(console.error)
   }
+
+  useEffect(() => {
+    ;(window as any).desktopAPI
+      ?.getAppInfo()
+      .then(() => {
+        dispatch({
+          type: ConferenceActionType.SetIsDesktopApp,
+          body: { isDesktopApp: true }
+        })
+      })
+      .catch(console.error)
+  }, [])
 
   useEffect(() => {
     navigator.mediaDevices.addEventListener('devicechange', handleDeviceChange)

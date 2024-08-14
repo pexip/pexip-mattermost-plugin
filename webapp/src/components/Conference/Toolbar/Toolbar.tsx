@@ -18,7 +18,8 @@ export const Toolbar = (): JSX.Element => {
     inputVideoDeviceId,
     inputAudioDeviceId,
     outputAudioDeviceId,
-    effect
+    effect,
+    isDesktopApp
   } = state
 
   return (
@@ -54,7 +55,7 @@ export const Toolbar = (): JSX.Element => {
           <Icon source={IconTypes.IconPresentationOn} />
         </button>
       </Tooltip>
-      {presentationStream != null && (
+      {!isDesktopApp && presentationStream != null && (
         <Tooltip text='Pop-out presentation'>
           <button
             data-testid='PresentationPopOutButton'
