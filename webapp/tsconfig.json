@@ -11,6 +11,14 @@
     "resolveJsonModule": true,
     "strictNullChecks": true,
     "strictBindCallApply": true,
-    "esModuleInterop": true
-  }
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "src/*": ["./src/*"],
+      "@components/*": ["./src/components/*"],
+      "@contexts/*": ["./src/contexts/*"]
+    }
+  },
+  "exclude": ["node_modules", "dist", "public", "update-segmenter-files.js"]
 }

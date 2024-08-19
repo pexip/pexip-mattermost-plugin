@@ -1,0 +1,40 @@
+.Toolbar {
+  display: flex;
+  background: var(--global-header-background);
+  padding: 5px;
+  justify-content: space-around;
+
+  button {
+    padding: 0.2em;
+    border-width: 0;
+    border-radius: 4px;
+    padding: 6px 10px;
+    margin: auto;
+    background-color: transparent;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.56);
+    line-height: 0;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.72);
+    }
+
+    &.selected {
+      color: var(--button-bg);
+    }
+
+    &.disconnect {
+      color: var(--dnd-indicator);
+    }
+
+    svg {
+      font-size: 18px;
+    }
+
+    // Scale down IconOpen Icon
+    svg[data-token-name=IconOpenInNew_24] {
+      padding: 0.1em;
+    }
+  }
+}

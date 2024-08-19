@@ -1,69 +1,46 @@
-import React, { Component } from 'react'
-import { Conference } from './Conference/Conference'
-import { ConferenceManager, ConnectionState } from './services/conference-manager'
-import JoinPanel from './JoinPanel/JoinPanel'
-import Loading from './Loading/Loading'
-import ErrorPanel from './ErrorPanel/ErrorPanel'
-import type { Subscription } from 'rxjs'
+import React, { useEffect } from 'react'
 
-import { MattermostManager } from './services/mattermost-manager'
-import { notifyJoinConference } from './utils'
+import type { ConferenceConfig } from './types/ConferenceConfig'
+import { useConferenceContext } from './contexts/ConferenceContext/ConferenceContext'
+import { ConnectionState } from './types/ConnectionState'
+import { JoinPanel } from './components/JoinPanel/JoinPanel'
+import { Conference } from './components/Conference/Conference'
+import { Loading } from './components/Loading/Loading'
+import { ErrorPanel } from './components/ErrorPanel/ErrorPanel'
 
 import './App.scss'
 
-interface AppState {
-  connectionState: ConnectionState
+interface AppProps {
+  config: ConferenceConfig
 }
 
-export class App extends Component<any, AppState> {
-  private connectionSubscription: Subscription
+export const App = (props: AppProps): JSX.Element => {
+  const { setConfig, state } = useConferenceContext()
 
-  constructor (props: any) {
-    super(props)
-    this.state = {
-      connectionState: ConnectionState.Disconnected
-    }
+  useEffect(() => {
+    console.log('Pexip launched')
+    setConfig(props.config)
+  }, [])
+
+  let component
+  switch (state.connectionState) {
+    case ConnectionState.Disconnected:
+      component = <JoinPanel />
+      break
+    case ConnectionState.Connected:
+      component = <Conference />
+      break
+    case ConnectionState.Connecting:
+      component = <Loading />
+      break
+    case ConnectionState.Error:
+      component = <ErrorPanel />
+      break
   }
 
-  componentDidMount (): void {
-    this.connectionSubscription = ConferenceManager.connectionState$.subscribe((connectionState) => {
-      if (connectionState === ConnectionState.Connected) {
-        const mattermostState = MattermostManager.getStore().getState()
-        const channel = ConferenceManager.getChannel()
-        notifyJoinConference(mattermostState, channel.id).catch((error) => {
-          console.error(error)
-        })
-      }
-      this.setState({ connectionState })
-    })
-  }
-
-  componentWillUnmount (): void {
-    this.connectionSubscription.unsubscribe()
-  }
-
-  render (): JSX.Element {
-    let component
-    switch (this.state.connectionState) {
-      case ConnectionState.Disconnected:
-        component = <JoinPanel />
-        break
-      case ConnectionState.Connected:
-        component = <Conference />
-        break
-      case ConnectionState.Connecting:
-        component = <Loading />
-        break
-      case ConnectionState.Error:
-        component = <ErrorPanel
-          message={ConferenceManager.getError()}
-          onGoBack={() => { this.setState({ connectionState: ConnectionState.Disconnected }) }} />
-        break
-    }
-    return (
-      <div className='App' data-testid='App'>
-        {component}
-      </div>
-    )
-  }
+  return (
+    <div className='App' data-testid='App'>
+      {component}
+    </div>
+  )
 }

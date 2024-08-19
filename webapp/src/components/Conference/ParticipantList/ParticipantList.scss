@@ -1,0 +1,56 @@
+.ParticipantList {
+  background-color: white;
+  margin: 16px;
+  box-shadow: 0 0 16px #0a213633;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+  height: 20px;
+
+  h3{
+    font-size: 1.14em;
+    font-weight: normal;
+    padding: 16px;
+    margin-bottom: 0;
+    border-bottom: 1px solid #e8f0f8;
+  }
+
+  ul {
+    margin: 0;
+    padding: 8px;
+    overflow: auto;
+    flex-grow: 1;
+  
+    li {
+      list-style: none;
+      color: #0a2136;
+      padding: 0 8px;
+      height: 32px;
+      line-height: 32px;
+      cursor: default;
+      display: flex;
+      border-radius: 8px;
+
+      .ParticipantName {
+        flex-grow: 1;
+      }
+
+      .AdmitButton {
+        min-height: 2em;
+        padding:  0 0.8em;
+      }
+
+      .ParticipantStatus {
+        display: flex;
+        align-items: center;
+        gap: 1em;
+        line-height: 0;
+      }
+
+      &:hover {
+        background-color: #f4f7fb;
+      }
+    }
+  }
+}

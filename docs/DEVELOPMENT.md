@@ -5,16 +5,39 @@
 Start by cloning the repository:
 
 ```
-git clone --depth 1 https://github.com/pexip/pexip-matermost-plugin com.pexip.pexip-video-connect
+git clone --depth 1 https://github.com/pexip/pexip-matermost-plugin com.pexip.pexip-app
 ```
 
-To compile you will need **node v18** and **npm v8**. This is important, because if you use another version of node, you will find some compatibility problems between packages.
+To compile the project you will need at least the following versions:
 
-You can download and install nvm to manage your node versions by following the instructions [here](https://github.com/nvm-sh/nvm). Once you've setup the project simply run `nvm i` within the root folder to use the suggested version of node.
+| NodeJS   | npm     |
+| -------- | ------- |
+| v20.11.1 | v10.2.4 |
 
-For compiling the server part you will need to have **Go** installed in your system. You can check how install it in the [Go docs](https://go.dev/doc/install).
+This is important, because if you use another version of node, you will find some compatibility problems between
+packages.
 
-Build the plugin, you only have to run the following command:
+You can download and install nvm to manage your node versions by following the instructions
+[here](https://github.com/nvm-sh/nvm). Once you've setup the project simply run `nvm i` within the root folder to use
+the suggested version of node.
+
+For compiling the server part you will need to have **Go** installed in your system. You can check how install it in the
+[Go docs](https://go.dev/doc/install).
+
+If you are using Linux (e.g. Ubuntu 24.04), you can install all **Go** dependencies with the following commands:
+
+```bash
+$ sudo apt install golang-go
+$ sudo snap install golangci-lint --classic
+```
+
+If you are using Mac, you can download the installer from [here](https://go.dev/dl/). And install lint:
+
+```bash
+$ brew install golangci-lint
+```
+
+To build the plugin, you only have to run the following command:
 
 ```bash
 make
@@ -23,13 +46,13 @@ make
 This will produce a single plugin file (with support for amd64 architecture) for upload to your Mattermost server:
 
 ```bash
-dist/com.pexip.pexip-video-connect-<version>.tar.gz
+dist/com.pexip.pexip-app-<version>.tar.gz
 ```
 
-This plugin was developed using the template provided by Mattermost: https://github.com/mattermost/mattermost-plugin-starter-template.
+This plugin was developed using the template provided by Mattermost:
+https://github.com/mattermost/mattermost-plugin-starter-template.
 
 To learn more about plugins, see [Mattermost documentation](https://developers.mattermost.com/extend/plugins/).
-
 
 ## How to launch a Mattermost in Docker
 
@@ -39,7 +62,8 @@ For testing the plugin, you can launch mattermost in a docker container:
 $ docker run --name mattermost-preview -d --publish 8065:8065 mattermost/mattermost-preview
 ```
 
-For now on, we will suppose that you are using the docker container and the app is accessible from https://localhost:8065:
+For now on, we will suppose that you are using the docker container and the app is accessible from
+https://localhost:8065:
 
 - Launch mattermost in a web browser: https://localhost:8065
 
@@ -51,7 +75,8 @@ For now on, we will suppose that you are using the docker container and the app 
 
 - In the left menu go to the **Plugins** section and there select **Plugin Management**.
 
-- In the section **Upload Plugin** click on **Choose File** and select the file `dist/com.pexip.pexip-video-connect-<version>.tar.gz`.
+- In the section **Upload Plugin** click on **Choose File** and select the file
+  `dist/com.pexip.pexip-app-<version>.tar.gz`.
 
 - Click on **Upload**.
 

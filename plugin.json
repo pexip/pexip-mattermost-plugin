@@ -1,12 +1,12 @@
 {
-    "id": "com.pexip.pexip-video-connect",
-    "name": "Pexip Video Connect",
+    "id": "com.pexip.pexip-app",
+    "name": "Pexip",
     "description": "Start video conferences with several participants inside Mattermost.",
     "homepage_url": "https://github.com/pexip/pexip-mattermost-plugin",
     "support_url": "https://github.com/pexip/pexip-mattermost-plugin/issues",
     "release_notes_url": "https://github.com/pexip/pexip-mattermost-plugin/releases/tag/v1.0.0",
-    "icon_path": "assets/starter-template-icon.svg",
-    "version": "1.0.0",
+    "icon_path": "public/icon.svg",
+    "version": "1.1.0",
     "min_server_version": "6.2.1",
     "server": {
         "executables": {
@@ -67,8 +67,7 @@
                 "key": "Embedded",
                 "display_name": "Embedded Experience",
                 "type": "bool",
-                "help_text": "Indicates if the conference should be displayed inside Mattermost or in another tab with only the conference.",
-                "default": true
+                "help_text": "Indicates if the conference should be displayed inside Mattermost or in another tab with only the conference."
             }
         ]
     }
