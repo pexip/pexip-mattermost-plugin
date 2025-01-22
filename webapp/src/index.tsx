@@ -9,11 +9,13 @@ import { getPluginSettings, notifyJoinConference } from '@utils/http-requests'
 import { App } from './App/App'
 import manifest from '../../plugin.json'
 import type { ConferenceConfig } from './types/ConferenceConfig'
-import { ConferenceContextProvider } from '@contexts/ConferenceContext/ConferenceContext'
+import ConferenceContextProvider from '@contexts/ConferenceContext'
 import { DisplayNameType } from './types/DisplayNameType'
 import { type PluginSettings } from './types/PluginSettings'
 import { getMattermostStore, setMattermostStore } from '@utils/mattermost-store'
 import { type UserSettings, settingsEventEmitter } from '@utils/user-settings'
+import ScreenSharingModal from './ScreenSharingModal'
+import { reducer } from './reducer'
 
 import '@pexip/components/dist/style.css'
 
@@ -24,7 +26,7 @@ const title = 'Pexip'
 let conferenceConfig: ConferenceConfig
 const RightHandSidebarComponent = (): JSX.Element => {
   return (
-    <ConferenceContextProvider>
+    <ConferenceContextProvider onShowScreenSharingModal={() => {}}>
       <App config={conferenceConfig} />
     </ConferenceContextProvider>
   )
@@ -37,6 +39,8 @@ class Plugin {
   initialize(registry: PluginRegistry, store: Store<GlobalState, Action>): void {
     this.store = store
     setMattermostStore(store)
+    registry.registerReducer(reducer)
+    registry.registerGlobalComponent(ScreenSharingModal)
     registry.registerChannelHeaderButtonAction(icon, this.action.bind(this), title)
     registry.registerWebSocketEventHandler('custom_' + manifest.id + '_change_user_settings', (message) => {
       settingsEventEmitter.emit('settingschange', message.data as UserSettings)
@@ -55,9 +59,7 @@ class Plugin {
     } else {
       const vmr = settings.prefix + channel.id
       const channelId: string = channel.id
-      notifyJoinConference(channelId).catch((error) => {
-        console.error(error)
-      })
+      notifyJoinConference(channelId).catch(console.error)
       const { node, hostPin, displayName } = conferenceConfig
       window.open(
         `https://${node}/webapp3/m/${vmr}/express?pin=${hostPin}&name=${displayName}`,

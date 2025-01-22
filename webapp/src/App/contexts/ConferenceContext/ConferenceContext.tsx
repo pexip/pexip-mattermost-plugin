@@ -58,7 +58,12 @@ const initialState: ConferenceState = {
   isDesktopApp: false
 }
 
-const ConferenceContextProvider = (props: any): JSX.Element => {
+interface ConferenceContextProviderProps {
+  children: React.ReactNode
+  onShowScreenSharingModal: () => void
+}
+
+const ConferenceContextProvider = (props: ConferenceContextProviderProps): JSX.Element => {
   const [state, dispatch] = useReducer(ConferenceReducer, initialState)
 
   const beforeUnloadHandler = (): void => {
@@ -139,7 +144,11 @@ const ConferenceContextProvider = (props: any): JSX.Element => {
         toggleMuteVideo(state, dispatch).catch(console.error)
       },
       togglePresenting: async () => {
-        togglePresenting(state, dispatch).catch(console.error)
+        if (state.isDesktopApp) {
+          props.onShowScreenSharingModal()
+        } else {
+          togglePresenting(state, dispatch).catch(console.error)
+        }
       },
       swapVideos: async () => {
         dispatch({ type: ConferenceActionType.SwapVideos })
