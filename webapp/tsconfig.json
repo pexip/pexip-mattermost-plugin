@@ -16,8 +16,9 @@
     "baseUrl": ".",
     "paths": {
       "src/*": ["./src/*"],
-      "@components/*": ["./src/components/*"],
-      "@contexts/*": ["./src/contexts/*"]
+      "@components/*": ["src/App/components/*"],
+      "@contexts/*": ["src/App/contexts/*"],
+      "@utils/*": ["src/App/utils/*"]
     }
   },
   "exclude": ["node_modules", "dist", "public", "update-segmenter-files.js"]

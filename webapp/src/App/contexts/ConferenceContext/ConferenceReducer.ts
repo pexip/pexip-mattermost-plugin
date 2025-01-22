@@ -1,4 +1,4 @@
-import { ConnectionState } from '../../types/ConnectionState'
+import { ConnectionState } from '../../../types/ConnectionState'
 import { ConferenceActionType, type ConferenceAction } from './ConferenceAction'
 import type { ConferenceState } from './ConferenceState'
 import { closePopUp } from './methods/togglePresentationInPopUp'
@@ -150,7 +150,7 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
     case ConferenceActionType.SetIsDesktopApp: {
       return {
         ...prevState,
-        isDesktopApp: action.body.isDesktopApp
+        isDesktopApp: action.body.isDesktopApp as boolean
       }
     }
     default:

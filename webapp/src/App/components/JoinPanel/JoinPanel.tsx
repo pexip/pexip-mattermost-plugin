@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 
 import { useConferenceContext } from '@contexts/ConferenceContext/ConferenceContext'
+import { getMattermostStore } from '@utils/mattermost-store'
 import type { Channel } from 'mattermost-redux/types/channels'
-import { getMattermostStore } from 'src/utils/mattermost-store'
 
 import './JoinPanel.scss'
 
@@ -39,11 +39,16 @@ export const JoinPanel = (): JSX.Element => {
     return unsubscribe
   }, [])
 
-
   return (
     <div className='JoinPanel'>
       <p>Connect to {channel?.display_name !== '' ? '"' + channel?.display_name + '"' : 'Direct'} room? </p>
-      <button onClick={ () => { handleConnect().catch((e) => { console.error(e) }) }}>
+      <button
+        onClick={() => {
+          handleConnect().catch((e) => {
+            console.error(e)
+          })
+        }}
+      >
         Join conference
       </button>
     </div>

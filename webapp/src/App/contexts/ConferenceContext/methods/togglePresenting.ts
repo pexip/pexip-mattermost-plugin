@@ -22,7 +22,7 @@ export const togglePresenting = async (
       presentationStream = await navigator.mediaDevices.getDisplayMedia()
     }
 
-    presentationStream.getVideoTracks()[0].addEventListener('ended', () => {
+    presentationStream?.getVideoTracks()[0].addEventListener('ended', () => {
       client?.stopPresenting()
       dispatch({
         type: ConferenceActionType.TogglePresenting,

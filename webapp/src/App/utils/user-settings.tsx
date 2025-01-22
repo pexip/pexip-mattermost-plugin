@@ -1,8 +1,8 @@
 import React from 'react'
 import { getPluginServerRoute } from './http-requests'
 import { EventEmitter } from 'events'
-import { type Effect } from 'src/types/Effect'
-import manifest from '../../../plugin.json'
+import { type Effect } from '../../types/Effect'
+import manifest from '../../../../plugin.json'
 
 export interface UserSettings {
   inputVideoDeviceId: string

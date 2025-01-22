@@ -15,7 +15,12 @@ export interface RHSPlugin {
 }
 
 export interface PluginRegistry {
-  registerChannelHeaderButtonAction: (icon: JSX.Element, action: (channel: Channel, channelMembership: ChannelMembership) => Promise<void>, dropdownText: string, tooltip?: string) => void
+  registerChannelHeaderButtonAction: (
+    icon: JSX.Element,
+    action: (channel: Channel, channelMembership: ChannelMembership) => Promise<void>,
+    dropdownText: string,
+    tooltip?: string
+  ) => void
   registerRightHandSidebarComponent: (component: React.ElementType, title: string | JSX.Element) => RHSPlugin
   registerWebSocketEventHandler: (event: string, handler: (message: any) => void) => void
 }

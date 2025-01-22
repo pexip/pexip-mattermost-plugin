@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react'
 
-import type { ConferenceConfig } from './types/ConferenceConfig'
+import type { ConferenceConfig } from '../types/ConferenceConfig'
 import { useConferenceContext } from './contexts/ConferenceContext/ConferenceContext'
-import { ConnectionState } from './types/ConnectionState'
+import { ConnectionState } from '../types/ConnectionState'
 import { JoinPanel } from './components/JoinPanel/JoinPanel'
 import { Conference } from './components/Conference/Conference'
 import { Loading } from './components/Loading/Loading'
@@ -18,7 +18,6 @@ export const App = (props: AppProps): JSX.Element => {
   const { setConfig, state } = useConferenceContext()
 
   useEffect(() => {
-    console.log('Pexip launched')
     setConfig(props.config)
   }, [])
 

@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { App } from './App'
-import { type ConferenceConfig } from './types/ConferenceConfig'
+import { type ConferenceConfig } from '../types/ConferenceConfig'
 import { ConferenceContextProvider } from './contexts/ConferenceContext/ConferenceContext'
 
 const mockConfig: ConferenceConfig = {
@@ -45,7 +45,7 @@ jest.mock('./components/ErrorPanel/ErrorPanel', () => {
 describe('App component', () => {
   it('should render', () => {
     render(
-      <ConferenceContextProvider>
+      <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
         <App config={mockConfig} />
       </ConferenceContextProvider>
     )

@@ -52,7 +52,7 @@ jest.mock('@contexts/ConferenceContext/ConferenceContext', () => ({
 }))
 
 const mockOpenUserSettingsDialog = jest.fn().mockResolvedValue(undefined)
-jest.mock('src/utils/user-settings', () => ({
+jest.mock('@utils/user-settings', () => ({
   openUserSettingsDialog: (props: any) => mockOpenUserSettingsDialog(props)
 }))
 

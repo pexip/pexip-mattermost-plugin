@@ -1,8 +1,8 @@
 import type { Client, Participant } from '@pexip/infinity'
-import type { ConnectionState } from 'src/types/ConnectionState'
-import type { ConferenceConfig } from 'src/types/ConferenceConfig'
+import type { ConnectionState } from '../../../types/ConnectionState'
+import type { ConferenceConfig } from '../../../types/ConferenceConfig'
 import type { Channel } from 'mattermost-redux/types/channels'
-import type { Effect } from 'src/types/Effect'
+import type { Effect } from '../../../types/Effect'
 
 interface ConferenceState {
   config: ConferenceConfig | null
