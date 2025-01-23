@@ -73,8 +73,14 @@ export const ScreenSharingModal = (props: ScreenSharingModalProps): JSX.Element 
   }
 
   return (
-    <div className='ScreenSharingModal'>
-      <div className='Modal' ref={modalRef}>
+    <div className='ScreenSharingModal' onClick={props.onHide}>
+      <div
+        className='Modal'
+        ref={modalRef}
+        onClick={(e) => {
+          e.stopPropagation()
+        }}
+      >
         <div className='Header'>
           <span className='Title'>Choose what to share</span>
           <button className='ModalCloseButton style--none' onClick={props.onHide}>
