@@ -1,7 +1,7 @@
-import { ActionType } from './actions'
+import { type Action, ActionType } from './actions'
 import { initialState, type State } from './state'
 
-export const reducer = (state: State = initialState, action: { type: string; data: boolean }): State => {
+export const reducer = (state: State = initialState, action: Action): State => {
   switch (action.type) {
     case ActionType.HideScreenSharingModal:
       return {
@@ -11,7 +11,13 @@ export const reducer = (state: State = initialState, action: { type: string; dat
     case ActionType.ShowScreenSharingModal:
       return {
         ...state,
-        showScreenSharingModal: true
+        showScreenSharingModal: true,
+        screenSharingSourceId: null
+      }
+    case ActionType.StartScreenSharing:
+      return {
+        ...state,
+        screenSharingSourceId: action.payload as string
       }
     default:
       return state

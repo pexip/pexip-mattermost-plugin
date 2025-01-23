@@ -12,6 +12,7 @@ export interface DesktopCaptureSource {
 interface ScreenSharingModalProps {
   show: boolean
   onHide: () => void
+  onShare: (sourceId: string | null) => void
 }
 
 export const ScreenSharingModal = (props: ScreenSharingModalProps): JSX.Element => {
@@ -21,7 +22,8 @@ export const ScreenSharingModal = (props: ScreenSharingModalProps): JSX.Element 
   const modalRef = React.createRef<HTMLDivElement>()
 
   const handleShare = (): void => {
-    alert(`Selected source: ${selected}`)
+    props.onHide()
+    props.onShare(selected)
   }
 
   useEffect(() => {

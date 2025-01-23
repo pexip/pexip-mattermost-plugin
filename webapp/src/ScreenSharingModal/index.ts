@@ -21,6 +21,12 @@ const mapDispatchToProps = (dispatch: Dispatch): any =>
         dispatch({
           type: ActionType.HideScreenSharingModal
         })
+      },
+      onShare: (sourceId: string) => (dispatch: Dispatch) => {
+        dispatch({
+          type: ActionType.StartScreenSharing,
+          payload: sourceId
+        })
       }
     },
     dispatch

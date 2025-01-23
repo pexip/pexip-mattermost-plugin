@@ -280,7 +280,7 @@ beforeEach(() => {
 describe('ConferenceContext', () => {
   it('should render', () => {
     render(
-      <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+      <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
         <ConferenceContextTester />
       </ConferenceContextProvider>
     )
@@ -300,7 +300,7 @@ describe('ConferenceContext', () => {
   describe('setConfig', () => {
     it('should save the configuration', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -316,7 +316,7 @@ describe('ConferenceContext', () => {
   describe('connect', () => {
     it('should have the connectionState to "Disconnected" before calling', () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -326,7 +326,7 @@ describe('ConferenceContext', () => {
 
     it('should change the connectionState to "Connecting" while establishing the call', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -342,7 +342,7 @@ describe('ConferenceContext', () => {
 
     it('should set the "channel" in the state while establishing the call', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -356,7 +356,7 @@ describe('ConferenceContext', () => {
 
     it('should change the connectionState to "Connected" once the connection is established', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -374,7 +374,7 @@ describe('ConferenceContext', () => {
       const error = { message: 'Cannot use the camera' }
       mockGetUserMedia.mockRejectedValue(error)
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -391,7 +391,7 @@ describe('ConferenceContext', () => {
     it('should return "Cannot connect" message if response.status != 200', async () => {
       mockCall.mockResolvedValue({ status: 401 })
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -407,7 +407,7 @@ describe('ConferenceContext', () => {
 
     it('should set to "false" the state for muteAudio, muteVideo and presenting when reconnected', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -443,7 +443,7 @@ describe('ConferenceContext', () => {
   describe('disconnect', () => {
     it('should change the connectionState to "Disconnected"', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -465,7 +465,7 @@ describe('ConferenceContext', () => {
   describe('toggleMuteAudio', () => {
     it('should have the initial value to "false"', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -475,7 +475,7 @@ describe('ConferenceContext', () => {
 
     it('should change to "true" when triggered', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -489,7 +489,7 @@ describe('ConferenceContext', () => {
 
     it('should change to "false" when triggered twice', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -507,7 +507,7 @@ describe('ConferenceContext', () => {
 
     it('should call "client.mute" with the new value', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -525,7 +525,7 @@ describe('ConferenceContext', () => {
 
     it('should call "client.mute" with the new value when called twice', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -547,7 +547,7 @@ describe('ConferenceContext', () => {
 
     it('should stop the audio track when trying to mute', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -565,7 +565,7 @@ describe('ConferenceContext', () => {
 
     it('should call getUserMedia when trying to unmute', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -589,7 +589,7 @@ describe('ConferenceContext', () => {
   describe('toggleMuteVideo', () => {
     it('should have the initial value to "false"', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -599,7 +599,7 @@ describe('ConferenceContext', () => {
 
     it('should change to "true" when triggered', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -613,7 +613,7 @@ describe('ConferenceContext', () => {
 
     it('should change to "false" when triggered twice', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -631,7 +631,7 @@ describe('ConferenceContext', () => {
 
     it('should call "client.muteVideo" with the new value', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -649,7 +649,7 @@ describe('ConferenceContext', () => {
 
     it('should call "client.muteVideo" with the new value when called twice', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -671,7 +671,7 @@ describe('ConferenceContext', () => {
 
     it('should stop the video track when trying to mute', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -689,7 +689,7 @@ describe('ConferenceContext', () => {
 
     it('should call getUserMedia when trying to unmute', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -713,7 +713,7 @@ describe('ConferenceContext', () => {
   describe('togglePresenting', () => {
     it('should have the value "presenting" to "false" at the beginning', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -727,7 +727,7 @@ describe('ConferenceContext', () => {
 
     it('should change the value "presenting" to "true" when triggered', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -745,7 +745,7 @@ describe('ConferenceContext', () => {
 
     it('should change the value "presenting" to "false" when triggered twice', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -767,7 +767,7 @@ describe('ConferenceContext', () => {
 
     it('should trigger "getDisplayMedia" when called', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -784,7 +784,7 @@ describe('ConferenceContext', () => {
 
     it('should call "client.present" when called', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -802,7 +802,7 @@ describe('ConferenceContext', () => {
 
     it('should call "client.stopPresenting" when called twice', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -824,7 +824,7 @@ describe('ConferenceContext', () => {
 
     it('should set "presentationInPopUp" to "false" when called', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -845,7 +845,7 @@ describe('ConferenceContext', () => {
   describe('swapVideos', () => {
     it('should have "presentationInMain" to "false" by default', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -855,7 +855,7 @@ describe('ConferenceContext', () => {
 
     it('should have "presentationInMain" to "false" when enable presentation by button and true before', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -874,7 +874,7 @@ describe('ConferenceContext', () => {
 
     it('should have "presentationInMain" to "true" when clicked once', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -888,7 +888,7 @@ describe('ConferenceContext', () => {
 
     it('should have "presentationInMain" to "true" when clicked twice', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -906,7 +906,7 @@ describe('ConferenceContext', () => {
 
     it('should have "presentationInMain" to "false" when enable presentation by button and true before', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -927,7 +927,7 @@ describe('ConferenceContext', () => {
   describe('togglePresentationInPopUp', () => {
     it('should have "presentationInPopUp" to "false" by default', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -937,7 +937,7 @@ describe('ConferenceContext', () => {
 
     it('should change "presentationInPopUp" to "true" when called', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -951,7 +951,7 @@ describe('ConferenceContext', () => {
 
     it('should change "presentationInPopUp" to "false" when called twice', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -968,7 +968,7 @@ describe('ConferenceContext', () => {
   describe('changeDevices', () => {
     it('should change the outputAudioDeviceId in the state', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -982,7 +982,7 @@ describe('ConferenceContext', () => {
 
     it('should call getUserMedia with the proper deviceId for audio and video', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -1021,7 +1021,7 @@ describe('ConferenceContext', () => {
 
     it('should call getUserMedia with only deviceId for audio when videoMuted', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -1059,7 +1059,7 @@ describe('ConferenceContext', () => {
 
     it('should call getUserMedia with only deviceId for video when audioMuted', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -1097,7 +1097,7 @@ describe('ConferenceContext', () => {
 
     it("shouldn't call getUserMedia if audioMuted and videoMuted are true", async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -1126,7 +1126,7 @@ describe('ConferenceContext', () => {
         callback = cb
       })
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -1174,7 +1174,7 @@ describe('ConferenceContext', () => {
 
     it('should change the inputVideoDeviceId in the state even when the video is muted', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -1196,7 +1196,7 @@ describe('ConferenceContext', () => {
 
     it('should change the inputAudioDeviceId in the state even when the audio is muted', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -1220,7 +1220,7 @@ describe('ConferenceContext', () => {
   describe('changeEffect', () => {
     it('should set the effect from localStorage on connect', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -1234,7 +1234,7 @@ describe('ConferenceContext', () => {
 
     it('should call changeEffect on toggleVideoMute', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -1257,7 +1257,7 @@ describe('ConferenceContext', () => {
 
     it('should change the effect in the state', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -1275,7 +1275,7 @@ describe('ConferenceContext', () => {
 
     it('should call createCanvasTransform with the proper effect', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -1294,7 +1294,7 @@ describe('ConferenceContext', () => {
 
     it('should save the new effect in localStorage', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )
@@ -1312,7 +1312,7 @@ describe('ConferenceContext', () => {
 
     it('should change the effect in the state even when the video is muted', async () => {
       render(
-        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()}>
+        <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
           <ConferenceContextTester />
         </ConferenceContextProvider>
       )

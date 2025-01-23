@@ -60,6 +60,7 @@ const initialState: ConferenceState = {
 
 interface ConferenceContextProviderProps {
   children: React.ReactNode
+  screenSharingSourceId: string | null
   onShowScreenSharingModal: () => void
 }
 
@@ -98,6 +99,12 @@ const ConferenceContextProvider = (props: ConferenceContextProviderProps): JSX.E
       })
       .catch(console.error)
   }, [])
+
+  useEffect(() => {
+    if (props.screenSharingSourceId != null) {
+      togglePresenting(state, dispatch, props.screenSharingSourceId).catch(console.error)
+    }
+  }, [props.screenSharingSourceId])
 
   useEffect(() => {
     navigator.mediaDevices.addEventListener('devicechange', handleDeviceChange)
@@ -144,7 +151,7 @@ const ConferenceContextProvider = (props: ConferenceContextProviderProps): JSX.E
         toggleMuteVideo(state, dispatch).catch(console.error)
       },
       togglePresenting: async () => {
-        if (state.isDesktopApp) {
+        if (state.isDesktopApp && !state.presenting) {
           props.onShowScreenSharingModal()
         } else {
           togglePresenting(state, dispatch).catch(console.error)

@@ -26,7 +26,7 @@ const title = 'Pexip'
 let conferenceConfig: ConferenceConfig
 const RightHandSidebarComponent = (): JSX.Element => {
   return (
-    <ConferenceContextProvider onShowScreenSharingModal={() => {}}>
+    <ConferenceContextProvider onShowScreenSharingModal={() => {}} screenSharingSourceId={null}>
       <App config={conferenceConfig} />
     </ConferenceContextProvider>
   )

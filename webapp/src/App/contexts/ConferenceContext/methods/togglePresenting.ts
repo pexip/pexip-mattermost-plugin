@@ -3,9 +3,10 @@ import { type ConferenceState } from '../ConferenceState'
 
 export const togglePresenting = async (
   state: ConferenceState,
-  dispatch: React.Dispatch<ConferenceAction>
+  dispatch: React.Dispatch<ConferenceAction>,
+  sourceId?: string | null
 ): Promise<void> => {
-  const { client, presenting } = state
+  const { client, presenting, isDesktopApp } = state
 
   let presentationStream
   if (presenting) {
@@ -13,17 +14,25 @@ export const togglePresenting = async (
       track.stop()
     })
     client?.stopPresenting()
-  } else {
     // if (isDesktopApp) {
-    //   // presentationStream = await navigator.mediaDevices.getUserMedia({
-    //   //   video: { mandatory: { chromeMediaSource: 'desktop' } }
-    //   // } as unknown as MediaStreamConstraints)
-    //   // dispatch({ type: ConferenceActionType.ToggleScreenSharingModal })
-    // } else {
-    //   presentationStream = await navigator.mediaDevices.getDisplayMedia()
+    //   // dispatch({ type: ConferenceActionType.ToggleScreenSharing
     // }
+  } else {
+    if (isDesktopApp) {
+      const options: Record<string, unknown> = {
+        chromeMediaSource: 'desktop'
+      }
 
-    presentationStream = await navigator.mediaDevices.getDisplayMedia()
+      if (sourceId != null) {
+        options.chromeMediaSourceId = sourceId
+      }
+
+      presentationStream = await navigator.mediaDevices.getUserMedia({
+        video: { mandatory: options }
+      } as unknown as MediaStreamConstraints)
+    } else {
+      presentationStream = await navigator.mediaDevices.getDisplayMedia()
+    }
 
     presentationStream?.getVideoTracks()[0].addEventListener('ended', () => {
       client?.stopPresenting()

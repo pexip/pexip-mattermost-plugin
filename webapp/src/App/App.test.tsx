@@ -45,7 +45,7 @@ jest.mock('./components/ErrorPanel/ErrorPanel', () => {
 describe('App component', () => {
   it('should render', () => {
     render(
-      <ConferenceContextProvider onShowScreenSharingModal={() => {}}>
+      <ConferenceContextProvider onShowScreenSharingModal={jest.fn()} screenSharingSourceId={null}>
         <App config={mockConfig} />
       </ConferenceContextProvider>
     )
