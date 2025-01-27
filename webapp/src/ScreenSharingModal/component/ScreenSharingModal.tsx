@@ -73,9 +73,10 @@ export const ScreenSharingModal = (props: ScreenSharingModalProps): JSX.Element 
   }
 
   return (
-    <div className='ScreenSharingModal' onClick={props.onHide}>
+    <div className='ScreenSharingModal' data-testid='ScreenSharingModal' onClick={props.onHide}>
       <div
         className='Modal'
+        data-testid='ScreenSharingModalInner'
         ref={modalRef}
         onClick={(e) => {
           e.stopPropagation()
@@ -83,7 +84,7 @@ export const ScreenSharingModal = (props: ScreenSharingModalProps): JSX.Element 
       >
         <div className='Header'>
           <span className='Title'>Choose what to share</span>
-          <button className='ModalCloseButton style--none' onClick={props.onHide}>
+          <button className='ModalCloseButton style--none' data-testid='ScreenSharingModalClose' onClick={props.onHide}>
             <Icon source={IconTypes.IconClose} />
           </button>
         </div>
@@ -91,10 +92,10 @@ export const ScreenSharingModal = (props: ScreenSharingModalProps): JSX.Element 
         <div className='Body'>{sourcesComponent}</div>
         <hr className='Divider' />
         <div className='Footer'>
-          <button className='CancelButton style--none' onClick={props.onHide}>
+          <button className='CancelButton style--none' data-testid='ScreenSharingModalCancel' onClick={props.onHide}>
             Cancel
           </button>
-          <button className='ShareButton style--none' onClick={handleShare}>
+          <button className='ShareButton style--none' data-testid='ScreenSharingModalShare' onClick={handleShare}>
             Share
           </button>
         </div>
