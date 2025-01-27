@@ -63,15 +63,15 @@ $ docker run --name mattermost-preview -d --publish 8065:8065 mattermost/matterm
 ```
 
 For now on, we will suppose that you are using the docker container and the app is accessible from
-https://localhost:8065:
+http://localhost:8065:
 
-- Launch mattermost in a web browser: https://localhost:8065
+- Launch mattermost in a web browser: http://localhost:8065
 
 - Introduce all the mandatory info: username, password, organization, url, etc.
 
 ## How to upload the plugin
 
-- Open the admin web page: https://localhost:8065/admin_console
+- Open the admin web page: http://localhost:8065/admin_console
 
 - In the left menu go to the **Plugins** section and there select **Plugin Management**.
 
