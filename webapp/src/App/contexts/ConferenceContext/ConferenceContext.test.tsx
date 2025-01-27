@@ -275,6 +275,7 @@ beforeEach(() => {
   mockEnumerateDevices.mockResolvedValue([])
   mockGetUserMedia.mockReturnValue(new MediaStream())
   mockGetDisplayMedia.mockReturnValue(new MediaStream())
+  ;(window as any).desktopAPI = undefined
 })
 
 describe('ConferenceContext', () => {
@@ -839,6 +840,60 @@ describe('ConferenceContext', () => {
       })
       const presentationInPopUp = screen.getByTestId('presentationInPopUp')
       expect(presentationInPopUp.innerHTML).toBe('false')
+    })
+
+    it('should not display the screen sharing modal if it is not a desktop app', async () => {
+      const onShowScreenSharingModal = jest.fn()
+      await act(async () => {
+        render(
+          <ConferenceContextProvider onShowScreenSharingModal={onShowScreenSharingModal} screenSharingSourceId={null}>
+            <ConferenceContextTester />
+          </ConferenceContextProvider>
+        )
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonTogglePresenting')
+        fireEvent.click(button)
+      })
+      expect(onShowScreenSharingModal).not.toHaveBeenCalled()
+    })
+
+    it('should display the screen sharing modal if it is a desktop app', async () => {
+      ;(window as any).desktopAPI = {
+        getAppInfo: jest.fn().mockResolvedValue({ isDesktopApp: true })
+      }
+      const onShowScreenSharingModal = jest.fn()
+      await act(async () => {
+        render(
+          <ConferenceContextProvider onShowScreenSharingModal={onShowScreenSharingModal} screenSharingSourceId={null}>
+            <ConferenceContextTester />
+          </ConferenceContextProvider>
+        )
+      })
+      await act(async () => {
+        const button = screen.getByTestId('buttonTogglePresenting')
+        fireEvent.click(button)
+      })
+      expect(onShowScreenSharingModal).toHaveBeenCalledTimes(1)
+    })
+
+    it('should call "togglePresentation" with the "screenSharingSourceId" when this value is defined in props', async () => {
+      const sourceId = '1234-abcd'
+      ;(window as any).desktopAPI = {
+        getAppInfo: jest.fn().mockResolvedValue({ isDesktopApp: true })
+      }
+      await act(async () => {
+        render(
+          <ConferenceContextProvider onShowScreenSharingModal={() => undefined} screenSharingSourceId={sourceId}>
+            <ConferenceContextTester />
+          </ConferenceContextProvider>
+        )
+      })
+      const expectedOptions = {
+        video: { mandatory: { chromeMediaSource: 'desktop', chromeMediaSourceId: sourceId } }
+      }
+      expect(mockGetUserMedia).toHaveBeenCalledTimes(1)
+      expect(mockGetUserMedia).toHaveBeenCalledWith(expectedOptions)
     })
   })
 

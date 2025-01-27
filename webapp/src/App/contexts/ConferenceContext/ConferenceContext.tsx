@@ -101,10 +101,10 @@ const ConferenceContextProvider = (props: ConferenceContextProviderProps): JSX.E
   }, [])
 
   useEffect(() => {
-    if (props.screenSharingSourceId != null) {
+    if (state.isDesktopApp && props.screenSharingSourceId != null) {
       togglePresenting(state, dispatch, props.screenSharingSourceId).catch(console.error)
     }
-  }, [props.screenSharingSourceId])
+  }, [props.screenSharingSourceId, state.isDesktopApp])
 
   useEffect(() => {
     navigator.mediaDevices.addEventListener('devicechange', handleDeviceChange)

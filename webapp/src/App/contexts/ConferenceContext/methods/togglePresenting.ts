@@ -14,9 +14,6 @@ export const togglePresenting = async (
       track.stop()
     })
     client?.stopPresenting()
-    // if (isDesktopApp) {
-    //   // dispatch({ type: ConferenceActionType.ToggleScreenSharing
-    // }
   } else {
     if (isDesktopApp) {
       const options: Record<string, unknown> = {
