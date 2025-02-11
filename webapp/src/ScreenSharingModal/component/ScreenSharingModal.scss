@@ -1,0 +1,145 @@
+%button-screen-source-modal {
+  border-radius: 4px;
+  margin: 0 4px;
+  font-weight: 600;
+  padding: 12px 20px;
+
+  color: rgba(var(--center-channel-color-rgb), 0.64);
+}
+
+.ScreenSharingModal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.64);
+
+  .Modal {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background: var(--center-channel-bg);
+    color: var(--center-channel-color);
+    border-radius: 8px;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    box-shadow: 0px 20px 32px rgba(var(--center-channel-color-rgb), 0.12);
+    max-width: 832px;
+    max-height: 614px;
+
+    .Header {
+      position: relative;
+      width: 100%;
+      padding: 26px 32px;
+
+      .Title {
+        font-weight: 600;
+        font-family: Metropolis;
+        font-size: 22px;
+        line-height: 28px;
+      }
+
+      .ModalCloseButton {
+        position: absolute;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 24px;
+        color: rgba(var(--center-channel-color-rgb), 0.56);
+        right: 18px;
+        top: 18px;
+        width: 40px;
+        height: 40px;
+      
+        &:hover {
+          background: rgba(var(--center-channel-color-rgb), 0.08);
+        }
+      }
+    }
+
+    .Body {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      overflow: auto;
+      padding: 28px 32px
+    }
+
+    .Footer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      align-self: flex-end;
+      padding: 24px 32px;
+
+      .CancelButton {
+        @extend %button-screen-source-modal;
+        background: rgba(var(--button-bg-rgb), 0.08);
+        color: rgb(var(--button-bg-rgb));
+      
+        &:hover {
+          background: rgba(var(--button-bg-rgb), 0.12);
+        }
+      }
+
+      .ShareButton {
+        @extend %button-screen-source-modal;
+        background: rgb(var(--button-bg-rgb));
+        color: rgb(var(--center-channel-bg-rgb));
+      
+        &:hover {
+          background: rgba(var(--button-bg-rgb), 0.90);
+        }
+      }
+    }
+  }
+
+  .SourceButton {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 8px 4px;
+
+    .SourceThumbnail {
+      border: 2px solid rgba(var(--center-channel-color-rgb), 0.12);
+      border-radius: 4px;
+      box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      -webkit-box-sizing: border-box;
+      margin-bottom: 8px;
+    
+      width: 224px;
+      height: 126px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    
+      &:hover {
+        border: 2px solid rgba(var(--button-bg-rgb), 0.64);
+      }
+
+      &.selected {
+        border: 2px solid rgba(var(--button-bg-rgb), 0.90);
+      }
+    }
+
+    .SourceLabel {
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      width: 224px;
+    }
+  }
+
+  hr.Divider {
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    width: 100%;
+    margin: 0;
+  }
+}

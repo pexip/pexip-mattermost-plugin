@@ -64,8 +64,9 @@
     "moduleNameMapper": {
       "\\.(css|scss)$": "identity-obj-proxy",
       "^src/(.*)$": "<rootDir>/src/$1",
-      "^@components/(.*)$": "<rootDir>/src/components/$1",
-      "^@contexts/(.*)$": "<rootDir>/src/contexts/$1"
+      "^@components/(.*)$": "<rootDir>/src/App/components/$1",
+      "^@contexts/(.*)$": "<rootDir>/src/App/contexts/$1",
+      "^@utils/(.*)$": "<rootDir>/src/App/utils/$1"
     }
   }
 }

@@ -36,8 +36,9 @@ const config = {
       {
         alias: {
           src: './src',
-          '@components': './src/components',
-          '@contexts': './src/contexts'
+          '@components': './src/App/components',
+          '@contexts': './src/App/contexts',
+          '@utils': './src/App/utils',
         }
       }
     ]
