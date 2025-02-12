@@ -36,7 +36,7 @@ let mockRemoteStream: any
 let mockPresentationStream: any
 let mockPresentationInMain: boolean
 let mockPresentationInPopUp: boolean
-jest.mock('@contexts/ConferenceContext/ConferenceContext', () => ({
+jest.mock('../../contexts/ConferenceContext/ConferenceContext', () => ({
   useConferenceContext: () => ({
     state: {
       participants: [],
@@ -52,7 +52,7 @@ jest.mock('@contexts/ConferenceContext/ConferenceContext', () => ({
   })
 }))
 
-jest.mock('@components/Tooltip/Tooltip', () => ({
+jest.mock('../Tooltip/Tooltip', () => ({
   Tooltip: (props: any) => <div>{props.children}</div>
 }))
 

@@ -1,8 +1,8 @@
 import React from 'react'
 import { Button, Icon, IconTypes } from '@pexip/components'
 import type { Participant } from '@pexip/infinity'
-import { useConferenceContext } from 'src/App/contexts/ConferenceContext/ConferenceContext'
-import { Tooltip } from 'src/App/components/Tooltip/Tooltip'
+import { useConferenceContext } from '../../../contexts/ConferenceContext/ConferenceContext'
+import { Tooltip } from '../../Tooltip/Tooltip'
 
 import './ParticipantList.scss'
 

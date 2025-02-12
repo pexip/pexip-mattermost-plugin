@@ -1,9 +1,9 @@
 import { type DisconnectReason } from '@pexip/infinity'
 import { ConferenceActionType, type ConferenceAction } from '../ConferenceAction'
 import { type ConferenceState } from '../ConferenceState'
-import { getMattermostStore } from 'src/App/utils/mattermost-store'
-import { notifyLeaveConference } from 'src/App/utils/http-requests'
-import { ConnectionState } from 'src/types/ConnectionState'
+import { getMattermostStore } from '../../../utils/mattermost-store'
+import { notifyLeaveConference } from '../../../utils/http-requests'
+import { ConnectionState } from '../../../../types/ConnectionState'
 
 export const disconnect = async (
   state: ConferenceState,

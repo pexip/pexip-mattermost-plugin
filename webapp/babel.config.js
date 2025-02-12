@@ -30,18 +30,7 @@ const config = {
     '@babel/plugin-syntax-dynamic-import',
     '@babel/proposal-object-rest-spread',
     '@babel/plugin-proposal-optional-chaining',
-    'babel-plugin-typescript-to-proptypes',
-    [
-      'module-resolver',
-      {
-        alias: {
-          src: './src',
-          '@components': './src/App/components',
-          '@contexts': './src/App/contexts',
-          '@utils': './src/App/utils',
-        }
-      }
-    ]
+    'babel-plugin-typescript-to-proptypes'
   ]
 }
 

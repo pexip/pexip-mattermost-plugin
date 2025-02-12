@@ -151,7 +151,7 @@ jest.mock(
   }),
   { virtual: true }
 )
-jest.mock('src/App/utils/mattermost-store', () => ({
+jest.mock('../../utils/mattermost-store', () => ({
   getMattermostStore: jest.fn(() => ({
     getState: jest.fn(() => ({
       entities: { channels: { currentChannelId: 'current-channel-id-mock' } }

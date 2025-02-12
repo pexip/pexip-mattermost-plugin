@@ -13,13 +13,7 @@
     "strictBindCallApply": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "baseUrl": ".",
-    "paths": {
-      "src/*": ["./src/*"],
-      "@components/*": ["src/App/components/*"],
-      "@contexts/*": ["src/App/contexts/*"],
-      "@utils/*": ["src/App/utils/*"]
-    }
+    "baseUrl": "."
   },
   "exclude": ["node_modules", "dist", "public", "update-segmenter-files.js"]
 }

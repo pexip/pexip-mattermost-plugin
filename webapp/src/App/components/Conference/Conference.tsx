@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { Icon, IconTypes, Video } from '@pexip/components'
-import { useConferenceContext } from 'src/App/contexts/ConferenceContext/ConferenceContext'
+import { useConferenceContext } from '../../contexts/ConferenceContext/ConferenceContext'
 import { Toolbar } from './Toolbar/Toolbar'
 import { ParticipantList } from './ParticipantList/ParticipantList'
 import { Tooltip } from '../Tooltip/Tooltip'
 import { Selfview } from '@pexip/media-components'
-import { type UserSettings, settingsEventEmitter } from '@utils/user-settings'
+import { type UserSettings, settingsEventEmitter } from '../../utils/user-settings'
 
 import './Conference.scss'
 

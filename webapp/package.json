@@ -62,11 +62,7 @@
       "<rootDir>/src/setupTests.ts"
     ],
     "moduleNameMapper": {
-      "\\.(css|scss)$": "identity-obj-proxy",
-      "^src/(.*)$": "<rootDir>/src/$1",
-      "^@components/(.*)$": "<rootDir>/src/App/components/$1",
-      "^@contexts/(.*)$": "<rootDir>/src/App/contexts/$1",
-      "^@utils/(.*)$": "<rootDir>/src/App/utils/$1"
+      "\\.(css|scss)$": "identity-obj-proxy"
     }
   }
 }
