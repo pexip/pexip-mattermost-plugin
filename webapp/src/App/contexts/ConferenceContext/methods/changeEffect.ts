@@ -8,7 +8,7 @@ import {
   type ProcessVideoTrack
 } from '@pexip/media-processor'
 import { ConferenceActionType, type ConferenceAction } from '../ConferenceAction'
-import { type Effect } from 'src/types/Effect'
+import { type Effect } from '../../../../types/Effect'
 import { type ConferenceState } from '../ConferenceState'
 
 interface NavigatorUABrandVersion {

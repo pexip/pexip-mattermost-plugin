@@ -25,11 +25,11 @@ jest.mock(
   { virtual: true }
 )
 const mockUseConferenceContext = jest.fn()
-jest.mock('@contexts/ConferenceContext/ConferenceContext', () => ({
+jest.mock('../../../contexts/ConferenceContext/ConferenceContext', () => ({
   useConferenceContext: () => mockUseConferenceContext()
 }))
 
-jest.mock('@components/Tooltip/Tooltip', () => ({
+jest.mock('../../Tooltip/Tooltip', () => ({
   Tooltip: (props: any) => <div>{props.children}</div>
 }))
 

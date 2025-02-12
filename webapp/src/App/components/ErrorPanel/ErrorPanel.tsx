@@ -1,5 +1,5 @@
 import React from 'react'
-import { useConferenceContext } from '@contexts/ConferenceContext/ConferenceContext'
+import { useConferenceContext } from '../../contexts/ConferenceContext/ConferenceContext'
 
 import './ErrorPanel.scss'
 

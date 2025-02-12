@@ -14,7 +14,7 @@ jest.mock('@pexip/components', () => ({
   }
 }))
 
-jest.mock('@components/Tooltip/Tooltip', () => ({
+jest.mock('../../Tooltip/Tooltip', () => ({
   Tooltip: (props: any) => {
     const { children, ...otherProps } = props
     return <div {...otherProps}>{children}</div>
@@ -31,7 +31,7 @@ const mockToggleMuteVideo = jest.fn().mockResolvedValue(undefined)
 const mockTogglePresenting = jest.fn().mockResolvedValue(undefined)
 const mockTogglePresentationInPopUp = jest.fn().mockResolvedValue(undefined)
 const mockDisconnect = jest.fn().mockResolvedValue(undefined)
-jest.mock('@contexts/ConferenceContext/ConferenceContext', () => ({
+jest.mock('../../../contexts/ConferenceContext/ConferenceContext', () => ({
   useConferenceContext: () => ({
     state: {
       audioMuted: mockAudioMuted,
@@ -52,7 +52,7 @@ jest.mock('@contexts/ConferenceContext/ConferenceContext', () => ({
 }))
 
 const mockOpenUserSettingsDialog = jest.fn().mockResolvedValue(undefined)
-jest.mock('@utils/user-settings', () => ({
+jest.mock('../../../utils/user-settings', () => ({
   openUserSettingsDialog: (props: any) => mockOpenUserSettingsDialog(props)
 }))
 

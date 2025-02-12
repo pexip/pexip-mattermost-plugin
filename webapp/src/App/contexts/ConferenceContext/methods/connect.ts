@@ -3,8 +3,8 @@ import { ConferenceActionType, type ConferenceAction } from '../ConferenceAction
 import { changeEffect } from './changeEffect'
 import { type ConferenceState } from '../ConferenceState'
 import { filterMediaDevices } from './filterMediaDevices'
-import { notifyJoinConference, notifyLeaveConference } from 'src/App/utils/http-requests'
-import { getMattermostStore } from 'src/App/utils/mattermost-store'
+import { notifyJoinConference, notifyLeaveConference } from '../../../utils/http-requests'
+import { getMattermostStore } from '../../../utils/mattermost-store'
 
 interface ConnectParams {
   host: string

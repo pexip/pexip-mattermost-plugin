@@ -1,8 +1,8 @@
 import React from 'react'
 import { Icon, IconTypes } from '@pexip/components'
-import { useConferenceContext } from 'src/App/contexts/ConferenceContext/ConferenceContext'
-import { Tooltip } from 'src/App/components/Tooltip/Tooltip'
-import { openUserSettingsDialog } from '@utils/user-settings'
+import { useConferenceContext } from '../../../contexts/ConferenceContext/ConferenceContext'
+import { Tooltip } from '../../Tooltip/Tooltip'
+import { openUserSettingsDialog } from '../../../utils/user-settings'
 
 import './Toolbar.scss'
 
