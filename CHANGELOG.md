@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to
 [Semantic Versioning](http://semver.org/).
 
+## [1.2.0] 2025-02-18
+
+## Added
+
+- Support for choosing screen or window when sharing the screen in the Desktop App.
+- Support for pop-out the screen sharing video in the Desktop App.
+
 ## [1.1.0] 2024-08-19
 
 ### Added
