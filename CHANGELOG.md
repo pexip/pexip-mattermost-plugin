@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [1.2.0] 2025-02-18
 
-## Added
+### Added
 
 - Support for choosing screen or window when sharing the screen in the Desktop App.
 - Support for pop-out the screen sharing video in the Desktop App.
