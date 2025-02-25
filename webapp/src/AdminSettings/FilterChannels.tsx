@@ -1,62 +1,171 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Box, Button, Checkbox, Divider, List, ListLink, TextHeading } from '@pexip/components'
+import { getMattermostStore } from 'src/App/utils/mattermost-store'
+import { getAllChannels } from 'mattermost-redux/selectors/entities/channels'
+import { type Channel } from 'mattermost-redux/types/channels'
 
 import './FilterChannels.scss'
 
-// https://mui.com/material-ui/react-transfer-list/
+// Component based on https://mui.com/material-ui/react-transfer-list/
 export const FilterChannels = (): JSX.Element => {
   const [enabled, setEnabled] = React.useState(false)
 
+  const [allowedChannels, setAllowedChannels] = React.useState<Array<Channel & { checked: boolean }>>([])
+  const [disallowedChannels, setDisallowedChannels] = React.useState<Array<Channel & { checked: boolean }>>([])
+
+  const store = getMattermostStore()
+
+  const allowedSelected = allowedChannels.filter((channel) => channel.checked)
+  const disallowedSelected = disallowedChannels.filter((channel) => channel.checked)
+
+  const moveToAllowed = (): void => {
+    const selected = disallowedChannels
+      .filter((channel) => channel.checked)
+      .map((channel) => ({ ...channel, checked: false }))
+    const updatedAllowed = [...allowedChannels, ...selected]
+    const updatedDisallowed = disallowedChannels.filter((channel) => !channel.checked)
+    setAllowedChannels(updatedAllowed)
+    setDisallowedChannels(updatedDisallowed)
+  }
+
+  const moveToDisallowed = (): void => {
+    const selected = allowedChannels
+      .filter((channel) => channel.checked)
+      .map((channel) => ({ ...channel, checked: false }))
+    const updatedDisallowed = [...disallowedChannels, ...selected]
+    const updatedAllowed = allowedChannels.filter((channel) => !channel.checked)
+    setAllowedChannels(updatedAllowed)
+    setDisallowedChannels(updatedDisallowed)
+  }
+
+  // const indeterminateSvg = (
+  //   <svg
+  //     // class='MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-q7mezt'
+  //     focusable='false'
+  //     aria-hidden='true'
+  //     viewBox='0 0 24 24'
+  //     data-testid='IndeterminateCheckBoxIcon'
+  //   >
+  //     <path d='M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10H7v-2h10v2z'></path>
+  //   </svg>
+  // )
+
+  useEffect(() => {
+    const channels = Object.values(getAllChannels(store.getState()))
+      .filter((channel) => channel.team_id !== '' && channel.display_name !== '')
+      .map((channel) => ({ ...channel, checked: false }))
+
+    setAllowedChannels([])
+    setDisallowedChannels(channels)
+    // const disallowedChannels = channels.filter((channel) => !allowedChannels.includes(channel))
+  }, [])
+
   const channelSelector = (
     <div className='ChannelSelector'>
-      <Box className='ChannelSelectorList'>
+      <Box className='ChannelSelectorColumn'>
         <div className='ChannelSelectorHeader'>
-          <Checkbox label='' name='' />
+          <Checkbox
+            label=''
+            name=''
+            checked={disallowedChannels.length > 0 && disallowedSelected.length === disallowedChannels.length}
+            ref={(element) => {
+              if (element != null) {
+                element.indeterminate =
+                  disallowedSelected.length > 0 && disallowedSelected.length < disallowedChannels.length
+              }
+            }}
+            onClick={() => {
+              if (disallowedSelected.length === disallowedChannels.length) {
+                const updatedChannels = disallowedChannels.map((c) => ({ ...c, checked: false }))
+                setDisallowedChannels(updatedChannels)
+              }
+              if (disallowedSelected.length < disallowedChannels.length) {
+                const updatedChannels = disallowedChannels.map((c) => ({ ...c, checked: true }))
+                setDisallowedChannels(updatedChannels)
+              }
+            }}
+          />
           <div>
-            <TextHeading htmlTag='h3'>Allowed Channels</TextHeading>
-            <span>0/3 selected</span>
+            <TextHeading htmlTag='h3'>Disallowed Channels</TextHeading>
+            <span className='ChannelSelectorSubtitle'>
+              {disallowedSelected.length}/{disallowedChannels.length} selected
+            </span>
           </div>
         </div>
         <Divider />
-        <List>
-          <ListLink>
-            <Checkbox label={'Channel 1'} name={''} />
-          </ListLink>
-          <ListLink>
-            <Checkbox label={'Channel 1'} name={''} />
-          </ListLink>
-          <ListLink>
-            <Checkbox label={'Channel 1'} name={''} />
-          </ListLink>
+        <List className='ChannelSelectorList'>
+          {disallowedChannels.map((channel) => (
+            <ListLink key={channel.id} className='ChannelSelectorListLink'>
+              <Checkbox
+                label={channel.display_name}
+                name={channel.id}
+                checked={channel.checked}
+                onChange={(event) => {
+                  const checked = event.target.checked
+                  const updatedChannels = disallowedChannels.map((c) => (c.id === channel.id ? { ...c, checked } : c))
+                  setDisallowedChannels(updatedChannels)
+                }}
+              />
+            </ListLink>
+          ))}
         </List>
       </Box>
+
       <div className='ChannelSelectorButtons'>
-        <Button aria-label='move selected right' variant='secondary'>
+        <Button aria-label='move selected right' variant='secondary' onClick={moveToAllowed}>
           &gt;
         </Button>
-        <Button aria-label='move select left' variant='secondary'>
+        <Button aria-label='move select left' variant='secondary' onClick={moveToDisallowed}>
           &lt;
         </Button>
       </div>
-      <Box className='ChannelSelectorList'>
+
+      <Box className='ChannelSelectorColumn'>
         <div className='ChannelSelectorHeader'>
-          <Checkbox label='' name='' />
+          <Checkbox
+            label=''
+            name=''
+            checked={allowedChannels.length > 0 && allowedSelected.length === allowedChannels.length}
+            ref={(element) => {
+              if (element != null) {
+                const indeterminate = allowedSelected.length > 0 && allowedSelected.length < allowedChannels.length
+                element.indeterminate = indeterminate
+              }
+            }}
+            onClick={() => {
+              if (allowedSelected.length === allowedChannels.length) {
+                const updatedChannels = allowedChannels.map((c) => ({ ...c, checked: false }))
+                setAllowedChannels(updatedChannels)
+              }
+              if (allowedSelected.length < allowedChannels.length) {
+                const updatedChannels = allowedChannels.map((c) => ({ ...c, checked: true }))
+                setAllowedChannels(updatedChannels)
+              }
+            }}
+          />
           <div>
-            <TextHeading htmlTag='h3'>Disallowed Channels</TextHeading>
-            <span>0/3 selected</span>
+            <TextHeading htmlTag='h3'>Allowed Channels</TextHeading>
+            <span className='ChannelSelectorSubtitle'>
+              {allowedSelected.length}/{allowedChannels.length} selected
+            </span>
           </div>
         </div>
         <Divider />
-        <List>
-          <ListLink>
-            <Checkbox label={'Channel 1'} name={''} />
-          </ListLink>
-          <ListLink>
-            <Checkbox label={'Channel 1'} name={''} />
-          </ListLink>
-          <ListLink>
-            <Checkbox label={'Channel 1'} name={''} />
-          </ListLink>
+        <List className='ChannelSelectorList'>
+          {allowedChannels.map((channel) => (
+            <ListLink key={channel.id} className='ChannelSelectorListLink'>
+              <Checkbox
+                label={channel.display_name}
+                name={channel.id}
+                checked={channel.checked}
+                onChange={(event) => {
+                  const checked = event.target.checked
+                  const updatedChannels = allowedChannels.map((c) => (c.id === channel.id ? { ...c, checked } : c))
+                  setAllowedChannels(updatedChannels)
+                }}
+              />
+            </ListLink>
+          ))}
         </List>
       </Box>
     </div>
@@ -97,98 +206,3 @@ export const FilterChannels = (): JSX.Element => {
     </div>
   )
 }
-
-// import React from 'react'
-// import PropTypes from 'prop-types'
-
-// export default class SecretMessageSetting extends React.PureComponent {
-//   static propTypes = {
-//     id: PropTypes.string.isRequired,
-//     label: PropTypes.string.isRequired,
-//     helpText: PropTypes.node,
-//     value: PropTypes.any,
-//     disabled: PropTypes.bool.isRequired,
-//     config: PropTypes.object.isRequired,
-//     license: PropTypes.object.isRequired,
-//     setByEnv: PropTypes.bool.isRequired,
-//     onChange: PropTypes.func.isRequired,
-//     registerSaveAction: PropTypes.func.isRequired,
-//     setSaveNeeded: PropTypes.func.isRequired,
-//     unRegisterSaveAction: PropTypes.func.isRequired
-//   }
-
-//   constructor(props: any) {
-//     // eslint-disable-next-line @typescript-eslint/ban-types
-//     super(props as {})
-
-//     this.state = {
-//       showSecretMessage: false
-//     }
-//   }
-
-//   // componentDidMount(): void {
-//   //   this.props.registerSaveAction(this.handleSave)
-//   // }
-
-//   // componentWillUnmount(): void {
-//   //   this.props.unRegisterSaveAction(this.handleSave)
-//   // }
-
-//   // handleSave = async () => {
-//   //   this.setState({
-//   //     error: ''
-//   //   })
-
-//   //   let error
-//   //   return { error }
-//   // }
-
-//   // showSecretMessage = () => {
-//   //   this.setState({
-//   //     showSecretMessage: true
-//   //   })
-//   // }
-
-//   toggleSecretMessage = (e: any): void => {
-//     e.preventDefault()
-
-//     // this.setState({
-//     //   showSecretMessage: !this.state.showSecretMessage
-//     // })
-//   }
-
-//   // handleChange = (e): void => {
-//   //   this.props.onChange(this.props.id, e.target.value)
-//   // }
-
-//   render(): JSX.Element {
-//     return (
-//       <React.Fragment>
-//         {/* {this.state.showSecretMessage &&
-//                     <textarea
-//                         style={style.input}
-//                         className='form-control input'
-//                         rows={5}
-//                         value={this.props.value}
-//                         disabled={this.props.disabled || this.props.setByEnv}
-//                         onInput={this.handleChange}
-//                     />
-//                 } */}
-//         <div>
-//           {/* <button className='btn btn-default' onClick={this.toggleSecretMessage} disabled={this.props.disabled}> */}
-//           <button className='btn btn-default' onClick={this.toggleSecretMessage}>
-//             Hide Secret Message
-//             {/* {this.state.showSecretMessage && 'Hide Secret Message'}
-//             {!this.state.showSecretMessage && 'Show Secret Message'} */}
-//           </button>
-//         </div>
-//       </React.Fragment>
-//     )
-//   }
-// }
-
-// const style = {
-//   input: {
-//     marginBottom: '5px'
-//   }
-// }

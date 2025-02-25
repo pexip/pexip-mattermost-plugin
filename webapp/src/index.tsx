@@ -16,9 +16,9 @@ import { getMattermostStore, setMattermostStore } from './App/utils/mattermost-s
 import { type UserSettings, settingsEventEmitter } from './App/utils/user-settings'
 import ScreenSharingModal from './ScreenSharingModal'
 import { reducer } from './reducer'
+import { FilterChannels } from './AdminSettings/FilterChannels'
 
 import '@pexip/components/dist/style.css'
-import { FilterChannels } from './AdminSettings/FilterChannels'
 
 const pluginId = manifest.id
 const icon = <i id='pexip-vmr-plugin-button' className='icon fa fa-video-camera' />
@@ -46,7 +46,7 @@ class Plugin {
     registry.registerWebSocketEventHandler('custom_' + manifest.id + '_change_user_settings', (message) => {
       settingsEventEmitter.emit('settingschange', message.data as UserSettings)
     })
-    // https://github.com/mattermost/mattermost-plugin-demo/blob/master/plugin.json
+    // Custom setting example: https://github.com/mattermost/mattermost-plugin-demo/blob/master/plugin.json
     registry.registerAdminConsoleCustomSetting('FilterChannels', FilterChannels, { showTitle: true })
 
     this.rhsPlugin = registry.registerRightHandSidebarComponent(RightHandSidebarComponent, title)
