@@ -1,10 +1,9 @@
 import React, { useEffect } from 'react'
 import { Box, Button, Checkbox, Divider, List, ListLink, TextHeading } from '@pexip/components'
-import { getMattermostStore } from 'src/App/utils/mattermost-store'
-import { getAllChannels } from 'mattermost-redux/selectors/entities/channels'
 import { type Channel } from 'mattermost-redux/types/channels'
 
 import './FilterChannels.scss'
+import { Client4 } from 'mattermost-redux/client'
 
 // Component based on https://mui.com/material-ui/react-transfer-list/
 export const FilterChannels = (): JSX.Element => {
@@ -12,8 +11,6 @@ export const FilterChannels = (): JSX.Element => {
 
   const [allowedChannels, setAllowedChannels] = React.useState<Array<Channel & { checked: boolean }>>([])
   const [disallowedChannels, setDisallowedChannels] = React.useState<Array<Channel & { checked: boolean }>>([])
-
-  const store = getMattermostStore()
 
   const allowedSelected = allowedChannels.filter((channel) => channel.checked)
   const disallowedSelected = disallowedChannels.filter((channel) => channel.checked)
@@ -38,26 +35,17 @@ export const FilterChannels = (): JSX.Element => {
     setDisallowedChannels(updatedDisallowed)
   }
 
-  // const indeterminateSvg = (
-  //   <svg
-  //     // class='MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-q7mezt'
-  //     focusable='false'
-  //     aria-hidden='true'
-  //     viewBox='0 0 24 24'
-  //     data-testid='IndeterminateCheckBoxIcon'
-  //   >
-  //     <path d='M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10H7v-2h10v2z'></path>
-  //   </svg>
-  // )
-
   useEffect(() => {
-    const channels = Object.values(getAllChannels(store.getState()))
-      .filter((channel) => channel.team_id !== '' && channel.display_name !== '')
-      .map((channel) => ({ ...channel, checked: false }))
+    Client4.getAllChannels()
+      .then((allChannels) => {
+        const channels = Object.values(allChannels)
+          .filter((channel) => channel.team_id !== '' && channel.display_name !== '')
+          .map((channel) => ({ ...channel, checked: false }))
 
-    setAllowedChannels([])
-    setDisallowedChannels(channels)
-    // const disallowedChannels = channels.filter((channel) => !allowedChannels.includes(channel))
+        setAllowedChannels([])
+        setDisallowedChannels(channels)
+      })
+      .catch(console.error)
   }, [])
 
   const channelSelector = (
