@@ -5,9 +5,33 @@ import { type Channel } from 'mattermost-redux/types/channels'
 import './FilterChannels.scss'
 import { Client4 } from 'mattermost-redux/client'
 
+interface FilterChannelsValue {
+  enabled: boolean
+  allowedChannels: string[]
+}
+
+interface FilterChannelsProps {
+  id: string
+  label: string
+  helpText: React.ReactNode
+  value: FilterChannelsValue
+  disabled: boolean
+  config: string
+  currentState: string
+  license: {
+    IsLicensed: boolean
+  }
+  setByEnv: boolean
+  onChange: (id: string, values: any) => void
+  registerSaveAction: () => void
+  setSaveNeeded: () => void
+  unRegisterSaveAction: () => void
+}
+
 // Component based on https://mui.com/material-ui/react-transfer-list/
-export const FilterChannels = (): JSX.Element => {
-  const [enabled, setEnabled] = React.useState(false)
+export const FilterChannels = (props: FilterChannelsProps): JSX.Element => {
+  console.log(props)
+  const [enabled, setEnabled] = React.useState(props.value.enabled)
 
   const [allowedChannels, setAllowedChannels] = React.useState<Array<Channel & { checked: boolean }>>([])
   const [disallowedChannels, setDisallowedChannels] = React.useState<Array<Channel & { checked: boolean }>>([])
@@ -23,6 +47,11 @@ export const FilterChannels = (): JSX.Element => {
     const updatedDisallowed = disallowedChannels.filter((channel) => !channel.checked)
     setAllowedChannels(updatedAllowed)
     setDisallowedChannels(updatedDisallowed)
+    props.onChange(props.id, {
+      enabled: true,
+      allowedChannels: updatedAllowed.map((c) => c.id)
+    })
+    props.setSaveNeeded()
   }
 
   const moveToDisallowed = (): void => {
@@ -33,6 +62,11 @@ export const FilterChannels = (): JSX.Element => {
     const updatedAllowed = allowedChannels.filter((channel) => !channel.checked)
     setAllowedChannels(updatedAllowed)
     setDisallowedChannels(updatedDisallowed)
+    props.onChange(props.id, {
+      enabled: true,
+      allowedChannels: updatedAllowed.map((c) => c.id)
+    })
+    props.setSaveNeeded()
   }
 
   useEffect(() => {
@@ -41,9 +75,12 @@ export const FilterChannels = (): JSX.Element => {
         const channels = Object.values(allChannels)
           .filter((channel) => channel.team_id !== '' && channel.display_name !== '')
           .map((channel) => ({ ...channel, checked: false }))
-
-        setAllowedChannels([])
-        setDisallowedChannels(channels)
+        const allowedChannels = channels.filter((channel: Channel) => props.value.allowedChannels.includes(channel.id))
+        const disallowedChannels = channels.filter(
+          (channel: Channel) => !props.value.allowedChannels.includes(channel.id)
+        )
+        setAllowedChannels(allowedChannels)
+        setDisallowedChannels(disallowedChannels)
       })
       .catch(console.error)
   }, [])
@@ -169,7 +206,13 @@ export const FilterChannels = (): JSX.Element => {
             value='true'
             checked={enabled}
             onChange={() => {
-              setEnabled(true)
+              const enabled = true
+              setEnabled(enabled)
+              props.onChange(props.id, {
+                enabled,
+                allowedChannels: props.value.allowedChannels ?? []
+              })
+              props.setSaveNeeded()
             }}
           />
           <span>True</span>
@@ -183,7 +226,13 @@ export const FilterChannels = (): JSX.Element => {
             value='false'
             checked={!enabled}
             onChange={() => {
-              setEnabled(false)
+              const enabled = false
+              setEnabled(enabled)
+              props.onChange(props.id, {
+                enabled,
+                allowedChannels: props.value.allowedChannels
+              })
+              props.setSaveNeeded()
             }}
           />
           <span>False</span>
