@@ -35,7 +35,7 @@ export const ScreenSharingModal = (props: ScreenSharingModalProps): JSX.Element 
       }
     }
 
-    ;(window as any).desktopAPI.getDesktopSources(payload).then((sources: DesktopCaptureSource[]) => {
+    ;(window as any).desktopAPI?.getDesktopSources(payload).then((sources: DesktopCaptureSource[]) => {
       setSources(sources.sort((a, b) => a.id.localeCompare(b.id)))
     })
   }, [props.show])
