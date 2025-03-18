@@ -163,7 +163,11 @@ const mockConfig: ConferenceConfig = {
   node: 'node-mock',
   displayName: 'display-name-mock',
   vmrPrefix: 'vmr-prefix-mock',
-  hostPin: 'host-pin-mock'
+  hostPin: 'host-pin-mock',
+  filterChannels: {
+    enabled: false,
+    allowedChannels: []
+  }
 }
 
 const mockChannel: Channel = {

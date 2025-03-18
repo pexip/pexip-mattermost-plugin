@@ -8,7 +8,11 @@ const mockConfig: ConferenceConfig = {
   node: 'my-server.com',
   displayName: 'User',
   vmrPrefix: 'matt-',
-  hostPin: '0000'
+  hostPin: '0000',
+  filterChannels: {
+    enabled: false,
+    allowedChannels: []
+  }
 }
 
 Object.defineProperty(global.navigator, 'mediaDevices', {

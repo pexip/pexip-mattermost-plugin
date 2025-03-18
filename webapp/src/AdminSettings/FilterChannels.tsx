@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react'
 import { Box, Button, Checkbox, Divider, List, ListLink, TextHeading } from '@pexip/components'
 import { type Channel } from 'mattermost-redux/types/channels'
+import { Client4 } from 'mattermost-redux/client'
 
 import './FilterChannels.scss'
-import { Client4 } from 'mattermost-redux/client'
+import { getConfig } from 'mattermost-redux/selectors/entities/general'
+import { getMattermostStore } from 'src/App/utils/mattermost-store'
 
 interface FilterChannelsValue {
   enabled: boolean
@@ -30,8 +32,7 @@ interface FilterChannelsProps {
 
 // Component based on https://mui.com/material-ui/react-transfer-list/
 export const FilterChannels = (props: FilterChannelsProps): JSX.Element => {
-  console.log(props)
-  const [enabled, setEnabled] = React.useState(props.value.enabled)
+  const [enabled, setEnabled] = React.useState(props.value?.enabled ?? false)
 
   const [allowedChannels, setAllowedChannels] = React.useState<Array<Channel & { checked: boolean }>>([])
   const [disallowedChannels, setDisallowedChannels] = React.useState<Array<Channel & { checked: boolean }>>([])
@@ -70,15 +71,22 @@ export const FilterChannels = (props: FilterChannelsProps): JSX.Element => {
   }
 
   useEffect(() => {
-    Client4.getAllChannels()
+    const state = getMattermostStore().getState()
+    const config = getConfig(state)
+    if (config.SiteURL != null) {
+      const url: string = config.SiteURL
+      Client4.setUrl(url)
+    }
+    const page = 0
+    const perPage = 2000
+    Client4.getAllChannels(page, perPage)
       .then((allChannels) => {
         const channels = Object.values(allChannels)
-          .filter((channel) => channel.team_id !== '' && channel.display_name !== '')
+          .filter((channel) => channel.type === 'O' || channel.type !== 'P')
           .map((channel) => ({ ...channel, checked: false }))
-        const allowedChannels = channels.filter((channel: Channel) => props.value.allowedChannels.includes(channel.id))
-        const disallowedChannels = channels.filter(
-          (channel: Channel) => !props.value.allowedChannels.includes(channel.id)
-        )
+        const allowedChannelsIds = props.value?.allowedChannels ?? []
+        const allowedChannels = channels.filter((channel: Channel) => allowedChannelsIds.includes(channel.id))
+        const disallowedChannels = channels.filter((channel: Channel) => !allowedChannelsIds.includes(channel.id))
         setAllowedChannels(allowedChannels)
         setDisallowedChannels(disallowedChannels)
       })
@@ -210,7 +218,7 @@ export const FilterChannels = (props: FilterChannelsProps): JSX.Element => {
               setEnabled(enabled)
               props.onChange(props.id, {
                 enabled,
-                allowedChannels: props.value.allowedChannels ?? []
+                allowedChannels: props.value?.allowedChannels ?? []
               })
               props.setSaveNeeded()
             }}
@@ -230,7 +238,7 @@ export const FilterChannels = (props: FilterChannelsProps): JSX.Element => {
               setEnabled(enabled)
               props.onChange(props.id, {
                 enabled,
-                allowedChannels: props.value.allowedChannels
+                allowedChannels: props.value?.allowedChannels ?? []
               })
               props.setSaveNeeded()
             }}

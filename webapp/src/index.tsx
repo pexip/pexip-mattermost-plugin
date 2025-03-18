@@ -73,7 +73,7 @@ class Plugin {
   }
 
   private async getConferenceConfig(settings: PluginSettings, userId: string): Promise<ConferenceConfig> {
-    const state: GlobalState = getMattermostStore().getState()
+    const state = getMattermostStore().getState()
     const config = getConfig(state)
     if (config.SiteURL != null) {
       const url: string = config.SiteURL
@@ -101,7 +101,8 @@ class Plugin {
       node: settings.node,
       displayName,
       vmrPrefix: settings.prefix,
-      hostPin: settings.pin.toString()
+      hostPin: settings.pin.toString(),
+      filterChannels: settings.filterChannels
     }
     return conferenceConfig
   }

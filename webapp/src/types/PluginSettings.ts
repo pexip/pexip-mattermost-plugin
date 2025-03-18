@@ -6,4 +6,8 @@ export interface PluginSettings {
   pin: number
   displayNameType: DisplayNameType
   embedded: boolean
+  filterChannels: {
+    enabled: boolean
+    allowedChannels: string[]
+  }
 }
