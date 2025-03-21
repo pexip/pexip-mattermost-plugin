@@ -41,15 +41,16 @@ export const FilterChannels = (props: FilterChannelsProps): JSX.Element => {
 
   const allowedSelected = allowedChannels.filter((channel) => channel.checked)
   const disallowedSelected = disallowedChannels.filter((channel) => channel.checked)
+  const allowedUnselected = allowedChannels.filter((channel) => !channel.checked)
+  const disallowedUnselected = disallowedChannels.filter((channel) => !channel.checked)
 
   const moveToAllowed = (): void => {
-    const selected = disallowedChannels
-      .filter((channel) => channel.checked)
-      .map((channel) => ({ ...channel, checked: false }))
-    const updatedAllowed = [...allowedChannels, ...selected]
-    const updatedDisallowed = disallowedChannels.filter((channel) => !channel.checked)
+    disallowedSelected.forEach((channel) => {
+      channel.checked = false
+    })
+    const updatedAllowed = [...allowedChannels, ...disallowedSelected]
     setAllowedChannels(updatedAllowed)
-    setDisallowedChannels(updatedDisallowed)
+    setDisallowedChannels(disallowedUnselected)
     props.onChange(props.id, {
       enabled: true,
       allowedChannels: updatedAllowed.map((c) => c.id)
@@ -58,16 +59,15 @@ export const FilterChannels = (props: FilterChannelsProps): JSX.Element => {
   }
 
   const moveToDisallowed = (): void => {
-    const selected = allowedChannels
-      .filter((channel) => channel.checked)
-      .map((channel) => ({ ...channel, checked: false }))
-    const updatedDisallowed = [...disallowedChannels, ...selected]
-    const updatedAllowed = allowedChannels.filter((channel) => !channel.checked)
-    setAllowedChannels(updatedAllowed)
+    allowedSelected.forEach((channel) => {
+      channel.checked = false
+    })
+    const updatedDisallowed = [...disallowedChannels, ...allowedSelected]
+    setAllowedChannels(allowedUnselected)
     setDisallowedChannels(updatedDisallowed)
     props.onChange(props.id, {
       enabled: true,
-      allowedChannels: updatedAllowed.map((c) => c.id)
+      allowedChannels: allowedUnselected.map((c) => c.id)
     })
     props.setSaveNeeded()
   }
