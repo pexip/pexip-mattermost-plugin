@@ -30,12 +30,14 @@ interface FilterChannelsProps {
   unRegisterSaveAction: () => void
 }
 
+type ChannelWithChecked = Channel & { checked: boolean }
+
 // Component based on https://mui.com/material-ui/react-transfer-list/
 export const FilterChannels = (props: FilterChannelsProps): JSX.Element => {
   const [enabled, setEnabled] = React.useState(props.value?.enabled ?? false)
 
-  const [allowedChannels, setAllowedChannels] = React.useState<Array<Channel & { checked: boolean }>>([])
-  const [disallowedChannels, setDisallowedChannels] = React.useState<Array<Channel & { checked: boolean }>>([])
+  const [allowedChannels, setAllowedChannels] = React.useState<ChannelWithChecked[]>([])
+  const [disallowedChannels, setDisallowedChannels] = React.useState<ChannelWithChecked[]>([])
 
   const allowedSelected = allowedChannels.filter((channel) => channel.checked)
   const disallowedSelected = disallowedChannels.filter((channel) => channel.checked)
