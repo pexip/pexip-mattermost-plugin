@@ -16,7 +16,7 @@ import { getMattermostStore, setMattermostStore } from './App/utils/mattermost-s
 import { type UserSettings, settingsEventEmitter } from './App/utils/user-settings'
 import ScreenSharingModal from './ScreenSharingModal'
 import { reducer } from './reducer'
-import { FilterChannels } from './AdminSettings/FilterChannels'
+import { FilterChannels } from './AdminSettings/FilterChannels/FilterChannels'
 
 import '@pexip/components/dist/style.css'
 

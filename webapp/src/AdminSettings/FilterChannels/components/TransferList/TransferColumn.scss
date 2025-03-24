@@ -1,0 +1,72 @@
+.TransferColumn {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  background: #111 !important;
+  border-radius: 4px !important;
+  max-height: 100%;
+
+  input {
+    cursor: pointer;
+  }
+
+  .ChannelSelectorHeader {
+    display: flex;
+    padding: var(--list-small-spacing);;
+    align-items: center;
+    background-color: rgba(255,255,255,.15);
+
+    h3 {
+      font-size: 1em;
+      font-weight: bold;
+      margin: 0;
+      padding: 0;
+    }
+
+    .Subtitle {
+      font-weight: normal;
+      opacity: 0.7;
+    }
+
+    input:indeterminate + span {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    
+      &::after {
+        content: "";
+        width: 70%;
+        border-bottom: 2px solid #1e3a54;
+      }
+    }
+  }
+
+  .ChannelSelectorList {
+    padding: 0;
+    overflow-y: auto;
+
+    .ChannelSelectorListLink {
+      border-radius: 0;
+      
+      > div {
+        padding: 0;
+      }
+
+      &:hover {
+        background-color: rgba(255,255,255,.15);
+      }
+
+      span {
+        line-height: 0;
+        width: 100%;
+      }
+
+      label {
+        align-items: center;
+        margin: 0;
+        padding: var(--list-small-spacing);
+        width: 100%;
+      }
+    }
+  }
+}
