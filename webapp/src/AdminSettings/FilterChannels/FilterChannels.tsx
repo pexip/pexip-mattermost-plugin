@@ -5,6 +5,7 @@ import { getConfig } from 'mattermost-redux/selectors/entities/general'
 import { getMattermostStore } from 'src/App/utils/mattermost-store'
 import { ToggleEnable } from './components/ToggleEnable/ToggleEnable'
 import { TransferList } from './components/TransferList/TransferList'
+import { type ChannelWithChecked } from 'src/types/ChannelWithChecked'
 
 interface FilterChannelsValue {
   enabled: boolean
@@ -28,8 +29,6 @@ interface FilterChannelsProps {
   setSaveNeeded: () => void
   unRegisterSaveAction: () => void
 }
-
-type ChannelWithChecked = Channel & { checked: boolean }
 
 // Component based on https://mui.com/material-ui/react-transfer-list/
 export const FilterChannels = (props: FilterChannelsProps): JSX.Element => {
