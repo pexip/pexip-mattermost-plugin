@@ -5,7 +5,7 @@ import type { GlobalState } from 'mattermost-redux/types/store'
 import type { Channel, ChannelMembership } from 'mattermost-redux/types/channels'
 import { Client4 } from 'mattermost-redux/client'
 import { getConfig } from 'mattermost-redux/selectors/entities/general'
-import { getPluginSettings, notifyJoinConference } from './App/utils/http-requests'
+import { getPluginServerRoute, getPluginSettings, notifyJoinConference } from './App/utils/http-requests'
 import { App } from './App/App'
 import manifest from '../../plugin.json'
 import type { ConferenceConfig } from './types/ConferenceConfig'
@@ -60,6 +60,25 @@ class Plugin {
     if (settings.embedded) {
       this.store.dispatch(this.rhsPlugin.toggleRHSPlugin)
     } else {
+      if (settings.filterChannels.enabled && !settings.filterChannels.allowedChannels.includes(channel.id)) {
+        ;(window as any).openInteractiveDialog({
+          dialog: {
+            title: (
+              <span style={{ marginLeft: '0.5em' }}>
+                {/* Workaround to hide the cancel button */}
+                <style>{'#interactiveDialogModal .cancel-button { display: none}'}</style>
+                Conference not available
+              </span>
+            ),
+            icon_url: getPluginServerRoute() + '/public/icon.svg',
+            introduction_text:
+              'Conference not available for this channel. Use a different channel or ask your administrator to enable it.',
+            submit_label: 'Close',
+            notify_on_cancel: false
+          }
+        })
+        return
+      }
       const vmr = settings.prefix + channel.id
       const channelId: string = channel.id
       notifyJoinConference(channelId).catch(console.error)
