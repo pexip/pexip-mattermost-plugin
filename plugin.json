@@ -6,7 +6,7 @@
   "support_url": "https://github.com/pexip/pexip-mattermost-plugin/issues",
   "release_notes_url": "https://github.com/pexip/pexip-mattermost-plugin/releases/tag/v1.0.0",
   "icon_path": "public/icon.svg",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "min_server_version": "6.2.1",
   "server": {
     "executables": {
