@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to
 [Semantic Versioning](http://semver.org/).
 
+## [1.3.0] 2025-03-26
+
+### Added
+
+- Add support to filter the channels that are allowed to join a video conference.
+
+### Fixed
+
+- Ignore `getDesktopSources` when running the app in the browser, since it's only needed in te Desktop App.
+
+### Changed
+
+- Migrate configuration file to support golangci-lint 2.0.1.
+
 ## [1.2.0] 2025-02-18
 
 ### Added
