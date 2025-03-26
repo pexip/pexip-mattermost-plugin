@@ -25,4 +25,9 @@ export interface PluginRegistry {
   registerRightHandSidebarComponent: (component: React.ElementType, title: string | JSX.Element) => RHSPlugin
   registerWebSocketEventHandler: (event: string, handler: (message: any) => void) => void
   registerGlobalComponent: (component: React.ElementType) => void
+  registerAdminConsoleCustomSetting: (
+    key: string,
+    component: React.ElementType,
+    options?: { showTitle?: boolean }
+  ) => any
 }

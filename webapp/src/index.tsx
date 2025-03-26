@@ -5,7 +5,7 @@ import type { GlobalState } from 'mattermost-redux/types/store'
 import type { Channel, ChannelMembership } from 'mattermost-redux/types/channels'
 import { Client4 } from 'mattermost-redux/client'
 import { getConfig } from 'mattermost-redux/selectors/entities/general'
-import { getPluginSettings, notifyJoinConference } from './App/utils/http-requests'
+import { getPluginServerRoute, getPluginSettings, notifyJoinConference } from './App/utils/http-requests'
 import { App } from './App/App'
 import manifest from '../../plugin.json'
 import type { ConferenceConfig } from './types/ConferenceConfig'
@@ -16,6 +16,7 @@ import { getMattermostStore, setMattermostStore } from './App/utils/mattermost-s
 import { type UserSettings, settingsEventEmitter } from './App/utils/user-settings'
 import ScreenSharingModal from './ScreenSharingModal'
 import { reducer } from './reducer'
+import { FilterChannels } from './AdminSettings/FilterChannels/FilterChannels'
 
 import '@pexip/components/dist/style.css'
 
@@ -45,6 +46,8 @@ class Plugin {
     registry.registerWebSocketEventHandler('custom_' + manifest.id + '_change_user_settings', (message) => {
       settingsEventEmitter.emit('settingschange', message.data as UserSettings)
     })
+    // Custom setting example: https://github.com/mattermost/mattermost-plugin-demo/blob/master/plugin.json
+    registry.registerAdminConsoleCustomSetting('FilterChannels', FilterChannels, { showTitle: true })
 
     this.rhsPlugin = registry.registerRightHandSidebarComponent(RightHandSidebarComponent, title)
   }
@@ -57,6 +60,25 @@ class Plugin {
     if (settings.embedded) {
       this.store.dispatch(this.rhsPlugin.toggleRHSPlugin)
     } else {
+      if (settings.filterChannels.enabled && !settings.filterChannels.allowedChannels.includes(channel.id)) {
+        ;(window as any).openInteractiveDialog({
+          dialog: {
+            title: (
+              <span style={{ marginLeft: '0.5em' }}>
+                {/* Workaround to hide the cancel button */}
+                <style>{'#interactiveDialogModal .cancel-button { display: none}'}</style>
+                Conference not available
+              </span>
+            ),
+            icon_url: getPluginServerRoute() + '/public/icon.svg',
+            introduction_text:
+              'Conference not available for this channel. Use a different channel or ask your administrator to enable it.',
+            submit_label: 'Close',
+            notify_on_cancel: false
+          }
+        })
+        return
+      }
       const vmr = settings.prefix + channel.id
       const channelId: string = channel.id
       notifyJoinConference(channelId).catch(console.error)
@@ -70,7 +92,7 @@ class Plugin {
   }
 
   private async getConferenceConfig(settings: PluginSettings, userId: string): Promise<ConferenceConfig> {
-    const state: GlobalState = getMattermostStore().getState()
+    const state = getMattermostStore().getState()
     const config = getConfig(state)
     if (config.SiteURL != null) {
       const url: string = config.SiteURL
@@ -98,7 +120,8 @@ class Plugin {
       node: settings.node,
       displayName,
       vmrPrefix: settings.prefix,
-      hostPin: settings.pin.toString()
+      hostPin: settings.pin.toString(),
+      filterChannels: settings.filterChannels
     }
     return conferenceConfig
   }

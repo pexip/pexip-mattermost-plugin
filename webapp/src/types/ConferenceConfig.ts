@@ -3,4 +3,8 @@ export interface ConferenceConfig {
   displayName: string
   vmrPrefix: string
   hostPin: string
+  filterChannels: {
+    enabled: boolean
+    allowedChannels: string[]
+  }
 }

@@ -7,7 +7,9 @@ import type { Channel } from 'mattermost-redux/types/channels'
 import './JoinPanel.scss'
 
 export const JoinPanel = (): JSX.Element => {
-  const { connect } = useConferenceContext()
+  const { connect, state } = useConferenceContext()
+
+  const { config } = state
 
   const [channel, setChannel] = useState<Channel>()
 
@@ -33,24 +35,40 @@ export const JoinPanel = (): JSX.Element => {
     const store = getMattermostStore()
 
     refreshChannel()
+
     const unsubscribe = store.subscribe(() => {
       refreshChannel()
     })
     return unsubscribe
   }, [])
 
+  const filterChannelsEnabled = config?.filterChannels.enabled ?? false
+  const allowedChannels = config?.filterChannels.allowedChannels ?? []
+  const channelId = channel?.id ?? ''
+  const type = channel?.type ?? ''
+
+  const isDirectOrGroupChannel = type === 'D' || type === 'G'
+
+  const shouldAllowChannel = !filterChannelsEnabled || isDirectOrGroupChannel || allowedChannels.includes(channelId)
+
   return (
     <div className='JoinPanel'>
-      <p>Connect to {channel?.display_name !== '' ? '"' + channel?.display_name + '"' : 'Direct'} room? </p>
-      <button
-        onClick={() => {
-          handleConnect().catch((e) => {
-            console.error(e)
-          })
-        }}
-      >
-        Join conference
-      </button>
+      {shouldAllowChannel ? (
+        <>
+          <p>Connect to {channel?.display_name !== '' ? '"' + channel?.display_name + '"' : 'Direct'} room? </p>
+          <button
+            onClick={() => {
+              handleConnect().catch((e) => {
+                console.error(e)
+              })
+            }}
+          >
+            Join conference
+          </button>
+        </>
+      ) : (
+        <p>Conference not available for this channel</p>
+      )}
     </div>
   )
 }

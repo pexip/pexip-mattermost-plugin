@@ -51,17 +51,19 @@ func (p *Plugin) initializeRouter() {
 func (p *Plugin) httpGetSettings(w http.ResponseWriter, _ *http.Request) (int, error) {
 	conf := p.getConfiguration()
 	return respondJSON(w, struct {
-		Node            string `json:"node"`
-		Prefix          string `json:"prefix"`
-		Pin             int    `json:"pin"`
-		DisplayNameType string `json:"displayNameType"`
-		Embedded        bool   `json:"embedded"`
+		Node            string         `json:"node"`
+		Prefix          string         `json:"prefix"`
+		Pin             int            `json:"pin"`
+		DisplayNameType string         `json:"displayNameType"`
+		Embedded        bool           `json:"embedded"`
+		FilterChannels  FilterChannels `json:"filterChannels"`
 	}{
 		Node:            conf.Node,
 		Prefix:          conf.Prefix,
 		Pin:             conf.Pin,
 		DisplayNameType: conf.DisplayNameType,
 		Embedded:        conf.Embedded,
+		FilterChannels:  conf.FilterChannels,
 	})
 }
 

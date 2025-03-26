@@ -1,0 +1,24 @@
+.TransferList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 32px;
+  height: 20em;
+
+  .ChannelSelectorButtons {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    justify-content: center;
+    max-width: 3em;
+
+    button {
+      background-color: rgb(17, 17, 17);
+      box-shadow: none !important;
+
+      &:hover {
+        background-color: rgba(17, 17, 17, .7) !important;
+      }
+    }
+  }
+}
