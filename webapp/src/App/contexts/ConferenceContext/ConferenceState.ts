@@ -26,6 +26,8 @@ interface ConferenceState {
   participants: Participant[]
   errorMessage: string
   isDesktopApp: boolean
+  directMedia: boolean
+  me: Participant | null
 }
 
 export type { ConferenceState }

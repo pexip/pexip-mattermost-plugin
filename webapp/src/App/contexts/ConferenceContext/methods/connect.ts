@@ -53,6 +53,43 @@ export const connect = async (
     dispatch({ type: ConferenceActionType.Disconnected })
   })
 
+  clientSignals.onConferenceStatus.add((event) => {
+    dispatch({
+      type: ConferenceActionType.DirectMediaChanged,
+      body: {
+        directMedia: event.status.directMedia
+      }
+    })
+  })
+
+  clientSignals.onMe.add(async (event) => {
+    const me = event.participant
+    dispatch({
+      type: ConferenceActionType.Me,
+      body: {
+        me: event.participant
+      }
+    })
+    if (me.isWaiting && me.isHost) {
+      await client.admit({ participantUuid: me.uuid })
+    }
+  })
+
+  clientSignals.onTransfer.add(async (event) => {
+    dispatch({
+      type: ConferenceActionType.Transfer,
+      body: {
+        host,
+        conferenceAlias: event.alias,
+        token: event.token,
+        callTag: event.callTag,
+        displayName,
+        bandwidth: 0,
+        callType: ClientCallType.AudioVideo
+      }
+    })
+  })
+
   callSignals.onRemotePresentationStream.add((presentationStream) => {
     dispatch({
       type: ConferenceActionType.RemotePresentationStream,

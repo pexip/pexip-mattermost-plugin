@@ -60,6 +60,10 @@ jest.mock('@pexip/media-components', () => ({
   Selfview: (props: any) => <video data-testid={props['data-testid']}></video>
 }))
 
+jest.mock('../../utils/http-requests', () => ({
+  getPluginServerRoute: jest.fn()
+}))
+
 beforeEach(() => {
   mockLocalVideoStream = new MediaStream()
   mockLocalAudioStream = new MediaStream()

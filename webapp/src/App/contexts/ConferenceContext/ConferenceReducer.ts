@@ -16,7 +16,14 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
         ...prevState,
         connectionState: ConnectionState.Connecting,
         channel: action.body.channel,
-        errorMessage: ''
+        presentationStream: undefined,
+        localVideoStream: undefined,
+        localAudioStream: undefined,
+        processedVideoStream: undefined,
+        remoteStream: undefined,
+        participants: [],
+        errorMessage: '',
+        me: null
       }
     }
     case ConferenceActionType.Connected: {
@@ -27,7 +34,9 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
         client: action.body.client,
         audioMuted: false,
         videoMuted: false,
-        presenting: false
+        presenting: false,
+        presentationInMain: false,
+        presentationInPopUp: false
       }
     }
     case ConferenceActionType.ChangeDevices: {
@@ -152,6 +161,36 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
         ...prevState,
         isDesktopApp: action.body.isDesktopApp as boolean
       }
+    }
+    case ConferenceActionType.DirectMediaChanged: {
+      return {
+        ...prevState,
+        directMedia: action.body.directMedia
+      }
+    }
+    case ConferenceActionType.Me: {
+      return {
+        ...prevState,
+        me: action.body.me
+      }
+    }
+    case ConferenceActionType.Transfer: {
+      prevState.client
+        ?.disconnect({ reason: 'Transfer' })
+        .then(() => {
+          const localMediaStream = new MediaStream()
+          prevState.localAudioStream?.getTracks().forEach((track) => {
+            localMediaStream.addTrack(track)
+          })
+          prevState.localVideoStream?.getTracks().forEach((track) => {
+            localMediaStream.addTrack(track)
+          })
+
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- we are sure that the type is correct
+          prevState.client?.call({ ...action.body, mediaStream: localMediaStream }).catch(console.error)
+        })
+        .catch(console.error)
+      return prevState
     }
     default:
       return prevState
