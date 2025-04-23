@@ -20,7 +20,7 @@ const WaitingImageContainer = ({ participants }: { participants: Participant[] }
 )
 
 export const Conference = (): JSX.Element => {
-  const { state, swapVideos, changeDevices, changeEffect, disconnect } = useConferenceContext()
+  const { state, swapVideos, changeDevices, changeEffect } = useConferenceContext()
   const {
     channel,
     localVideoStream,
@@ -75,12 +75,6 @@ export const Conference = (): JSX.Element => {
       settingsEventEmitter.removeListener('settingschange', handleUserSettings)
     }
   }, [state])
-
-  useEffect(() => {
-    return () => {
-      disconnect().catch(console.error)
-    }
-  }, [])
 
   return (
     <div className='Conference' data-testid='Conference'>

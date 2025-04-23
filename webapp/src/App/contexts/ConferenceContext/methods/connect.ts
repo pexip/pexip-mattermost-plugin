@@ -3,8 +3,6 @@ import { ConferenceActionType, type ConferenceAction } from '../ConferenceAction
 import { changeEffect } from './changeEffect'
 import { type ConferenceState } from '../ConferenceState'
 import { filterMediaDevices } from './filterMediaDevices'
-import { notifyJoinConference, notifyLeaveConference } from '../../../utils/http-requests'
-import { getMattermostStore } from '../../../utils/mattermost-store'
 
 interface ConnectParams {
   host: string
@@ -42,15 +40,6 @@ export const connect = async (
         }
       })
     }
-  })
-
-  clientSignals.onConnected.add(() => {
-    notifyJoinConference(getMattermostStore().getState().entities.channels.currentChannelId).catch(console.error)
-  })
-
-  clientSignals.onDisconnected.add(() => {
-    notifyLeaveConference(getMattermostStore().getState().entities.channels.currentChannelId).catch(console.error)
-    dispatch({ type: ConferenceActionType.Disconnected })
   })
 
   clientSignals.onConferenceStatus.add((event) => {

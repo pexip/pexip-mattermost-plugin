@@ -1,3 +1,4 @@
+import { notifyJoinConference, notifyLeaveConference } from '../../utils/http-requests'
 import { ConnectionState } from '../../../types/ConnectionState'
 import { ConferenceActionType, type ConferenceAction } from './ConferenceAction'
 import type { ConferenceState } from './ConferenceState'
@@ -28,6 +29,9 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
     }
     case ConferenceActionType.Connected: {
       closePopUp()
+      if (!prevState.transferring) {
+        notifyJoinConference().catch(console.error)
+      }
       return {
         ...prevState,
         connectionState: ConnectionState.Connected,
@@ -36,7 +40,8 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
         videoMuted: false,
         presenting: false,
         presentationInMain: false,
-        presentationInPopUp: false
+        presentationInPopUp: false,
+        transferring: false
       }
     }
     case ConferenceActionType.ChangeDevices: {
@@ -83,6 +88,8 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
       prevState.presentationStream?.getTracks().forEach((track) => {
         track.stop()
       })
+
+      notifyLeaveConference().catch(console.error)
 
       return {
         ...prevState,
@@ -190,7 +197,7 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
           prevState.client?.call({ ...action.body, mediaStream: localMediaStream }).catch(console.error)
         })
         .catch(console.error)
-      return prevState
+      return { ...prevState, transferring: true }
     }
     default:
       return prevState

@@ -28,6 +28,7 @@ interface ConferenceState {
   isDesktopApp: boolean
   directMedia: boolean
   me: Participant | null
+  transferring: boolean
 }
 
 export type { ConferenceState }

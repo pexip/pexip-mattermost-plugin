@@ -15,10 +15,13 @@ interface AppProps {
 }
 
 export const App = (props: AppProps): JSX.Element => {
-  const { setConfig, state } = useConferenceContext()
+  const { setConfig, disconnect, state } = useConferenceContext()
 
   useEffect(() => {
     setConfig(props.config)
+    return () => {
+      disconnect().catch(console.error)
+    }
   }, [])
 
   let component

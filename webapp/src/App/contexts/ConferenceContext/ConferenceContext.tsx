@@ -57,7 +57,8 @@ const initialState: ConferenceState = {
   errorMessage: '',
   isDesktopApp: false,
   directMedia: false,
-  me: null
+  me: null,
+  transferring: false
 }
 
 interface ConferenceContextProviderProps {
