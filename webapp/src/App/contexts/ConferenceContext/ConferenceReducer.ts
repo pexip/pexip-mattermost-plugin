@@ -29,9 +29,7 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
     }
     case ConferenceActionType.Connected: {
       closePopUp()
-      if (!prevState.transferring) {
-        notifyJoinConference().catch(console.error)
-      }
+      notifyJoinConference().catch(console.error)
       return {
         ...prevState,
         connectionState: ConnectionState.Connected,
@@ -110,7 +108,8 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
     case ConferenceActionType.RemoteStream: {
       return {
         ...prevState,
-        remoteStream: action.body.remoteStream
+        remoteStream: action.body.remoteStream,
+        transferring: false
       }
     }
     case ConferenceActionType.Participants: {

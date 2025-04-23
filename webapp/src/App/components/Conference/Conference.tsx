@@ -11,11 +11,23 @@ import { type Participant } from '@pexip/infinity'
 
 import './Conference.scss'
 
-const WaitingImageContainer = ({ participants }: { participants: Participant[] }): JSX.Element => (
+const WaitingImageContainer = ({
+  participants,
+  transferring
+}: {
+  participants: Participant[]
+  transferring: boolean
+}): JSX.Element => (
   <div className='WaitingImageContainer'>
     <img src={`${getPluginServerRoute()}/public/waiting.jpg`} className='WaitingImage' />
 
-    <span>{participants.length === 1 ? 'Waiting for other participants...' : 'Participants without video'}</span>
+    <span>
+      {transferring
+        ? 'Reconnecting...'
+        : participants.length === 1
+        ? 'Waiting for other participants...'
+        : 'Participants without video'}
+    </span>
   </div>
 )
 
@@ -33,7 +45,8 @@ export const Conference = (): JSX.Element => {
     presentationInPopUp,
     participants,
     directMedia,
-    me
+    me,
+    transferring
   } = state
 
   const pipRef = React.createRef<HTMLDivElement>()
@@ -66,7 +79,7 @@ export const Conference = (): JSX.Element => {
     const allParticipantVideoMuted = participants
       .filter((participant) => participant.uuid !== me?.uuid)
       .every((participant) => participant.isCameraMuted)
-    return directMedia && (participants.length === 1 || allParticipantVideoMuted)
+    return (directMedia && (participants.length === 1 || allParticipantVideoMuted)) || transferring
   }
 
   useEffect(() => {
@@ -82,7 +95,7 @@ export const Conference = (): JSX.Element => {
       <div className='conference-container'>
         <div className='video-container main'>
           {isDirectMediaWaiting() && !presentationInMain ? (
-            <WaitingImageContainer participants={participants} />
+            <WaitingImageContainer participants={participants} transferring={transferring} />
           ) : (
             <Video
               srcObject={presentationInMain ? presentationStream : remoteStream}
@@ -108,7 +121,7 @@ export const Conference = (): JSX.Element => {
           {presentationStream != null && !presentationInPopUp && (
             <div className='video-container secondary' data-testid='SecondaryVideo'>
               {isDirectMediaWaiting() && presentationInMain ? (
-                <WaitingImageContainer participants={participants} />
+                <WaitingImageContainer participants={participants} transferring={transferring} />
               ) : (
                 <Video
                   srcObject={!presentationInMain ? presentationStream : remoteStream}
