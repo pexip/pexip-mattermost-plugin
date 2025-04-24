@@ -3,6 +3,7 @@ import { ConnectionState } from '../../../types/ConnectionState'
 import { ConferenceActionType, type ConferenceAction } from './ConferenceAction'
 import type { ConferenceState } from './ConferenceState'
 import { closePopUp } from './methods/togglePresentationInPopUp'
+import { CallType, type Participant } from '@pexip/infinity'
 
 export const ConferenceReducer = (prevState: ConferenceState, action: ConferenceAction): ConferenceState => {
   switch (action.type) {
@@ -115,7 +116,10 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
     case ConferenceActionType.Participants: {
       return {
         ...prevState,
-        participants: action.body.participants
+        participants: (action.body.participants as Participant[]).filter(
+          (participant) => participant.callType !== CallType.api || participant.uuid === prevState.me?.uuid
+        ),
+        ...(action.body.participants.length === 1 ? { transferring: false } : {})
       }
     }
     case ConferenceActionType.ToggleMuteAudio: {
