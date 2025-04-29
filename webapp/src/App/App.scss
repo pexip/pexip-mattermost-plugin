@@ -14,3 +14,11 @@
 .modal .about-modal .modal-body {
   overflow: unset;
 }
+
+/**
+ * The library "@pexip/components" overrides the font-size to 14px when Mattermost uses 10px.
+ * This is a workaround to fix the issue until the library is fixed.
+ */
+html {
+  font-size: 10px !important;
+}
