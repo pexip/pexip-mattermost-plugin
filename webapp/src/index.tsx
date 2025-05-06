@@ -80,8 +80,7 @@ class Plugin {
         return
       }
       const vmr = settings.prefix + channel.id
-      const channelId: string = channel.id
-      notifyJoinConference(channelId).catch(console.error)
+      notifyJoinConference().catch(console.error)
       const { node, hostPin, displayName } = conferenceConfig
       window.open(
         `https://${node}/webapp3/m/${vmr}/express?pin=${hostPin}&name=${displayName}`,

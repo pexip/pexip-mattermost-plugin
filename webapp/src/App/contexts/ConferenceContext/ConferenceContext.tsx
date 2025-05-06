@@ -55,7 +55,10 @@ const initialState: ConferenceState = {
   presentationInPopUp: false,
   participants: [],
   errorMessage: '',
-  isDesktopApp: false
+  isDesktopApp: false,
+  directMedia: false,
+  me: null,
+  transferring: false
 }
 
 interface ConferenceContextProviderProps {

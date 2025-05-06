@@ -15,7 +15,10 @@ export enum ConferenceActionType {
   ChangeDevices,
   UpdateLocalStream,
   ChangeEffect,
-  SetIsDesktopApp
+  SetIsDesktopApp,
+  DirectMediaChanged,
+  Me,
+  Transfer
 }
 
 export interface ConferenceAction {

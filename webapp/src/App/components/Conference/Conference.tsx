@@ -6,11 +6,33 @@ import { ParticipantList } from './ParticipantList/ParticipantList'
 import { Tooltip } from '../Tooltip/Tooltip'
 import { Selfview } from '@pexip/media-components'
 import { type UserSettings, settingsEventEmitter } from '../../utils/user-settings'
+import { getPluginServerRoute } from '../../utils/http-requests'
+import { type Participant } from '@pexip/infinity'
 
 import './Conference.scss'
 
+const WaitingImageContainer = ({
+  participants,
+  transferring
+}: {
+  participants: Participant[]
+  transferring: boolean
+}): JSX.Element => (
+  <div className='WaitingImageContainer'>
+    <img src={`${getPluginServerRoute()}/public/waiting.jpg`} className='WaitingImage' />
+
+    <span>
+      {transferring
+        ? 'Reconnecting...'
+        : participants.length === 1
+        ? 'Waiting for other participants...'
+        : 'Participants without video'}
+    </span>
+  </div>
+)
+
 export const Conference = (): JSX.Element => {
-  const { state, swapVideos, changeDevices, changeEffect, disconnect } = useConferenceContext()
+  const { state, swapVideos, changeDevices, changeEffect } = useConferenceContext()
   const {
     channel,
     localVideoStream,
@@ -20,7 +42,11 @@ export const Conference = (): JSX.Element => {
     videoMuted,
     presentationStream,
     presentationInMain,
-    presentationInPopUp
+    presentationInPopUp,
+    participants,
+    directMedia,
+    me,
+    transferring
   } = state
 
   const pipRef = React.createRef<HTMLDivElement>()
@@ -49,6 +75,13 @@ export const Conference = (): JSX.Element => {
     }
   }
 
+  const isDirectMediaWaiting = (): boolean => {
+    const allParticipantVideoMuted = participants
+      .filter((participant) => participant.uuid !== me?.uuid)
+      .every((participant) => participant.isCameraMuted)
+    return (directMedia && (participants.length === 1 || allParticipantVideoMuted)) || transferring
+  }
+
   useEffect(() => {
     settingsEventEmitter.addListener('settingschange', handleUserSettings)
     return (): void => {
@@ -56,22 +89,20 @@ export const Conference = (): JSX.Element => {
     }
   }, [state])
 
-  useEffect(() => {
-    return () => {
-      disconnect().catch(console.error)
-    }
-  }, [])
-
   return (
     <div className='Conference' data-testid='Conference'>
       <div className='header'>{channel?.display_name} Room</div>
       <div className='conference-container'>
         <div className='video-container main'>
-          <Video
-            srcObject={presentationInMain ? presentationStream : remoteStream}
-            data-testid='MainVideo'
-            sinkId={outputAudioDeviceId}
-          />
+          {isDirectMediaWaiting() && !presentationInMain ? (
+            <WaitingImageContainer participants={participants} transferring={transferring} />
+          ) : (
+            <Video
+              srcObject={presentationInMain ? presentationStream : remoteStream}
+              data-testid='MainVideo'
+              sinkId={outputAudioDeviceId}
+            />
+          )}
         </div>
 
         <div className='pip' ref={pipRef}>
@@ -89,7 +120,14 @@ export const Conference = (): JSX.Element => {
 
           {presentationStream != null && !presentationInPopUp && (
             <div className='video-container secondary' data-testid='SecondaryVideo'>
-              <Video srcObject={!presentationInMain ? presentationStream : remoteStream} sinkId={outputAudioDeviceId} />
+              {isDirectMediaWaiting() && presentationInMain ? (
+                <WaitingImageContainer participants={participants} transferring={transferring} />
+              ) : (
+                <Video
+                  srcObject={!presentationInMain ? presentationStream : remoteStream}
+                  sinkId={outputAudioDeviceId}
+                />
+              )}
               <Tooltip text='Swap videos' position='bottomCenter' className='SwapVideosTooltipContainer'>
                 <div className='exchange-panel' onClick={swapVideos}>
                   <Icon source={IconTypes.IconArrowRight} />

@@ -11,8 +11,15 @@ export const getPluginSettings = async (): Promise<PluginSettings> => {
   return settings
 }
 
-export const notifyJoinConference = async (channelId: string): Promise<void> => {
+export const getPluginServerRoute = (): string => {
+  const state = getMattermostStore().getState()
+  const config = getConfig(state)
+  return (config.SiteURL ?? '') + '/plugins/' + manifest.id
+}
+
+export const notifyJoinConference = async (): Promise<void> => {
   const baseUrl = getPluginServerRoute()
+  const channelId = getMattermostStore().getState().entities.channels.currentChannelId
   await fetch(
     `${baseUrl}/api/notify_join_conference`,
     Client4.getOptions({
@@ -22,14 +29,9 @@ export const notifyJoinConference = async (channelId: string): Promise<void> => 
   )
 }
 
-export const getPluginServerRoute = (): string => {
-  const state = getMattermostStore().getState()
-  const config = getConfig(state)
-  return (config.SiteURL ?? '') + '/plugins/' + manifest.id
-}
-
-export const notifyLeaveConference = async (channelId: string): Promise<void> => {
+export const notifyLeaveConference = async (): Promise<void> => {
   const baseUrl = getPluginServerRoute()
+  const channelId = getMattermostStore().getState().entities.channels.currentChannelId
   await fetch(
     `${baseUrl}/api/notify_leave_conference`,
     Client4.getOptions({

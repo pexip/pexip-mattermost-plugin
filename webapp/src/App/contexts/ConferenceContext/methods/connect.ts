@@ -3,8 +3,6 @@ import { ConferenceActionType, type ConferenceAction } from '../ConferenceAction
 import { changeEffect } from './changeEffect'
 import { type ConferenceState } from '../ConferenceState'
 import { filterMediaDevices } from './filterMediaDevices'
-import { notifyJoinConference, notifyLeaveConference } from '../../../utils/http-requests'
-import { getMattermostStore } from '../../../utils/mattermost-store'
 
 interface ConnectParams {
   host: string
@@ -44,13 +42,41 @@ export const connect = async (
     }
   })
 
-  clientSignals.onConnected.add(() => {
-    notifyJoinConference(getMattermostStore().getState().entities.channels.currentChannelId).catch(console.error)
+  clientSignals.onConferenceStatus.add((event) => {
+    dispatch({
+      type: ConferenceActionType.DirectMediaChanged,
+      body: {
+        directMedia: event.status.directMedia
+      }
+    })
   })
 
-  clientSignals.onDisconnected.add(() => {
-    notifyLeaveConference(getMattermostStore().getState().entities.channels.currentChannelId).catch(console.error)
-    dispatch({ type: ConferenceActionType.Disconnected })
+  clientSignals.onMe.add(async (event) => {
+    const me = event.participant
+    dispatch({
+      type: ConferenceActionType.Me,
+      body: {
+        me: event.participant
+      }
+    })
+    if (me.isWaiting && me.isHost) {
+      await client.admit({ participantUuid: me.uuid })
+    }
+  })
+
+  clientSignals.onTransfer.add(async (event) => {
+    dispatch({
+      type: ConferenceActionType.Transfer,
+      body: {
+        host,
+        conferenceAlias: event.alias,
+        token: event.token,
+        callTag: event.callTag,
+        displayName,
+        bandwidth: 0,
+        callType: ClientCallType.AudioVideo
+      }
+    })
   })
 
   callSignals.onRemotePresentationStream.add((presentationStream) => {

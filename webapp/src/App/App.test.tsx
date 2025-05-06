@@ -46,6 +46,11 @@ jest.mock('./components/ErrorPanel/ErrorPanel', () => {
   return { ErrorPanel }
 })
 
+jest.mock('./utils/http-requests', () => ({
+  notifyJoinConference: jest.fn(),
+  notifyLeaveConference: jest.fn()
+}))
+
 describe('App component', () => {
   it('should render', () => {
     render(

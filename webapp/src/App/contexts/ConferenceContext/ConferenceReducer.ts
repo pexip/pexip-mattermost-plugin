@@ -1,7 +1,9 @@
+import { notifyJoinConference, notifyLeaveConference } from '../../utils/http-requests'
 import { ConnectionState } from '../../../types/ConnectionState'
 import { ConferenceActionType, type ConferenceAction } from './ConferenceAction'
 import type { ConferenceState } from './ConferenceState'
 import { closePopUp } from './methods/togglePresentationInPopUp'
+import { CallType, type Participant } from '@pexip/infinity'
 
 export const ConferenceReducer = (prevState: ConferenceState, action: ConferenceAction): ConferenceState => {
   switch (action.type) {
@@ -16,18 +18,29 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
         ...prevState,
         connectionState: ConnectionState.Connecting,
         channel: action.body.channel,
-        errorMessage: ''
+        presentationStream: undefined,
+        localVideoStream: undefined,
+        localAudioStream: undefined,
+        processedVideoStream: undefined,
+        remoteStream: undefined,
+        participants: [],
+        errorMessage: '',
+        me: null
       }
     }
     case ConferenceActionType.Connected: {
       closePopUp()
+      notifyJoinConference().catch(console.error)
       return {
         ...prevState,
         connectionState: ConnectionState.Connected,
         client: action.body.client,
         audioMuted: false,
         videoMuted: false,
-        presenting: false
+        presenting: false,
+        presentationInMain: false,
+        presentationInPopUp: false,
+        transferring: false
       }
     }
     case ConferenceActionType.ChangeDevices: {
@@ -75,6 +88,8 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
         track.stop()
       })
 
+      notifyLeaveConference().catch(console.error)
+
       return {
         ...prevState,
         localVideoStream: undefined,
@@ -94,13 +109,17 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
     case ConferenceActionType.RemoteStream: {
       return {
         ...prevState,
-        remoteStream: action.body.remoteStream
+        remoteStream: action.body.remoteStream,
+        transferring: false
       }
     }
     case ConferenceActionType.Participants: {
       return {
         ...prevState,
-        participants: action.body.participants
+        participants: (action.body.participants as Participant[]).filter(
+          (participant) => participant.callType !== CallType.api || participant.uuid === prevState.me?.uuid
+        ),
+        ...(action.body.participants.length === 1 ? { transferring: false } : {})
       }
     }
     case ConferenceActionType.ToggleMuteAudio: {
@@ -152,6 +171,36 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
         ...prevState,
         isDesktopApp: action.body.isDesktopApp as boolean
       }
+    }
+    case ConferenceActionType.DirectMediaChanged: {
+      return {
+        ...prevState,
+        directMedia: action.body.directMedia
+      }
+    }
+    case ConferenceActionType.Me: {
+      return {
+        ...prevState,
+        me: action.body.me
+      }
+    }
+    case ConferenceActionType.Transfer: {
+      prevState.client
+        ?.disconnect({ reason: 'Transfer' })
+        .then(() => {
+          const localMediaStream = new MediaStream()
+          prevState.localAudioStream?.getTracks().forEach((track) => {
+            localMediaStream.addTrack(track)
+          })
+          prevState.localVideoStream?.getTracks().forEach((track) => {
+            localMediaStream.addTrack(track)
+          })
+
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- we are sure that the type is correct
+          prevState.client?.call({ ...action.body, mediaStream: localMediaStream }).catch(console.error)
+        })
+        .catch(console.error)
+      return { ...prevState, transferring: true }
     }
     default:
       return prevState

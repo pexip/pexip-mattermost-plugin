@@ -109,7 +109,10 @@ jest.mock(
     createInfinityClientSignals: () => ({
       onParticipants: { add: jest.fn() },
       onConnected: { add: jest.fn() },
-      onDisconnected: { add: jest.fn() }
+      onConferenceStatus: { add: jest.fn() },
+      onMe: { add: jest.fn() },
+      onDisconnected: { add: jest.fn() },
+      onTransfer: { add: jest.fn() }
     }),
     createCallSignals: () => ({
       onRemoteStream: { add: jest.fn() },
