@@ -6,6 +6,7 @@ export interface PluginSettings {
   pin: number
   displayNameType: DisplayNameType
   embedded: boolean
+  showJoinLeaveNotifications: boolean
   filterChannels: {
     enabled: boolean
     allowedChannels: string[]

@@ -23,12 +23,13 @@ type FilterChannels struct {
 }
 
 type configuration struct {
-	Node            string
-	Prefix          string
-	Pin             int
-	DisplayNameType string
-	Embedded        bool
-	FilterChannels  FilterChannels
+	Node                       string
+	Prefix                     string
+	Pin                        int
+	DisplayNameType            string
+	Embedded                   bool
+	ShowJoinLeaveNotifications bool
+	FilterChannels             FilterChannels
 }
 
 // Clone shallow copies the configuration. Your implementation may require a deep copy if

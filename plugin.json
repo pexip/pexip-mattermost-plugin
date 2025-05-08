@@ -73,7 +73,15 @@
         "key": "Embedded",
         "display_name": "Embedded Experience:",
         "type": "bool",
-        "help_text": "Indicates if the conference should be displayed inside Mattermost or in another tab with only the conference."
+        "help_text": "Indicates if the conference should be displayed inside Mattermost or in another tab with only the conference.",
+        "default": true
+      },
+      {
+        "key": "ShowJoinLeaveNotifications",
+        "display_name": "Show Join/Leave Notifications:",
+        "type": "bool",
+        "help_text": "Indicates if the join/leave notifications should be shown in the channel.",
+        "default": false
       },
       {
         "key": "FilterChannels",
