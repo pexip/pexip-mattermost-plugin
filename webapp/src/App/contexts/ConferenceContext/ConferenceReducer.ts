@@ -88,7 +88,10 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
         track.stop()
       })
 
-      notifyLeaveConference().catch(console.error)
+      const channelId = prevState.channel?.id
+      if (channelId != null) {
+        notifyLeaveConference(channelId).catch(console.error)
+      }
 
       return {
         ...prevState,

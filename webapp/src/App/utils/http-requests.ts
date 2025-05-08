@@ -29,9 +29,8 @@ export const notifyJoinConference = async (): Promise<void> => {
   )
 }
 
-export const notifyLeaveConference = async (): Promise<void> => {
+export const notifyLeaveConference = async (channelId: string): Promise<void> => {
   const baseUrl = getPluginServerRoute()
-  const channelId = getMattermostStore().getState().entities.channels.currentChannelId
   await fetch(
     `${baseUrl}/api/notify_leave_conference`,
     Client4.getOptions({
