@@ -76,6 +76,13 @@
         "help_text": "Indicates if the conference should be displayed inside Mattermost or in another tab with only the conference."
       },
       {
+        "key": "ShowJoinLeaveNotifications",
+        "display_name": "Show Join/Leave Notifications:",
+        "type": "bool",
+        "help_text": "Indicates if the join/leave notifications should be shown in the channel.",
+        "default": false
+      },
+      {
         "key": "FilterChannels",
         "display_name": "Filter Channels:",
         "type": "custom",

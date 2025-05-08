@@ -51,23 +51,49 @@ func (p *Plugin) initializeRouter() {
 func (p *Plugin) httpGetSettings(w http.ResponseWriter, _ *http.Request) (int, error) {
 	conf := p.getConfiguration()
 	return respondJSON(w, struct {
-		Node            string         `json:"node"`
-		Prefix          string         `json:"prefix"`
-		Pin             int            `json:"pin"`
-		DisplayNameType string         `json:"displayNameType"`
-		Embedded        bool           `json:"embedded"`
-		FilterChannels  FilterChannels `json:"filterChannels"`
+		Node                       string         `json:"node"`
+		Prefix                     string         `json:"prefix"`
+		Pin                        int            `json:"pin"`
+		DisplayNameType            string         `json:"displayNameType"`
+		Embedded                   bool           `json:"embedded"`
+		ShowJoinLeaveNotifications bool           `json:"showJoinLeaveNotifications"`
+		FilterChannels             FilterChannels `json:"filterChannels"`
 	}{
-		Node:            conf.Node,
-		Prefix:          conf.Prefix,
-		Pin:             conf.Pin,
-		DisplayNameType: conf.DisplayNameType,
-		Embedded:        conf.Embedded,
-		FilterChannels:  conf.FilterChannels,
+		Node:                       conf.Node,
+		Prefix:                     conf.Prefix,
+		Pin:                        conf.Pin,
+		DisplayNameType:            conf.DisplayNameType,
+		Embedded:                   conf.Embedded,
+		ShowJoinLeaveNotifications: conf.ShowJoinLeaveNotifications,
+		FilterChannels:             conf.FilterChannels,
 	})
 }
 
+func (p *Plugin) httpChangeUserSettings(w http.ResponseWriter, r *http.Request) (int, error) {
+	in := InChangeUserSettings{}
+	err := json.NewDecoder(r.Body).Decode(&in)
+
+	if err != nil {
+		return respondErr(w, http.StatusBadRequest,
+			errors.WithMessage(err, "failed to decode incoming request"))
+	}
+
+	p.API.PublishWebSocketEvent(changeUserSettingsEvent, map[string]interface{}{
+		"inputVideoDeviceId":  in.Submission.InputVideoDeviceID,
+		"inputAudioDeviceId":  in.Submission.InputAudioDeviceID,
+		"outputAudioDeviceId": in.Submission.OutputAudioDeviceID,
+		"effect":              in.Submission.Effect,
+	}, &model.WebsocketBroadcast{UserId: r.Header.Get("Mattermost-User-Id")})
+
+	return 200, err
+}
+
 func (p *Plugin) httpNotifyJoinConference(w http.ResponseWriter, r *http.Request) (int, error) {
+	if !p.getConfiguration().ShowJoinLeaveNotifications {
+		return respondErr(w, http.StatusForbidden,
+			errors.WithMessage(errors.New("notifications disabled in settings"), "cannot send join notification"))
+	}
+
 	in := InNotifyJoinConference{}
 	err := json.NewDecoder(r.Body).Decode(&in)
 	if err != nil {
@@ -104,26 +130,12 @@ func (p *Plugin) httpNotifyJoinConference(w http.ResponseWriter, r *http.Request
 	return 200, err
 }
 
-func (p *Plugin) httpChangeUserSettings(w http.ResponseWriter, r *http.Request) (int, error) {
-	in := InChangeUserSettings{}
-	err := json.NewDecoder(r.Body).Decode(&in)
-
-	if err != nil {
-		return respondErr(w, http.StatusBadRequest,
-			errors.WithMessage(err, "failed to decode incoming request"))
+func (p *Plugin) httpNotifyLeaveConference(w http.ResponseWriter, r *http.Request) (int, error) {
+	if !p.getConfiguration().ShowJoinLeaveNotifications {
+		return respondErr(w, http.StatusForbidden,
+			errors.WithMessage(errors.New("notifications disabled in settings"), "cannot send leave notification"))
 	}
 
-	p.API.PublishWebSocketEvent(changeUserSettingsEvent, map[string]interface{}{
-		"inputVideoDeviceId":  in.Submission.InputVideoDeviceID,
-		"inputAudioDeviceId":  in.Submission.InputAudioDeviceID,
-		"outputAudioDeviceId": in.Submission.OutputAudioDeviceID,
-		"effect":              in.Submission.Effect,
-	}, &model.WebsocketBroadcast{UserId: r.Header.Get("Mattermost-User-Id")})
-
-	return 200, err
-}
-
-func (p *Plugin) httpNotifyLeaveConference(w http.ResponseWriter, r *http.Request) (int, error) {
 	in := InNotifyJoinConference{}
 	err := json.NewDecoder(r.Body).Decode(&in)
 	if err != nil {

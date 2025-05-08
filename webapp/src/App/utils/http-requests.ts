@@ -18,6 +18,12 @@ export const getPluginServerRoute = (): string => {
 }
 
 export const notifyJoinConference = async (): Promise<void> => {
+  const settings = await getPluginSettings()
+
+  if (!settings.showJoinLeaveNotifications) {
+    return
+  }
+
   const baseUrl = getPluginServerRoute()
   const channelId = getMattermostStore().getState().entities.channels.currentChannelId
   await fetch(
@@ -30,6 +36,12 @@ export const notifyJoinConference = async (): Promise<void> => {
 }
 
 export const notifyLeaveConference = async (): Promise<void> => {
+  const settings = await getPluginSettings()
+
+  if (!settings.showJoinLeaveNotifications) {
+    return
+  }
+
   const baseUrl = getPluginServerRoute()
   const channelId = getMattermostStore().getState().entities.channels.currentChannelId
   await fetch(
