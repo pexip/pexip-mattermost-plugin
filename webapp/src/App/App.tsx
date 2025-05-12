@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react'
-
+import React, { useEffect, useRef } from 'react'
 import type { ConferenceConfig } from '../types/ConferenceConfig'
 import { useConferenceContext } from './contexts/ConferenceContext/ConferenceContext'
 import { ConnectionState } from '../types/ConnectionState'
@@ -9,7 +8,6 @@ import { Loading } from './components/Loading/Loading'
 import { ErrorPanel } from './components/ErrorPanel/ErrorPanel'
 
 import './App.scss'
-
 interface AppProps {
   config: ConferenceConfig
 }
@@ -17,10 +15,16 @@ interface AppProps {
 export const App = (props: AppProps): JSX.Element => {
   const { setConfig, disconnect, state } = useConferenceContext()
 
+  const disconnectRef = useRef<() => Promise<void>>()
+
+  useEffect(() => {
+    disconnectRef.current = disconnect
+  }, [state, disconnect])
+
   useEffect(() => {
     setConfig(props.config)
     return () => {
-      disconnect().catch(console.error)
+      disconnectRef.current?.().catch(console.error)
     }
   }, [])
 

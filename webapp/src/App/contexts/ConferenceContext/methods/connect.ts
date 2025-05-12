@@ -3,6 +3,8 @@ import { ConferenceActionType, type ConferenceAction } from '../ConferenceAction
 import { changeEffect } from './changeEffect'
 import { type ConferenceState } from '../ConferenceState'
 import { filterMediaDevices } from './filterMediaDevices'
+import { closePopUp } from './togglePresentationInPopUp'
+import { notifyJoinConference } from '../../../utils/http-requests'
 
 interface ConnectParams {
   host: string
@@ -157,6 +159,8 @@ export const connect = async (
   }
 
   if (response?.status === 200) {
+    closePopUp()
+    notifyJoinConference().catch(console.error)
     dispatch({
       type: ConferenceActionType.Connected,
       body: {

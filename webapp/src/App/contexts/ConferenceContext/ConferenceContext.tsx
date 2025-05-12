@@ -70,11 +70,6 @@ interface ConferenceContextProviderProps {
 const ConferenceContextProvider = (props: ConferenceContextProviderProps): JSX.Element => {
   const [state, dispatch] = useReducer(ConferenceReducer, initialState)
 
-  const beforeUnloadHandler = (): void => {
-    const disconnectReason: DisconnectReason = 'Browser closed'
-    disconnect(state, dispatch, disconnectReason).catch(console.error)
-  }
-
   const handleDeviceChange = (): void => {
     console.log('Device change detected')
     filterMediaDevices({
@@ -116,6 +111,19 @@ const ConferenceContextProvider = (props: ConferenceContextProviderProps): JSX.E
     }
   }, [state])
 
+  useEffect(() => {
+    const beforeUnloadHandler = (): void => {
+      const disconnectReason: DisconnectReason = 'Browser closed'
+      disconnect(state, dispatch, disconnectReason).catch(console.error)
+    }
+    if (state.connectionState === ConnectionState.Connected) {
+      addEventListener('beforeunload', beforeUnloadHandler)
+    }
+    return () => {
+      removeEventListener('beforeunload', beforeUnloadHandler)
+    }
+  }, [state.connectionState])
+
   const value = useMemo(
     () => ({
       setConfig: (config: ConferenceConfig): void => {
@@ -140,12 +148,13 @@ const ConferenceContextProvider = (props: ConferenceContextProviderProps): JSX.E
         } catch (e) {
           console.error(e)
         }
-        addEventListener('beforeunload', beforeUnloadHandler)
       },
       disconnect: async () => {
-        const disconnectReason: DisconnectReason = 'User initiated disconnect'
-        disconnect(state, dispatch, disconnectReason).catch(console.error)
-        removeEventListener('beforeunload', beforeUnloadHandler)
+        if (state.connectionState === ConnectionState.Disconnected) {
+          return
+        }
+        const reason: DisconnectReason = 'User initiated disconnect'
+        disconnect(state, dispatch, reason).catch(console.error)
       },
       toggleMuteAudio: async () => {
         toggleMuteAudio(state, dispatch).catch(console.error)

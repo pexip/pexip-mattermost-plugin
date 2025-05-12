@@ -1,8 +1,6 @@
-import { notifyJoinConference, notifyLeaveConference } from '../../utils/http-requests'
 import { ConnectionState } from '../../../types/ConnectionState'
 import { ConferenceActionType, type ConferenceAction } from './ConferenceAction'
 import type { ConferenceState } from './ConferenceState'
-import { closePopUp } from './methods/togglePresentationInPopUp'
 import { CallType, type Participant } from '@pexip/infinity'
 
 export const ConferenceReducer = (prevState: ConferenceState, action: ConferenceAction): ConferenceState => {
@@ -29,8 +27,6 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
       }
     }
     case ConferenceActionType.Connected: {
-      closePopUp()
-      notifyJoinConference().catch(console.error)
       return {
         ...prevState,
         connectionState: ConnectionState.Connected,
@@ -55,7 +51,6 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
         ...(outputAudioDeviceId != null && { outputAudioDeviceId })
       }
     }
-
     case ConferenceActionType.UpdateLocalStream: {
       const localVideoStream: MediaStream = action.body.localVideoStream
       const localAudioStream: MediaStream = action.body.localAudioStream
@@ -68,28 +63,13 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
         ...(processedVideoStream != null && { processedVideoStream })
       }
     }
-
     case ConferenceActionType.ChangeEffect: {
       return {
         ...prevState,
         effect: action.body.effect
       }
     }
-
     case ConferenceActionType.Disconnected: {
-      closePopUp()
-      prevState.localVideoStream?.getTracks().forEach((track) => {
-        track.stop()
-      })
-      prevState.localAudioStream?.getTracks().forEach((track) => {
-        track.stop()
-      })
-      prevState.presentationStream?.getTracks().forEach((track) => {
-        track.stop()
-      })
-
-      notifyLeaveConference().catch(console.error)
-
       return {
         ...prevState,
         localVideoStream: undefined,
