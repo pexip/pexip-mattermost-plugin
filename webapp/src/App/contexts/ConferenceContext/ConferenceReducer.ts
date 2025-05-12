@@ -51,7 +51,6 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
         ...(outputAudioDeviceId != null && { outputAudioDeviceId })
       }
     }
-
     case ConferenceActionType.UpdateLocalStream: {
       const localVideoStream: MediaStream = action.body.localVideoStream
       const localAudioStream: MediaStream = action.body.localAudioStream
@@ -64,14 +63,12 @@ export const ConferenceReducer = (prevState: ConferenceState, action: Conference
         ...(processedVideoStream != null && { processedVideoStream })
       }
     }
-
     case ConferenceActionType.ChangeEffect: {
       return {
         ...prevState,
         effect: action.body.effect
       }
     }
-
     case ConferenceActionType.Disconnected: {
       return {
         ...prevState,
