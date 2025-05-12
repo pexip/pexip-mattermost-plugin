@@ -76,10 +76,10 @@
         "help_text": "Indicates if the conference should be displayed inside Mattermost or in another tab with only the conference."
       },
       {
-        "key": "FilterChannels",
+        "key": "DisallowedChannels",
         "display_name": "Filter Channels:",
         "type": "custom",
-        "help_text": "Filter the channels where the plugin will be available."
+        "help_text": "The plugin will not be available in the disallowed channels."
       }
     ]
   }

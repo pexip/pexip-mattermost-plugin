@@ -9,10 +9,7 @@ const mockConfig: ConferenceConfig = {
   displayName: 'User',
   vmrPrefix: 'matt-',
   hostPin: '0000',
-  filterChannels: {
-    enabled: false,
-    allowedChannels: []
-  }
+  disallowedChannels: []
 }
 
 Object.defineProperty(global.navigator, 'mediaDevices', {

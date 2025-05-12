@@ -47,7 +47,7 @@ class Plugin {
       settingsEventEmitter.emit('settingschange', message.data as UserSettings)
     })
     // Custom setting example: https://github.com/mattermost/mattermost-plugin-demo/blob/master/plugin.json
-    registry.registerAdminConsoleCustomSetting('FilterChannels', FilterChannels, { showTitle: true })
+    registry.registerAdminConsoleCustomSetting('DisallowedChannels', FilterChannels, { showTitle: true })
 
     this.rhsPlugin = registry.registerRightHandSidebarComponent(RightHandSidebarComponent, title)
   }
@@ -60,7 +60,7 @@ class Plugin {
     if (settings.embedded) {
       this.store.dispatch(this.rhsPlugin.toggleRHSPlugin)
     } else {
-      if (settings.filterChannels.enabled && !settings.filterChannels.allowedChannels.includes(channel.id)) {
+      if (settings.disallowedChannels.includes(channel.id)) {
         ;(window as any).openInteractiveDialog({
           dialog: {
             title: (
@@ -120,7 +120,7 @@ class Plugin {
       displayName,
       vmrPrefix: settings.prefix,
       hostPin: settings.pin.toString(),
-      filterChannels: settings.filterChannels
+      disallowedChannels: settings.disallowedChannels
     }
     return conferenceConfig
   }

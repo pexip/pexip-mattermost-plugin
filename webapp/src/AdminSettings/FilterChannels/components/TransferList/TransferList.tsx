@@ -50,22 +50,22 @@ export const TransferList = (props: TransferListProps): JSX.Element => {
 
   return (
     <div className='TransferList'>
+      <TransferColumn title='Allowed Channels' channels={allowedChannels} onChange={handleChangeCheckedAllowed} />
+
+      <div className='ChannelSelectorButtons'>
+        <Button aria-label='move selected right' variant='secondary' onClick={moveToDisallowed}>
+          &gt;
+        </Button>
+        <Button aria-label='move select left' variant='secondary' onClick={moveToAllowed}>
+          &lt;
+        </Button>
+      </div>
+
       <TransferColumn
         title='Disallowed Channels'
         channels={disallowedChannels}
         onChange={handleChangeCheckedDisallowed}
       />
-
-      <div className='ChannelSelectorButtons'>
-        <Button aria-label='move selected right' variant='secondary' onClick={moveToAllowed}>
-          &gt;
-        </Button>
-        <Button aria-label='move select left' variant='secondary' onClick={moveToDisallowed}>
-          &lt;
-        </Button>
-      </div>
-
-      <TransferColumn title='Allowed Channels' channels={allowedChannels} onChange={handleChangeCheckedAllowed} />
     </div>
   )
 }

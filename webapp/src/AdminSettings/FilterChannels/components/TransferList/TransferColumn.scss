@@ -66,6 +66,10 @@
         margin: 0;
         padding: var(--list-small-spacing);
         width: 100%;
+
+        span {
+          font-size: 1.5em;
+        }
       }
     }
   }
