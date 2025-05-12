@@ -42,14 +42,10 @@ export const JoinPanel = (): JSX.Element => {
     return unsubscribe
   }, [])
 
-  const filterChannelsEnabled = config?.filterChannels.enabled ?? false
-  const allowedChannels = config?.filterChannels.allowedChannels ?? []
+  const disallowedChannels = config?.disallowedChannels ?? []
   const channelId = channel?.id ?? ''
-  const type = channel?.type ?? ''
 
-  const isDirectOrGroupChannel = type === 'D' || type === 'G'
-
-  const shouldAllowChannel = !filterChannelsEnabled || isDirectOrGroupChannel || allowedChannels.includes(channelId)
+  const shouldAllowChannel = !disallowedChannels.includes(channelId)
 
   return (
     <div className='JoinPanel'>

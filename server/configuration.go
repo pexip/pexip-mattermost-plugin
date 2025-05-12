@@ -17,18 +17,13 @@ import (
 //
 // If you add non-reference types to your configuration struct, be sure to rewrite Clone as a deep
 // copy appropriate for your types.
-type FilterChannels struct {
-	Enabled         bool     `json:"enabled"`
-	AllowedChannels []string `json:"allowedChannels"`
-}
-
 type configuration struct {
-	Node            string
-	Prefix          string
-	Pin             int
-	DisplayNameType string
-	Embedded        bool
-	FilterChannels  FilterChannels
+	Node               string
+	Prefix             string
+	Pin                int
+	DisplayNameType    string
+	Embedded           bool
+	DisallowedChannels []string
 }
 
 // Clone shallow copies the configuration. Your implementation may require a deep copy if
